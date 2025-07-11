@@ -1,30 +1,9 @@
 import prisma from "./services/prisma.js";
 const express = require('express');
-const bcrypt = require('bcryptjs'); // Biblioteca para criptografia de senhas
-const jwt = require('jsonwebtoken'); // Biblioteca para gerar e verificar tokens JWT
 import * as userServices from './services/userServices.js';
+import { authenticateToken, requireAdmin } from './services/userServices.js'; // Importar middleware
 const router = express.Router();
 
-// Chave secreta para JWT
-const JWT_SECRET = process.env.JWT_SECRET || 'chave-secreta';
-
-// Middleware para verificar autenticação
-const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-
-    if (!token) {
-        return res.status(401).json({ error: 'Token de acesso requerido.' });
-    }
-
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).json({ error: 'Token inválido.' });
-        }
-        req.user = user;
-        next(); // Chama o próximo middleware ou rota
-    });
-};
 
 // Middleware para verificar se é admin
 const requireAdmin = (req, res, next) => {
@@ -43,53 +22,18 @@ router.get('/', (req, res) => {
 
 // Login do usuário
 router.post('/auth/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
+    }
+
     try {
-        const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
-        }
-
-        // Buscar usuário pelo email
-        const user = await prisma.user.findUnique({
-            where: { email }
-        });
-
-        if (!user) {
-            return res.status(401).json({ error: 'Credenciais inválidas.' });
-        }
-
-        // Verificar senha
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Credenciais inválidas.' });
-        }
-
-        // Gerar token JWT
-        const token = jwt.sign(
-            { 
-                id: user.id, 
-                email: user.email, 
-                name: user.name,
-                isAdmin: user.isAdmin 
-            },
-            JWT_SECRET,
-            { expiresIn: '24h' }
-        );
-
-        res.json({
-            message: 'Login realizado com sucesso!',
-            token,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                isAdmin: user.isAdmin
-            }
-        });
+        const result = await userServices.authenticateUser(email, password);
+        res.status(result.status).json(result);
     } catch (error) {
-        console.error('Erro no login:', error);
-        res.status(500).json({ error: 'Erro interno do servidor.' });
+        console.error('Erro ao autenticar usuário:', error);
+        res.status(400).json({ error: error.message });
     }
 });
 
@@ -115,38 +59,10 @@ router.put('/auth/change-password', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Senha atual e nova senha são obrigatórias.' });
         }
 
-        if (newPassword.length < 6) {
-            return res.status(400).json({ error: 'A nova senha deve ter pelo menos 6 caracteres.' });
-        }
-
-        // Buscar usuário atual
-        const user = await prisma.user.findUnique({
-            where: { id: req.user.id }
-        });
-
-        if (!user) {
-            return res.status(404).json({ error: 'Usuário não encontrado.' });
-        }
-
-        // Verificar senha atual
-        const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
-        if (!isCurrentPasswordValid) {
-            return res.status(400).json({ error: 'Senha atual incorreta.' });
-        }
-
-        // Hash da nova senha
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-
-        // Atualizar senha
-        await prisma.user.update({
-            where: { id: req.user.id },
-            data: { password: hashedNewPassword }
-        });
-
-        res.json({ message: 'Senha alterada com sucesso!' });
+        const result = await userServices.changePassword(req.user.id, currentPassword, newPassword);
+        res.status(result.status).json(result);
     } catch (error) {
-        console.error('Erro ao alterar senha:', error);
-        res.status(500).json({ error: 'Erro interno do servidor.' });
+        res.status(400).json({ error: error.message });
     }
 });
 
@@ -166,38 +82,10 @@ router.post('/auth/forgot-password', async (req, res) => {
             return res.status(400).json({ error: 'Email é obrigatório.' });
         }
 
-        // Verificar se o usuário existe
-        const user = await prisma.user.findUnique({
-            where: { email }
-        });
-
-        if (!user) {
-            return res.json({ 
-                message: 'Se o email existir no sistema, você receberá instruções para redefinir sua senha.' 
-            });
-        }
-
-        // Gerar token de recuperação (válido por 1 hora)
-        const resetToken = jwt.sign(
-            { 
-                userId: user.id, 
-                email: user.email,
-                type: 'password-reset'
-            },
-            JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-        // Em produção, enviar este token por email
-        res.json({
-            message: 'Token de recuperação gerado com sucesso!',
-            resetToken: resetToken, // ⚠️ Em produção, remova esta linha e envie por email
-            instructions: 'Em produção, este token seria enviado por email. Use-o na rota /auth/reset-password'
-        });
-
+        const result = await userServices.requestPasswordReset(email, JWT_SECRET);
+        res.status(result.status).json(result);
     } catch (error) {
-        console.error('Erro ao solicitar recuperação de senha:', error);
-        res.status(500).json({ error: 'Erro interno do servidor.' });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -210,46 +98,10 @@ router.post('/auth/reset-password', async (req, res) => {
             return res.status(400).json({ error: 'Token e nova senha são obrigatórios.' });
         }
 
-        if (newPassword.length < 6) {
-            return res.status(400).json({ error: 'A nova senha deve ter pelo menos 6 caracteres.' });
-        }
-
-        // Verificar e decodificar o token
-        let decoded;
-        try {
-            decoded = jwt.verify(token, JWT_SECRET);
-        } catch (error) {
-            return res.status(400).json({ error: 'Token inválido ou expirado.' });
-        }
-
-        // Verificar se é um token de reset de senha
-        if (decoded.type !== 'password-reset') {
-            return res.status(400).json({ error: 'Tipo de token inválido.' });
-        }
-
-        // Verificar se o usuário ainda existe
-        const user = await prisma.user.findUnique({
-            where: { id: decoded.userId }
-        });
-
-        if (!user) {
-            return res.status(404).json({ error: 'Usuário não encontrado.' });
-        }
-
-        // Hash da nova senha
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // Atualizar a senha no banco
-        await prisma.user.update({
-            where: { id: decoded.userId },
-            data: { password: hashedPassword }
-        });
-
-        res.json({ message: 'Senha redefinida com sucesso! Você já pode fazer login com a nova senha.' });
-
+        const result = await userServices.resetPassword(token, newPassword, JWT_SECRET);
+        res.status(result.status).json(result);
     } catch (error) {
-        console.error('Erro ao redefinir senha:', error);
-        res.status(500).json({ error: 'Erro interno do servidor.' });
+        res.status(400).json({ error: error.message });
     }
 });
 
@@ -270,82 +122,20 @@ router.post('/users', async (req, res) => {
 // Criar primeiro usuário admin (apenas se não existir nenhum admin)
 router.post('/admin/create-first-admin', async (req, res) => {
     try {
-        // Verificar se já existe algum admin
-        const existingAdmin = await prisma.user.findFirst({
-            where: { isAdmin: true }
-        });
-
-        if (existingAdmin) {
-            return res.status(400).json({ error: 'Já existe um administrador no sistema.' });
-        }
-
-        const { name, email, password } = req.body;
-
-        if (!name || !email || !password) {
-            return res.status(400).json({ error: 'Username, email e senha são obrigatórios.' });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const admin = await prisma.user.create({
-            data: {
-                name,
-                email,
-                password: hashedPassword,
-                isAdmin: true
-            },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                isAdmin: true,
-                createdAt: true
-            }
-        });
-
-        res.status(201).json({
-            message: 'Primeiro administrador criado com sucesso!',
-            user: admin
-        });
+        const result = await userServices.createFirstAdmin(req.body);
+        res.status(result.status).json(result);
     } catch (error) {
-        console.error('Erro ao criar administrador:', error);
-        
-        if (error.code === 'P2002') {
-            const field = error.meta?.target?.[0];
-            if (field === 'name') {
-                res.status(400).json({ error: 'Username já está em uso.'});
-            } else if (field === 'email') {
-                res.status(400).json({ error: 'Email já está em uso.' });
-            } else {
-                res.status(400).json({ error: 'Username ou Email já está em uso.' });
-            }
-        } else {
-            console.error('Erro ao criar administrador:', error);
-            res.status(500).json({ error: 'Erro interno do servidor.' })
-        }
+        res.status(400).json({ error: error.message });
     }
 });
 
 // Listar todos os usuários (apenas admins)
 router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
     try {
-        const users = await prisma.user.findMany({
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                isAdmin: true,
-                createdAt: true,
-                updatedAt: true,
-            },
-            orderBy: {
-                createdAt: 'desc'
-            }
-        });
-
-        res.json(users);
+        const result = await userServices.getAllUsers();
+        res.status(result.status).json(result);
     } catch (error) {
-        console.error('Erro ao buscar usuários:', error);
+        console.error('Erro ao listar usuários:', error);
         res.status(500).json({ error: 'Erro interno do servidor.' });
     }
 });
@@ -361,23 +151,8 @@ router.get('/users/:id', authenticateToken, async (req, res) => {
             return res.status(403).json({ error: 'Acesso negado. Você só pode ver seu próprio perfil.' });
         }
 
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                isAdmin: true,
-                createdAt: true,
-                updatedAt: true,
-            }
-        });
-
-        if (!user) {
-            return res.status(404).json({ error: 'Usuário não encontrado.' });
-        }
-
-        res.json(user);
+        const user = await userServices.getUserById(userId);
+        res.status(user.status).json(user);
     } catch (error) {
         console.error('Erro ao buscar usuário:', error);
         res.status(500).json({ error: 'Erro interno do servidor.' });
@@ -451,11 +226,6 @@ router.delete('/users/:id', authenticateToken, requireAdmin, async (req, res) =>
             res.status(500).json({ error: 'Erro interno do servidor.' });
         }
     }
-});
-
-// Exemplo de rota protegida
-router.get('/protected', authenticateToken, (req, res) => {
-    res.json({ message: 'Você acessou uma rota protegida!', user: req.user });
 });
 
 // Graceful shutdown
