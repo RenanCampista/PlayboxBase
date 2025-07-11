@@ -22,16 +22,41 @@ class RawgClient:
                 'description': game.get('description'),
                 'background_image': game.get('background_image'),
                 'playtime': game.get('playtime'),
-                'platforms': game.get('platforms'),
-                'stores': game.get('stores'),
-                'genres': game.get('genres'),
-                'publishers': game.get('publishers'),
+                'platforms': self.get_platforms_names(game.get('platforms', [])),
+                'genres': self.get_genres_names(game.get('genres', [])),
+                'publishers': self.get_publishers_names(game.get('publishers', [])),
                 'metacritic': game.get('metacritic'),
-                'esrb_rating': game.get('esrb_rating'),
                 'screenshots': screenshots
             }
         return formatted_game
 
+    def get_platforms_names(self, platforms: list) -> list:
+        """Extract platform names from the game data."""
+        platforms_names = []
+        for platform in platforms:
+            name = platform.get('platform', {}).get('name')
+            if name:
+                platforms_names.append(name)
+        return platforms_names
+    
+    def get_publishers_names(self, publishers: list) -> list:
+        """Extract publisher names from the game data."""
+        publishers_names = []
+        for publisher in publishers:
+            name = publisher.get('name')
+            if name:
+                publishers_names.append(name)
+        return publishers_names
+    
+    def get_genres_names(self, genres: list) -> list:
+        """Extract genre names from the game data."""
+        genres_names = []
+        for genre in genres:
+            name = genre.get('name')
+            if name:
+                genres_names.append(name)
+        return genres_names
+    
     def get_game_details(self, game_id: int):
         """Fetch detailed information about a specific game."""
         params = {
@@ -102,7 +127,7 @@ if __name__ == "__main__":
     platforms = api.get_platforms_ids()
     platforms_ids = [platform_id for _, platform_id in platforms.items()]
     
-    if games := api.get_games_by_platform(platforms_ids, page_size=80):
+    if games := api.get_games_by_platform(platforms_ids, page_size=90):
         # Criar a pasta data
         if not os.path.exists('data'):
             os.makedirs('data')
