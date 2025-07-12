@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { authService } from '../services/api';
-import './ForgotPassword.css';
+import '../styles/ForgotPassword.css';
 
 const ForgotPassword = ({ onBackToLogin }) => {
   const [step, setStep] = useState(1); // 1: solicitar email, 2: inserir token e nova senha

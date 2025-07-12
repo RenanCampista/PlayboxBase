@@ -1,6 +1,6 @@
 import React from 'react';
 import { authService } from '../services/api';
-import './Header.css';
+import '../styles/Header.css';
 
 const Header = ({ user, onLogout }) => {
   const handleLogout = async () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import './UserList.css';
+import '../styles/UserList.css';
 
 const UserList = ({ users, onEdit, onDelete }) => {
   if (users.length === 0) {

@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
-import UserList from './components/UserList';
-import UserForm from './components/UserForm';
-import Login from './components/Login';
-import Register from './components/Register';
-import ForgotPassword from './components/ForgotPassword';
-import Header from './components/Header';
-import { userService, authService } from './services/api';
+import '../styles/App.css';
+import { UserList, UserForm, Header } from '../components';
+import { Login, Register, ForgotPassword } from './';
+import { userService, authService } from '../services/api';
 
 function App() {
   const [users, setUsers] = useState([]);

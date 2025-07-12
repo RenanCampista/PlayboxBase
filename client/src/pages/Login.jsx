@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { authService } from '../services/api';
-import './Login.css';
+import '../styles/Login.css';
 
 const Login = ({ onLoginSuccess, onShowRegister, onShowForgotPassword }) => {
   const [formData, setFormData] = useState({

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { userService } from '../services/api';
-import './Register.css';
+import '../styles/Register.css';
 
 const Register = ({ onRegisterSuccess, onBackToLogin }) => {
   const [formData, setFormData] = useState({
