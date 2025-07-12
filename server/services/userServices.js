@@ -93,6 +93,30 @@ const getUserById = async (userId) => {
     }
 }
 
+const getUserByEmail = async (email) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                isAdmin: true,
+                createdAt: true
+            }
+        });
+
+        if (!user) {
+            return { status: 404, message: "Usuário não encontrado." };
+        }
+
+        return { status: 200, user };
+    } catch (error) {
+        console.error('Erro ao buscar usuário por email:', error);
+        throw new Error("Erro ao buscar usuário por email: " + error.message);
+    }
+}
+
 const updateUser = async (userId, userData) => {
     try {
         const { name, email, password, isAdmin } = userData;
@@ -303,14 +327,8 @@ const resetPassword = async (token, newPassword, jwtSecret) => {
     }
 };
 
-const createFirstAdmin = async (adminData) => {
+const createAdmin = async (adminData) => {
     try {
-        const existingAdmin = await prisma.user.findFirst({ where: { isAdmin: true } });
-
-        if (existingAdmin) {
-            throw new Error("Já existe um administrador no sistema.");
-        }
-
         const { name, email, password } = adminData;
 
         if (!name || !email || !password) {
@@ -335,7 +353,7 @@ const createFirstAdmin = async (adminData) => {
             }
         });
 
-        return { status: 201, message: "Primeiro administrador criado com sucesso!", user: admin };
+        return { status: 201, message: "Administrador criado com sucesso!", user: admin };
     } catch (error) {
         console.error('Erro ao criar administrador:', error);
         throw new Error(error.message);
@@ -354,6 +372,7 @@ module.exports = {
     createUser,
     getAllUsers,
     getUserById,
+    getUserByEmail,
     updateUser,
     deleteUser,
     authenticateUser,
@@ -362,6 +381,6 @@ module.exports = {
     changePassword,
     requestPasswordReset,
     resetPassword,
-    createFirstAdmin,
+    createAdmin,
     requireAdmin
 };

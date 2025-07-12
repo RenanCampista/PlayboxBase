@@ -100,12 +100,6 @@ export const authService = {
     return user ? JSON.parse(user) : null;
   },
 
-  // Criar primeiro admin
-  createFirstAdmin: async (userData) => {
-    const response = await api.post('/admin/create-first-admin', userData);
-    return response.data;
-  },
-
   // Solicitar recuperação de senha
   forgotPassword: async (email) => {
     const response = await api.post('/auth/forgot-password', { email });
@@ -183,9 +177,6 @@ export const devService = {
         'POST /users - Criar usuário',
         'PUT /users/:id - Atualizar usuário',
         'DELETE /users/:id - Deletar usuário (admin)'
-      ],
-      admin: [
-        'POST /admin/create-first-admin - Criar primeiro admin'
       ],
       general: [
         'GET / - Informações da API'

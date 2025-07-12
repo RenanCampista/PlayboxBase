@@ -4,7 +4,6 @@ const router = express.Router();
 // Importar todas as rotas
 const authRoutes = require('./auth.js');
 const userRoutes = require('./users.js');
-const adminRoutes = require('./admin.js');
 
 // Rota de teste
 router.get('/', (req, res) => {
@@ -14,7 +13,6 @@ router.get('/', (req, res) => {
         endpoints: {
             auth: '/auth/*',
             users: '/users/*',
-            admin: '/admin/*',
         }
     });
 });
@@ -22,6 +20,5 @@ router.get('/', (req, res) => {
 // Registrar as rotas com seus prefixos
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
-router.use('/admin', adminRoutes);
 
 module.exports = router;
