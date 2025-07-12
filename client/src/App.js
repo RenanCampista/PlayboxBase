@@ -107,8 +107,9 @@ function App() {
 
   const checkApiConnection = async () => {
     try {
-      const response = await userService.testConnection();
-      setApiStatus(response.message);
+      const response = await userService.getApiInfo();
+      setApiStatus(`${response.message} (v${response.version})`);
+      console.log('📡 Endpoints disponíveis:', response.endpoints);
     } catch (err) {
       setApiStatus('Erro ao conectar com a API');
       console.error('Erro ao testar conexão:', err);

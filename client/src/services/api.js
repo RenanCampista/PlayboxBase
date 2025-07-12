@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+/**
+ * API Service para Playbox
+ * 
+ * Estrutura de Rotas:
+ * - /auth/*    - Autenticação (login, logout, verificação, recuperação de senha)
+ * - /users/*   - Operações com usuários (CRUD)
+ * - /admin/*   - Operações administrativas
+ * - /games/*   - Operações com jogos (futuro)
+ */
+
 const API_BASE_URL = 'http://localhost:3000';
 
 const api = axios.create({
@@ -146,6 +156,56 @@ export const userService = {
     const response = await api.get('/');
     return response.data;
   },
+
+  // Obter informações da API
+  getApiInfo: async () => {
+    const response = await api.get('/');
+    return response.data;
+  },
+};
+
+// Serviços de desenvolvimento/debug
+export const devService = {
+  // Listar todos os endpoints disponíveis
+  listEndpoints: () => {
+    return {
+      auth: [
+        'POST /auth/login - Fazer login',
+        'GET /auth/verify - Verificar token',
+        'PUT /auth/change-password - Alterar senha',
+        'POST /auth/logout - Fazer logout',
+        'POST /auth/forgot-password - Solicitar recuperação de senha',
+        'POST /auth/reset-password - Redefinir senha com token'
+      ],
+      users: [
+        'GET /users - Listar todos os usuários (admin)',
+        'GET /users/:id - Buscar usuário por ID',
+        'POST /users - Criar usuário',
+        'PUT /users/:id - Atualizar usuário',
+        'DELETE /users/:id - Deletar usuário (admin)'
+      ],
+      admin: [
+        'POST /admin/create-first-admin - Criar primeiro admin'
+      ],
+      general: [
+        'GET / - Informações da API'
+      ]
+    };
+  },
+
+  // Testar todas as rotas públicas
+  testPublicRoutes: async () => {
+    const results = {};
+    
+    try {
+      const apiInfo = await api.get('/');
+      results.api = { status: 'OK', data: apiInfo.data };
+    } catch (error) {
+      results.api = { status: 'ERROR', error: error.message };
+    }
+
+    return results;
+  }
 };
 
 export default api;

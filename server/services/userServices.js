@@ -1,12 +1,12 @@
-import prisma from "./prisma.js"
-import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
+const prisma = require("./prisma.js")
+const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
 
 
 // Chave secreta para JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'chave-secreta';
 
-export const createUser = async (userData) => {
+const createUser = async (userData) => {
     try {
         const { name, email, password } = userData;
 
@@ -51,7 +51,7 @@ export const createUser = async (userData) => {
     }
 }
 
-export const getAllUsers = async () => {
+const getAllUsers = async () => {
     try {
         const users = await prisma.user.findMany({
             select: {
@@ -69,7 +69,7 @@ export const getAllUsers = async () => {
     }
 }
 
-export const getUserById = async (userId) => {
+const getUserById = async (userId) => {
     try {
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -93,7 +93,7 @@ export const getUserById = async (userId) => {
     }
 }
 
-export const updateUser = async (userId, userData) => {
+const updateUser = async (userId, userData) => {
     try {
         const { name, email, password, isAdmin } = userData;
 
@@ -148,7 +148,7 @@ export const updateUser = async (userId, userData) => {
     }
 }
 
-export const deleteUser = async (userId) => {
+const deleteUser = async (userId) => {
     try {
         const user = await prisma.user.findUnique({
             where: { id: userId }
@@ -172,7 +172,7 @@ export const deleteUser = async (userId) => {
     }
 }
 
-export const authenticateUser = async (email, password) => {
+const authenticateUser = async (email, password) => {
     try {
         const user = await prisma.user.findUnique({
             where: { email }
@@ -196,7 +196,7 @@ export const authenticateUser = async (email, password) => {
     }
 }
 
-export const verifyToken = (token) => {
+const verifyToken = (token) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         return { status: 200, userId: decoded.id, isAdmin: decoded.isAdmin };
@@ -206,7 +206,7 @@ export const verifyToken = (token) => {
     }
 }
 
-export const authenticateToken = (req, res, next) => {
+const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -223,7 +223,7 @@ export const authenticateToken = (req, res, next) => {
     });
 }
 
-export const changePassword = async (userId, currentPassword, newPassword) => {
+const changePassword = async (userId, currentPassword, newPassword) => {
     try {
         const user = await prisma.user.findUnique({ where: { id: userId } });
 
@@ -250,7 +250,7 @@ export const changePassword = async (userId, currentPassword, newPassword) => {
     }
 };
 
-export const requestPasswordReset = async (email, jwtSecret) => {
+const requestPasswordReset = async (email, jwtSecret) => {
     try {
         const user = await prisma.user.findUnique({ where: { email } });
 
@@ -275,7 +275,7 @@ export const requestPasswordReset = async (email, jwtSecret) => {
     }
 };
 
-export const resetPassword = async (token, newPassword, jwtSecret) => {
+const resetPassword = async (token, newPassword, jwtSecret) => {
     try {
         const decoded = jwt.verify(token, jwtSecret);
 
@@ -303,7 +303,7 @@ export const resetPassword = async (token, newPassword, jwtSecret) => {
     }
 };
 
-export const createFirstAdmin = async (adminData) => {
+const createFirstAdmin = async (adminData) => {
     try {
         const existingAdmin = await prisma.user.findFirst({ where: { isAdmin: true } });
 
@@ -342,9 +342,26 @@ export const createFirstAdmin = async (adminData) => {
     }
 };
 
-export const requireAdmin = (req, res, next) => {
+const requireAdmin = (req, res, next) => {
     if (!req.user.isAdmin) {
         return res.status(403).json({ error: 'Acesso negado. Apenas administradores podem acessar.' });
     }
     next();
+};
+
+// Exportando os serviços. Isso faz com que esses métodos possam ser usados em outros arquivos.
+module.exports = {
+    createUser,
+    getAllUsers,
+    getUserById,
+    updateUser,
+    deleteUser,
+    authenticateUser,
+    verifyToken,
+    authenticateToken,
+    changePassword,
+    requestPasswordReset,
+    resetPassword,
+    createFirstAdmin,
+    requireAdmin
 };
