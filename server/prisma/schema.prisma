@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,6 +5,20 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+enum Genre {
+  ACTION
+  ADVENTURE
+  INDIE
+  MASSIVELY_MULTIPLAYER
+  PLATFORMER
+  PUZZLE
+  RPG
+  RACING
+  SHOOTER
+  SPORTS
+  PLACEHOLDER
 }
 
 model User {
@@ -21,4 +29,48 @@ model User {
   isAdmin     Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  reviews     Review[]
+  catalogs    Catalog[]
+}
+
+model Review {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  gameId      Int
+  rating      Int
+  comment     String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id])
+  game        Game      @relation(fields: [gameId], references: [id])
+}
+
+model Game {
+  id                Int         @id @default(autoincrement())
+  name              String      @unique
+  releaseDate       DateTime    @db.Date
+  description       String?     @db.Text
+  backgroundImage   String
+  playtime          Int
+  platforms         String      // String separada por vírgulas: "PC,PlayStation,Xbox"
+  genres            String      // String separada por vírgulas: "ACTION,RPG"
+  publishers        String      // String separada por vírgulas: "Publisher1,Publisher2"
+  metacriticScore   Int?
+  screenshots       String      @db.Text // String separada por vírgulas (URLs)
+  reviews           Review[]
+  catalogs          Catalog[]   @relation("GameCatalogs")
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+model Catalog {
+  id            Int         @id @default(autoincrement())
+  name          String      @unique
+  userId        Int?        // Para catálogos de usuários (favoritos)
+  genre         Genre?      // Para catálogos de gêneros
+  games         Game[]      @relation("GameCatalogs")
+  user          User?       @relation(fields: [userId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }

@@ -2,6 +2,7 @@ import requests
 import json
 from dotenv import load_dotenv
 import os
+import re
 
 load_dotenv()
 API_KEY = os.getenv('RAWG_API_KEY')
@@ -15,11 +16,14 @@ class RawgClient:
 
     def format_game_data(self, game: dict, screenshots: list):
         """Format game data for better readability."""
+        # Clean HTML tags from description
+        raw_description = game.get('description', '')
+        clean_description = clean_html_tags(raw_description)
+        
         formatted_game = {
                 'name': game.get('name'),
-                'id': game.get('id'),
                 'released': game.get('released'),
-                'description': game.get('description'),
+                'description': clean_description,
                 'background_image': game.get('background_image'),
                 'playtime': game.get('playtime'),
                 'platforms': self.get_platforms_names(game.get('platforms', [])),
@@ -121,6 +125,38 @@ def save_to_json(data, filename='games.json'):
         json.dump(data, f, indent=4, ensure_ascii=False)
         
         
+def clean_html_tags(text):
+    """Remove HTML tags from text"""
+    if not text:
+        return ""
+    
+    # Remove HTML tags
+    clean_text = re.sub(r'<[^>]+>', '', text)
+    
+    # Replace HTML entities
+    html_entities = {
+        '&amp;': '&',
+        '&lt;': '<',
+        '&gt;': '>',
+        '&quot;': '"',
+        '&apos;': "'",
+        '&nbsp;': ' ',
+        '&#39;': "'",
+        '&#x27;': "'",
+        '&#x2F;': '/',
+        '&#x5C;': '\\',
+        '&#x3D;': '='
+    }
+    
+    for entity, char in html_entities.items():
+        clean_text = clean_text.replace(entity, char)
+    
+    # Remove extra whitespace
+    clean_text = ' '.join(clean_text.split())
+    
+    return clean_text
+    
+    
 if __name__ == "__main__":
     api = RawgClient(API_KEY)
     
@@ -128,11 +164,7 @@ if __name__ == "__main__":
     platforms_ids = [platform_id for _, platform_id in platforms.items()]
     
     if games := api.get_games_by_platform(platforms_ids, page_size=90):
-        # Criar a pasta data
-        if not os.path.exists('data'):
-            os.makedirs('data')
-        save_to_json(games, filename='data/games.json')
-        print(f"Saved {len(games)} games to data/games.json")
+        save_to_json(games, filename='games.json')
+        print(f"Saved {len(games)} games to games.json")
     else:
         print("No games found or an error occurred.")
-    

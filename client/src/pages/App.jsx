@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
 import { UserList, UserForm, Header } from '../components';
-import { Login, Register, ForgotPassword } from './';
+import { Login, Register, ForgotPassword, Home, GameDetail } from './';
 import { userService, authService } from '../services/api';
 
 function App() {
@@ -16,6 +16,10 @@ function App() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [showRegister, setShowRegister] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  
+  // Estados para navegação
+  const [currentPage, setCurrentPage] = useState('home'); // 'home', 'admin', 'profile', 'game-detail'
+  const [selectedGame, setSelectedGame] = useState(null);
 
   // Verificar autenticação ao carregar o app
   useEffect(() => {
@@ -63,6 +67,7 @@ function App() {
     setCurrentUser(user);
     setShowRegister(false);
     setShowForgotPassword(false);
+    setCurrentPage('home'); // Redirecionar para Home após login
     setError(null);
   };
 
@@ -95,10 +100,37 @@ function App() {
     setError(null);
   };
 
-  const handleRegisterSuccess = () => {
+  const handleRegisterSuccess = (user) => {
+    console.log('Register success, setting user:', user);
+    setIsLoggedIn(true);
+    setCurrentUser(user);
     setShowRegister(false);
     setShowForgotPassword(false);
+    setCurrentPage('home'); // Redirecionar para Home após registro
     setError(null);
+  };
+
+  // Funções de navegação
+  const handleGameSelect = (game) => {
+    setSelectedGame(game);
+    setCurrentPage('game-detail');
+  };
+
+  const handleBackToHome = () => {
+    setSelectedGame(null);
+    setCurrentPage('home');
+  };
+
+  const handleShowAdmin = () => {
+    setCurrentPage('admin');
+  };
+
+  const handleShowProfile = () => {
+    setCurrentPage('profile');
+  };
+
+  const handleShowHome = () => {
+    setCurrentPage('home');
   };
 
   const checkApiConnection = async () => {
@@ -218,55 +250,93 @@ function App() {
         )
       ) : (
         <>
-          <Header user={currentUser} onLogout={handleLogout} />
+          <Header 
+            user={currentUser} 
+            onLogout={handleLogout}
+            onNavigate={(page) => {
+              if (page === 'home') handleShowHome();
+              else if (page === 'admin') handleShowAdmin();
+              else if (page === 'profile') handleShowProfile();
+            }}
+            currentPage={currentPage}
+          />
           
           <main className="App-main">
-            <div className="api-status">
-              Status da API: {apiStatus || 'Verificando...'}
-            </div>
-
-            {error && (
-              <div className="error-message">
-                {error}
-              </div>
+            {currentPage === 'home' && (
+              <Home onGameSelect={handleGameSelect} />
             )}
 
-            {!showForm && (
-              <div className="toolbar">
-                {currentUser?.isAdmin && (
-                  <button 
-                    onClick={handleNewUser}
-                    className="btn btn-primary"
-                  >
-                    Novo Usuário
-                  </button>
-                )}
-                {currentUser?.isAdmin && (
-                  <button 
-                    onClick={loadUsers}
-                    className="btn btn-secondary"
-                  >
-                    Recarregar
-                  </button>
-                )}
-              </div>
-            )}
-
-            {showForm ? (
-              <UserForm
-                user={editingUser}
-                onSubmit={handleFormSubmit}
-                onCancel={handleCancelForm}
+            {currentPage === 'game-detail' && (
+              <GameDetail 
+                game={selectedGame} 
+                onBack={handleBackToHome} 
               />
-            ) : (
+            )}
+
+            {currentPage === 'admin' && currentUser?.isAdmin && (
               <>
-                {loading ? (
-                  <div className="loading">Carregando usuários...</div>
-                ) : currentUser?.isAdmin ? (
-                  <UserList
-                    users={users}
-                    onEdit={handleEditUser}
-                    onDelete={handleDeleteUser}
+                <div className="api-status">
+                  Status da API: {apiStatus || 'Verificando...'}
+                </div>
+
+                {error && (
+                  <div className="error-message">
+                    {error}
+                  </div>
+                )}
+
+                {!showForm && (
+                  <div className="toolbar">
+                    <button 
+                      onClick={handleNewUser}
+                      className="btn btn-primary"
+                    >
+                      Novo Usuário
+                    </button>
+                    <button 
+                      onClick={loadUsers}
+                      className="btn btn-secondary"
+                    >
+                      Recarregar
+                    </button>
+                  </div>
+                )}
+
+                {showForm ? (
+                  <UserForm
+                    user={editingUser}
+                    onSubmit={handleFormSubmit}
+                    onCancel={handleCancelForm}
+                  />
+                ) : (
+                  <>
+                    {loading ? (
+                      <div className="loading">Carregando usuários...</div>
+                    ) : (
+                      <UserList
+                        users={users}
+                        onEdit={handleEditUser}
+                        onDelete={handleDeleteUser}
+                      />
+                    )}
+                  </>
+                )}
+              </>
+            )}
+
+            {currentPage === 'profile' && (
+              <>
+                {error && (
+                  <div className="error-message">
+                    {error}
+                  </div>
+                )}
+                
+                {showForm ? (
+                  <UserForm
+                    user={editingUser}
+                    onSubmit={handleFormSubmit}
+                    onCancel={handleCancelForm}
                   />
                 ) : (
                   <div className="user-profile">

@@ -22,14 +22,26 @@ const createUser = async (userData) => {
                 name,
                 email,
                 password: hashedPassword,
-                isAdmin: false // Setado para false por padrão
+                isAdmin: false, // Setado para false por padrão
+                catalogs: {
+                    create: {
+                        name: `Favoritos de ${name}`,
+                        genre: 'PLACEHOLDER', // Placeholder para gênero
+                    }
+                }
             },
             select: {
                 id: true,
                 name: true,
                 email: true,
                 isAdmin: true,
-                createdAt: true
+                createdAt: true,
+                catalogs: {
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                }
             }
         });
         
@@ -342,14 +354,26 @@ const createAdmin = async (adminData) => {
                 name,
                 email,
                 password: hashedPassword,
-                isAdmin: true
+                isAdmin: true,
+                catalogs: {
+                    create: {
+                        name: `Favoritos de ${name}`,
+                        genre: 'PLACEHOLDER'
+                    }
+                }
             },
             select: {
                 id: true,
                 name: true,
                 email: true,
                 isAdmin: true,
-                createdAt: true
+                createdAt: true,
+                catalogs: {
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                }
             }
         });
 

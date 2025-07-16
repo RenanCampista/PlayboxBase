@@ -82,7 +82,7 @@ export const authService = {
 
   // Alterar senha
   changePassword: async (currentPassword, newPassword) => {
-    const response = await api.put('/auth/change-password', {
+    const response = await api.put('/auth/changePassword', {
       currentPassword,
       newPassword
     });
@@ -102,7 +102,7 @@ export const authService = {
 
   // Solicitar recuperação de senha
   forgotPassword: async (email) => {
-    const response = await api.post('/auth/forgot-password', { email });
+    const response = await api.post('/auth/forgotPassword', { email });
     return response.data;
   },
 
@@ -158,6 +158,45 @@ export const userService = {
   },
 };
 
+// Serviços para jogos
+export const gameService = {
+  // Listar todos os jogos
+  getGames: async () => {
+    const response = await api.get('/games');
+    return response.data;
+  },
+
+  // Obter um jogo específico
+  getGame: async (id) => {
+    const response = await api.get(`/games/${id}`);
+    return response.data;
+  },
+
+  // Criar um novo jogo (admin)
+  createGame: async (gameData) => {
+    const response = await api.post('/games', gameData);
+    return response.data;
+  },
+
+  // Atualizar um jogo (admin)
+  updateGame: async (id, gameData) => {
+    const response = await api.put(`/games/${id}`, gameData);
+    return response.data;
+  },
+
+  // Deletar um jogo (admin)
+  deleteGame: async (id) => {
+    const response = await api.delete(`/games/${id}`);
+    return response.data;
+  },
+
+  // Buscar jogos por gênero
+  getGamesByGenre: async (genre) => {
+    const response = await api.get(`/games/genre/${genre}`);
+    return response.data;
+  }
+};
+
 // Serviços de desenvolvimento/debug
 export const devService = {
   // Listar todos os endpoints disponíveis
@@ -166,10 +205,10 @@ export const devService = {
       auth: [
         'POST /auth/login - Fazer login',
         'GET /auth/verify - Verificar token',
-        'PUT /auth/change-password - Alterar senha',
+        'PUT /auth/changePassword - Alterar senha',
         'POST /auth/logout - Fazer logout',
-        'POST /auth/forgot-password - Solicitar recuperação de senha',
-        'POST /auth/reset-password - Redefinir senha com token'
+        'POST /auth/forgotPassword - Solicitar recuperação de senha',
+        'POST /auth/resetPassword - Redefinir senha com token'
       ],
       users: [
         'GET /users - Listar todos os usuários (admin)',
@@ -177,6 +216,14 @@ export const devService = {
         'POST /users - Criar usuário',
         'PUT /users/:id - Atualizar usuário',
         'DELETE /users/:id - Deletar usuário (admin)'
+      ],
+      games: [
+        'GET /games - Listar todos os jogos',
+        'GET /games/:id - Obter um jogo específico',
+        'POST /games - Criar um novo jogo (admin)',
+        'PUT /games/:id - Atualizar um jogo (admin)',
+        'DELETE /games/:id - Deletar um jogo (admin)',
+        'GET /games/genre/:genre - Buscar jogos por gênero'
       ],
       general: [
         'GET / - Informações da API'
