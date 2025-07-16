@@ -1,7 +1,9 @@
 require('dotenv').config();
 const express = require('express'); // Framework para construir APIs
 const cors = require('cors'); // Middleware para habilitar CORS
-const { getUserByEmail, createAdmin } = require('./services/userServices.js'); // Importa os serviços de usuário
+const { getUserByEmail, createAdmin } = require('./services/userServices.js');
+const { initializeCatalogs } = require('./services/catalogServices.js');
+const { loadGamesFromJson } = require('./services/gameServices.js');
 const app = express();
 const routes = require('./routes/index.js'); // Importa as rotas organizadas
 
@@ -21,8 +23,28 @@ app.listen(PORT, async () => {
         console.log(`✅ Conexão com o banco de dados estabelecida`);
     } catch (error) {
         console.error(`❌ Erro ao conectar com o banco de dados: ${error.message}`);
-        exit(1);
+        process.exit(1);
     }
+
+    // Inicializar catálogos padrão
+    try {
+        await initializeCatalogs();
+        console.log(`✅ Catálogos padrão inicializados com sucesso.`);
+    } catch (error) {
+        console.error(`❌ Erro ao inicializar catálogos: ${error.message}`);
+        process.exit(1);
+    }
+
+    // Carregar jogos do JSON 
+    try {
+        const filePath = './scripts/game_data_collector/games.json'; // Caminho do arquivo JSON com os jogos
+        await loadGamesFromJson(filePath);
+        console.log(`✅ Jogos carregados do JSON com sucesso.`);
+    } catch (error) {
+        console.error(`❌ Erro ao carregar jogos do JSON: ${error.message}`);
+        process.exit(1);
+    }
+    
 
     // Verificar se o banco de dados já possui um user admin
     try {
@@ -40,9 +62,8 @@ app.listen(PORT, async () => {
         }
     } catch (error) {
         console.error(`❌ Erro ao verificar usuário admin: ${error.message}`);
-        exit(1);
+        process.exit(1);
     }
-
 
     console.log(`🚀 Servidor rodando na porta ${PORT}`);
     console.log(`📡 API disponível em http://localhost:${PORT}`);

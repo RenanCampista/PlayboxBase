@@ -82,7 +82,7 @@ export const authService = {
 
   // Alterar senha
   changePassword: async (currentPassword, newPassword) => {
-    const response = await api.put('/auth/change-password', {
+    const response = await api.put('/auth/changePassword', {
       currentPassword,
       newPassword
     });
@@ -102,7 +102,7 @@ export const authService = {
 
   // Solicitar recuperação de senha
   forgotPassword: async (email) => {
-    const response = await api.post('/auth/forgot-password', { email });
+    const response = await api.post('/auth/forgotPassword', { email });
     return response.data;
   },
 
@@ -166,10 +166,10 @@ export const devService = {
       auth: [
         'POST /auth/login - Fazer login',
         'GET /auth/verify - Verificar token',
-        'PUT /auth/change-password - Alterar senha',
+        'PUT /auth/changePassword - Alterar senha',
         'POST /auth/logout - Fazer logout',
-        'POST /auth/forgot-password - Solicitar recuperação de senha',
-        'POST /auth/reset-password - Redefinir senha com token'
+        'POST /auth/forgotPassword - Solicitar recuperação de senha',
+        'POST /auth/resetPassword - Redefinir senha com token'
       ],
       users: [
         'GET /users - Listar todos os usuários (admin)',

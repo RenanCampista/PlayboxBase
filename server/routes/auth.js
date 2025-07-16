@@ -39,7 +39,7 @@ router.get('/verify', authenticateToken, (req, res) => {
 });
 
 // Alterar senha do usuário logado
-router.put('/change-password', authenticateToken, async (req, res) => {
+router.put('/changePassword', authenticateToken, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
 
@@ -62,7 +62,7 @@ router.post('/logout', (req, res) => {
 // === ROTAS DE RECUPERAÇÃO DE SENHA ===
 
 // Solicitar recuperação de senha
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgotPassword', async (req, res) => {
     try {
         const { email } = req.body;
 
@@ -78,7 +78,7 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 // Redefinir senha com token
-router.post('/reset-password', async (req, res) => {
+router.post('/resetPassword', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
 
