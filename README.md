@@ -24,125 +24,148 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
 ### Autenticação e Segurança
 - **JWT (JSON Web Token)** - Autenticação baseada em tokens
 
-### Scripts e Utilitários
-- **Python** - Scripts para coleta de dados de jogos
-- **RAWG API** - API externa para dados de jogos
-- **requests** - Biblioteca Python para requisições HTTP
+### Containerização e DevOps
+- **Docker** - Containerização da aplicação
+- **Docker Compose** - Orquestração de containers
+- **MySQL Docker Image** - Banco de dados containerizado
+
 
 ### Ferramentas de Desenvolvimento
 - **ESLint** - Linter para JavaScript
 - **Git** - Controle de versão
+- **Makefile** - Automação de comandos Docker
 
-## Instalação
+## Pré-requisitos
+
+- **Docker** - Para containerização da aplicação
+- **Docker Compose** - Para orquestração dos containers
+- **Make** (opcional) - Para usar comandos automatizados
+
+## Instalação e Execução
+
+### Opção 1: Usando Makefile (Recomendado)
+
 1. Clone o repositório:
    ```bash
    git clone https://github.com/RenanCampista/Playbox.git
-    ```
+   ```
 
 2. Navegue até o diretório do projeto:
    ```bash
    cd Playbox
    ```
 
-3. O arquivo `setup.sh` contém os comandos para instalar as dependências do projeto. Execute-o:
+3. Inicie a aplicação completa:
    ```bash
-   ./setup.sh
+   make dev
    ```
 
-4. Crie um banco de dados MySQL chamado `playbox` executando os seguintes comandos no MySQL:
-   
-   4.1. Abra o terminal MySQL e execute o seguinte comando:
+### Opção 2: Usando Docker Compose
+
+1. Clone o repositório:
    ```bash
-   mysql -u root -p
+   git clone https://github.com/RenanCampista/Playbox.git
    ```
-   4.2. Insira a senha do usuário root do MySQL quando solicitado. Em seguida, crie o banco de dados:
+
+2. Navegue até o diretório do projeto:
    ```bash
-   CREATE DATABASE play_box CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   cd Playbox
    ```
-   4.3. Saia do MySQL:
+
+3. Inicie os containers:
    ```bash
-   EXIT;
+   docker-compose up --build -d
    ```
 
-5. Configure as variáveis de ambiente:
-    Na pasta `server`, crie um arquivo `.env` e adicione as seguintes variáveis:
-   ```env
-    # Configuração do Banco de Dados
-    DATABASE_URL="mysql://root:root@localhost:3306/play_box"
-
-    # Configuração do Servidor
-    PORT=3000
-
-    JWT_SECRET="sua-chave-secreta-super-segura-aqui-com-pelo-menos-32-caracteres"
-   ```
-
-   **Observação**: O script `setup.sh` criará automaticamente os arquivos `.env` se eles não existirem.
-
-6. Configure o Prisma:
+4. Execute as migrações do banco:
    ```bash
-   cd server
-   npx prisma generate
-   npx prisma db push
+   docker-compose exec backend npx prisma migrate deploy
    ```
 
-7. Inicie o servidor de desenvolvimento:
-   ```bash
-   cd server
-   npm run dev
-   ```
-8. Abra outro terminal e inicie o cliente:
-   ```bash
-   cd client
-   npm start
-   ```
+### Acesso à Aplicação
 
-Após seguir esses passos, você deve ser capaz de acessar:
-- **Backend**: `http://localhost:3000` 
-- **Frontend**: `http://localhost:3001`
+Após a inicialização, você pode acessar:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **Banco MySQL**: localhost:3307
+  - Usuário: `playbox_user`
+  - Senha: `playbox_password`
+  - Database: `playbox`
+
+### Comandos Úteis
+
+```bash
+# Parar todos os containers
+make down
+
+# Ver logs em tempo real
+make logs-f
+
+# Executar migrações
+make migrate
+
+# Acessar shell do backend
+make shell-be
+
+# Acessar shell do frontend
+make shell-fe
+
+# Acessar MySQL
+make shell-db
+
+# Limpar containers e volumes
+make clean
+```
 
 ## Estrutura do Projeto
 
 ```
 PlayBox/
-├── client/                 # Frontend React
-│   ├── public/            # Arquivos públicos
+├── client/                    # Frontend React
+│   ├── public/               # Arquivos públicos
 │   ├── src/
-│   │   ├── components/    # Componentes reutilizáveis
-│   │   ├── pages/         # Páginas da aplicação
-│   │   ├── services/      # Serviços da API
-│   │   ├── styles/        # Arquivos CSS
-│   │   └── utils/         # Utilitários
+│   │   ├── components/       # Componentes reutilizáveis
+│   │   ├── pages/           # Páginas da aplicação
+│   │   ├── services/        # Serviços da API
+│   │   ├── styles/          # Arquivos CSS
+│   │   └── utils/           # Utilitários
+│   ├── Dockerfile           # Configuração Docker do frontend
 │   └── package.json
-├── server/                # Backend Node.js
-│   ├── prisma/           # Configuração do banco
-│   ├── routes/           # Rotas da API
-│   ├── services/         # Lógica de negócio
-│   ├── scripts/          # Scripts utilitários
+├── server/                   # Backend Node.js
+│   ├── prisma/              # Configuração do banco
+│   ├── routes/              # Rotas da API
+│   ├── services/            # Lógica de negócio
+│   ├── scripts/             # Scripts utilitários
 │   │   └── game_data_collector/  # Coleta de dados de jogos
-│   ├── server.js         # Servidor principal
+│   ├── Dockerfile           # Configuração Docker do backend
+│   ├── server.js            # Servidor principal
 │   └── package.json
-├── setup.sh              # Script de instalação
-└── README.md
+├── docker-compose.yml       # Orquestração dos containers
+├── Makefile                # Comandos automatizados
+├── README-DOCKER.md        # Documentação detalhada do Docker
+└── README.md              # Este arquivo
 ```
 
 
-## Funcionalidades
+### Funcionalidades Principais
 
-### Sistema de Autenticação
+#### Sistema de Autenticação
 - Login e registro de usuários
 - Autenticação JWT
 - Recuperação de senha
 - Controle de acesso (usuários e administradores)
 
-### Gestão de Jogos
+#### Gestão de Jogos
 - Catálogo de jogos com informações detalhadas
 - Sistema de avaliações e comentários
 - Filtragem por gêneros
 - Catálogos personalizados (favoritos)
 
-### Coleta de Dados
-- Script Python para coleta automática de dados de jogos via RAWG API
-- Localizado em `server/scripts/game_data_collector/`
+#### Arquitetura Containerizada
+- Aplicação totalmente containerizada com Docker
+- Banco de dados MySQL isolado
+- Hot reload para desenvolvimento
+- Configuração simplificada via Makefile
 
 ### Estrutura do Banco de Dados
 - Usuários com perfis e permissões
@@ -150,24 +173,65 @@ PlayBox/
 - Sistema de reviews e ratings
 - Catálogos organizados por gênero ou usuário
 
+
 ## Scripts Adicionais
 
 ### Coleta de Dados de Jogos
-Para popular o banco de dados com jogos da RAWG API:
+Para popular o banco com mais jogos da RAWG API:
 
-1. Configure a API key da RAWG no arquivo `.env` do servidor:
-   ```env
-   RAWG_API_KEY="sua-chave-da-rawg-api"
+1. Acesse o container do backend:
+   ```bash
+   make shell-be
    ```
 
-2. Execute o script de coleta:
+2. Navegue até o script de coleta:
    ```bash
-   cd server/scripts/game_data_collector
-   pip install -r requirements.txt
+   cd scripts/game_data_collector
+   ```
+
+3. Configure a API key da RAWG (se necessário):
+   ```bash
+   echo 'RAWG_API_KEY="sua-chave-da-rawg-api"' >> .env
+   ```
+
+4. Execute o script:
+   ```bash
    python main.py
    ```
 
+### Backup do Banco de Dados
+
+```bash
+# Fazer backup
+docker-compose exec database mysqldump -u playbox_user -p playbox > backup.sql
+
+# Restaurar backup
+docker-compose exec -T database mysql -u playbox_user -p playbox < backup.sql
+```
+
+## Solução de Problemas
+
+### Portas em Uso
+Se alguma porta estiver em uso, verifique:
+```bash
+lsof -i :3000  # Frontend
+lsof -i :5000  # Backend
+lsof -i :3307  # MySQL
+```
+
+### Logs de Debug
+```bash
+# Ver logs de todos os serviços
+make logs-f
+
+# Ver logs específicos
+docker-compose logs frontend
+docker-compose logs backend
+docker-compose logs database
+```
+
 ## Próximos Passos
-- Terminar o frontend, incluindo a implementação de componentes de avaliação de jogos, sistema de comentários.
-- Implementar testes unitários e de integração com Jest e Supertest.
-- Gerar documentação de código com Swagger.
+- Implementar componentes de avaliação de jogos e sistema de comentários
+- Adicionar testes unitários e de integração
+- Implementar documentação da API com Swagger
+- Adicionar configuração de produção (quando necessário)
