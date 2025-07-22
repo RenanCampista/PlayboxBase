@@ -24,7 +24,7 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
 ### Autenticação e Segurança
 - **JWT (JSON Web Token)** - Autenticação baseada em tokens
 
-### Containerização e DevOps
+### Containerização
 - **Docker** - Containerização da aplicação
 - **Docker Compose** - Orquestração de containers
 - **MySQL Docker Image** - Banco de dados containerizado
@@ -43,7 +43,7 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
 
 ## Instalação e Execução
 
-### Opção 1: Usando Makefile (Recomendado)
+### Opção 1: Usando Docker (Recomendado)
 
 1. Clone o repositório:
    ```bash
@@ -60,8 +60,16 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
    make dev
    ```
 
-### Opção 2: Usando Docker Compose
+Após a inicialização, você pode acessar:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **Banco MySQL**: localhost:3307
+  - Usuário: `playbox_user`
+  - Senha: `playbox_password`
+  - Database: `playbox`
 
+### Opção 2: Sem Docker
+Note: Nesta opção, você deve ter o Node.js e o MySQL instalados localmente.
 1. Clone o repositório:
    ```bash
    git clone https://github.com/RenanCampista/Playbox.git
@@ -71,51 +79,61 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
    ```bash
    cd Playbox
    ```
-
-3. Inicie os containers:
+3. Instale as dependências do projeto:
    ```bash
-   docker-compose up --build -d
+   make setup
    ```
 
-4. Execute as migrações do banco:
+4. Crie um banco de dados MySQL chamado `playbox` executando os seguintes comandos no MySQL:
+   
+   4.1. Abra o terminal MySQL e execute o seguinte comando:
    ```bash
-   docker-compose exec backend npx prisma migrate deploy
+   mysql -u root -p
+   ```
+   4.2. Insira a senha do usuário root do MySQL quando solicitado. Em seguida, crie o banco de dados:
+   ```bash
+   CREATE DATABASE play_box CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+   4.3. Saia do MySQL:
+   ```bash
+   EXIT;
    ```
 
-### Acesso à Aplicação
+5. Configure as variáveis de ambiente:
+    Na pasta `server`, crie um arquivo `.env` e adicione as seguintes variáveis:
+   ```env
+    # Configuração do Banco de Dados
+    DATABASE_URL="mysql://root:root@localhost:3306/play_box"
 
-Após a inicialização, você pode acessar:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
-- **Banco MySQL**: localhost:3307
-  - Usuário: `playbox_user`
-  - Senha: `playbox_password`
-  - Database: `playbox`
+    # Configuração do Servidor
+    PORT=3000
 
-### Comandos Úteis
+    JWT_SECRET="sua-chave-secreta-super-segura-aqui-com-pelo-menos-32-caracteres"
+   ```
 
-```bash
-# Parar todos os containers
-make down
+   **Observação**: O script `setup.sh` criará automaticamente os arquivos `.env` se eles não existirem.
 
-# Ver logs em tempo real
-make logs-f
+6. Configure o Prisma:
+   ```bash
+   cd server
+   npx prisma generate
+   npx prisma db push
+   ```
 
-# Executar migrações
-make migrate
+7. Inicie o servidor de desenvolvimento:
+   ```bash
+   cd server
+   npm run dev
+   ```
+8. Abra outro terminal e inicie o cliente:
+   ```bash
+   cd client
+   npm start
+   ```
 
-# Acessar shell do backend
-make shell-be
-
-# Acessar shell do frontend
-make shell-fe
-
-# Acessar MySQL
-make shell-db
-
-# Limpar containers e volumes
-make clean
-```
+Após seguir esses passos, você deve ser capaz de acessar:
+- **Backend**: `http://localhost:3000` 
+- **Frontend**: `http://localhost:3001`
 
 ## Estrutura do Projeto
 
@@ -147,77 +165,10 @@ PlayBox/
 ```
 
 
-### Funcionalidades Principais
-
-#### Sistema de Autenticação
-- Login e registro de usuários
-- Autenticação JWT
-- Recuperação de senha
-- Controle de acesso (usuários e administradores)
-
-#### Gestão de Jogos
-- Catálogo de jogos com informações detalhadas
-- Sistema de avaliações e comentários
-- Filtragem por gêneros
-- Catálogos personalizados (favoritos)
-
-#### Arquitetura Containerizada
-- Aplicação totalmente containerizada com Docker
-- Banco de dados MySQL isolado
-- Hot reload para desenvolvimento
-- Configuração simplificada via Makefile
-
-### Estrutura do Banco de Dados
-- Usuários com perfis e permissões
-- Jogos com metadados completos
-- Sistema de reviews e ratings
-- Catálogos organizados por gênero ou usuário
-
-
 ## Scripts Adicionais
 
 ### Coleta de Dados de Jogos
-Para popular o banco com mais jogos da RAWG API:
-
-1. Acesse o container do backend:
-   ```bash
-   make shell-be
-   ```
-
-2. Navegue até o script de coleta:
-   ```bash
-   cd scripts/game_data_collector
-   ```
-
-3. Configure a API key da RAWG (se necessário):
-   ```bash
-   echo 'RAWG_API_KEY="sua-chave-da-rawg-api"' >> .env
-   ```
-
-4. Execute o script:
-   ```bash
-   python main.py
-   ```
-
-### Backup do Banco de Dados
-
-```bash
-# Fazer backup
-docker-compose exec database mysqldump -u playbox_user -p playbox > backup.sql
-
-# Restaurar backup
-docker-compose exec -T database mysql -u playbox_user -p playbox < backup.sql
-```
-
-## Solução de Problemas
-
-### Portas em Uso
-Se alguma porta estiver em uso, verifique:
-```bash
-lsof -i :3000  # Frontend
-lsof -i :5000  # Backend
-lsof -i :3307  # MySQL
-```
+Leia a [documentação](scripts/game_data_collector/README.md) do script.
 
 ### Logs de Debug
 ```bash

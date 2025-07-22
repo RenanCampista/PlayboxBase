@@ -14,6 +14,9 @@ help:
 	@echo "  shell-be   - Acessa shell do backend"
 	@echo "  shell-fe   - Acessa shell do frontend"
 	@echo "  shell-db   - Acessa MySQL"
+	@echo "  setup      - Executa script de setup inicial para configuração sem Docker"
+	@echo "  reset      - Remove node_modules e executa setup completo"
+	@echo "  docker-permissions - Configura permissões do Docker"
 
 # Desenvolvimento
 dev: build up migrate
@@ -59,9 +62,22 @@ clean:
 	docker-compose down -v --rmi all --remove-orphans || true
 	docker system prune -f
 
-# Setup inicial
+# Setup inicial (usar script de setup)
 setup:
-	@if [ ! -f "server/.env" ]; then \
-		echo "📝 Criando arquivo .env..."; \
-		cp server/.env.example server/.env; \
-	fi
+	chmod +x ./scripts/setup.sh
+	./scripts/setup.sh
+
+# Reset completo do projeto (remove node_modules e reinstala)
+reset:
+	@echo "🧹 Limpando node_modules..."
+	sudo rm -rf server/node_modules client/node_modules || true
+	@echo "🧹 Limpando cache npm..."
+	npm cache clean --force || true
+	@echo "🔧 Executando setup..."
+	chmod +x ./scripts/setup.sh
+	./scripts/setup.sh
+
+# Permissões Docker
+docker-permissions:
+	@echo "🔧 Configurando permissões do Docker..."
+	sudo usermod -aG docker $USER
