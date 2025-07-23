@@ -15,7 +15,7 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
 - **Node.js** - Runtime JavaScript para servidor
 - **Express** - Framework web para Node.js
 - **Prisma** - ORM moderno para TypeScript e JavaScript
-- **MySQL** - Sistema de gerenciamento de banco de dados
+- **PostgreSQL** - Sistema de gerenciamento de banco de dados
 - **bcryptjs** - Biblioteca para hash de senhas
 - **CORS** - Middleware para permitir requisições cross-origin
 - **dotenv** - Carregamento de variáveis de ambiente
@@ -27,7 +27,7 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
 ### Containerização
 - **Docker** - Containerização da aplicação
 - **Docker Compose** - Orquestração de containers
-- **MySQL Docker Image** - Banco de dados containerizado
+- **PostgreSQL Docker Image** - Banco de dados containerizado
 
 
 ### Ferramentas de Desenvolvimento
@@ -63,13 +63,31 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
 Após a inicialização, você pode acessar:
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:5000
-- **Banco MySQL**: localhost:3307
+- **Banco PostgreSQL**: localhost:5432
   - Usuário: `playbox_user`
   - Senha: `playbox_password`
   - Database: `playbox`
 
+## Configuração do Banco de Dados
+
+O projeto utiliza **PostgreSQL** como banco de dados. Você pode escolher entre duas opções:
+
+### Opção A: Banco PostgreSQL na Nuvem (Neon.tech) - Recomendado
+1. Crie uma conta gratuita em [Neon.tech](https://neon.tech)
+2. Crie um novo banco de dados
+3. Copie a connection URL fornecida
+4. No arquivo `server/.env`, substitua a `DATABASE_URL` pela sua URL
+
+### Opção B: PostgreSQL Local
+1. Instale PostgreSQL na sua máquina
+2. Crie um banco de dados chamado `playbox`
+3. Configure a `DATABASE_URL` no arquivo `server/.env`:
+   ```
+   DATABASE_URL="postgresql://usuario:senha@localhost:5432/playbox"
+   ```
+
 ### Opção 2: Sem Docker
-Note: Nesta opção, você deve ter o Node.js e o MySQL instalados localmente.
+Note: Nesta opção, você deve ter o Node.js instalado localmente.
 1. Clone o repositório:
    ```bash
    git clone https://github.com/RenanCampista/Playbox.git
@@ -84,45 +102,29 @@ Note: Nesta opção, você deve ter o Node.js e o MySQL instalados localmente.
    make setup
    ```
 
-4. Crie um banco de dados MySQL chamado `playbox` executando os seguintes comandos no MySQL:
-   
-   4.1. Abra o terminal MySQL e execute o seguinte comando:
-   ```bash
-   mysql -u root -p
-   ```
-   4.2. Insira a senha do usuário root do MySQL quando solicitado. Em seguida, crie o banco de dados:
-   ```bash
-   CREATE DATABASE play_box CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   ```
-   4.3. Saia do MySQL:
-   ```bash
-   EXIT;
-   ```
+4. Configure o banco de dados PostgreSQL (ver opções acima)
 
-5. Configure as variáveis de ambiente:
-    Na pasta `server`, crie um arquivo `.env` e adicione as seguintes variáveis:
-   ```env
-    # Configuração do Banco de Dados
-    DATABASE_URL="mysql://root:root@localhost:3306/play_box"
-
-    # Configuração do Servidor
-    PORT=3000
-
-    JWT_SECRET="sua-chave-secreta-super-segura-aqui-com-pelo-menos-32-caracteres"
-   ```
-
-   **Observação**: O script `setup.sh` criará automaticamente os arquivos `.env` se eles não existirem.
-
-6. Configure o Prisma:
+5. Execute as migrações do banco de dados:
    ```bash
    cd server
-   npx prisma generate
-   npx prisma db push
+   npx prisma migrate dev --name init
    ```
 
-7. Inicie o servidor de desenvolvimento:
+6. Inicie o servidor backend:
    ```bash
    cd server
+   npm run dev
+   ```
+
+7. Em outro terminal, inicie o frontend:
+   ```bash
+   cd client
+   npm start
+   ```
+
+Após a inicialização, você pode acessar:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
    npm run dev
    ```
 8. Abra outro terminal e inicie o cliente:

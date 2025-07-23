@@ -1,25 +1,23 @@
 version: '3.3'
 
 services:
-  # Banco de dados MySQL
+  # Banco de dados PostgreSQL
   database:
-    image: mysql:8.0
+    image: postgres:15
     container_name: playbox-database-dev
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: playbox
-      MYSQL_USER: playbox_user
-      MYSQL_PASSWORD: playbox_password
+      POSTGRES_DB: playbox
+      POSTGRES_USER: playbox_user
+      POSTGRES_PASSWORD: playbox_password
     ports:
-      - "3307:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data_dev:/var/lib/mysql
+      - postgres_data_dev:/var/lib/postgresql/data
     networks:
       - playbox-network
-    command: --default-authentication-plugin=mysql_native_password
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U playbox_user -d playbox"]
       timeout: 10s
       retries: 10
       interval: 10s
@@ -32,7 +30,7 @@ services:
     container_name: playbox-backend-dev
     restart: unless-stopped
     environment:
-      DATABASE_URL: "mysql://playbox_user:playbox_password@database:3306/playbox"
+      DATABASE_URL: "postgresql://playbox_user:playbox_password@database:5432/playbox"
       NODE_ENV: development
       JWT_SECRET: "your-secret-key-here"
       PORT: 5000
@@ -71,7 +69,7 @@ services:
     tty: true
 
 volumes:
-  mysql_data_dev:
+  postgres_data_dev:
 
 networks:
   playbox-network:
