@@ -164,7 +164,7 @@ if __name__ == "__main__":
     platforms_ids = [platform_id for _, platform_id in platforms.items()]
     
     if games := api.get_games_by_platform(platforms_ids, page_size=90):
-        save_to_json(games, filename='games.json')
+        save_to_json(games, filename='../../server/data/games.json')
         print(f"Saved {len(games)} games to games.json")
     else:
         print("No games found or an error occurred.")

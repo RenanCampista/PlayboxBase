@@ -1,5 +1,5 @@
 #!/bin/bash
-#curl -X POST http://localhost:3000/admin/create-first-admin   -H "Content-Type: application/json"   -d '{"name": "Admin", "email": "admin@email.com", "password": "admin123"}'
+
 # Cores para output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -34,6 +34,15 @@ dir_exists() {
     [ -d "$1" ]
 }
 
+# Função para limpar cache npm se necessário
+clean_npm_cache() {
+    print_info "Verificando cache npm..."
+    if npm cache verify 2>/dev/null | grep -q "issues"; then
+        print_warning "Cache npm com problemas. Limpando..."
+        npm cache clean --force
+    fi
+}
+
 # Header
 echo -e "${BLUE}================================${NC}"
 echo -e "${BLUE}         SETUP SCRIPT           ${NC}"
@@ -63,6 +72,7 @@ fi
 
 # Obter o diretório do script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$SCRIPT_DIR/.."
 print_info "Diretório do projeto: $SCRIPT_DIR"
 
 # Verificar estrutura do projeto
@@ -80,6 +90,9 @@ fi
 
 print_success "Estrutura do projeto verificada"
 
+# Limpar cache npm se necessário
+clean_npm_cache
+
 # Configurar Backend
 echo ""
 print_info "Configurando Backend..."
@@ -88,6 +101,14 @@ cd "$SCRIPT_DIR/server"
 if [ ! -f "package.json" ]; then
     print_error "package.json não encontrado no server!"
     exit 1
+fi
+
+# Limpar node_modules se existir com permissões incorretas
+if [ -d "node_modules" ]; then
+    if [ ! -w "node_modules" ]; then
+        print_warning "node_modules com permissões inadequadas. Removendo..."
+        sudo rm -rf node_modules
+    fi
 fi
 
 print_info "Instalando dependências do server..."
@@ -126,6 +147,14 @@ if [ ! -f "package.json" ]; then
     exit 1
 fi
 
+# Limpar node_modules se existir com permissões incorretas
+if [ -d "node_modules" ]; then
+    if [ ! -w "node_modules" ]; then
+        print_warning "node_modules com permissões inadequadas. Removendo..."
+        sudo rm -rf node_modules
+    fi
+fi
+
 print_info "Instalando dependências do client..."
 npm install
 
@@ -156,13 +185,26 @@ if [ ! -f ".env" ]; then
     print_warning "Arquivo .env não encontrado no server"
     print_info "Criando arquivo .env básico para o server..."
     cat > .env << EOF
-# Configuração do Banco de Dados
+# ==========================================
+# CONFIGURAÇÃO DO BANCO DE DADOS
+# ==========================================
+# 
+# Para desenvolvimento local (sem Docker):
+# DATABASE_URL="mysql://root:root@localhost:3306/play_box"
+# 
+# Para desenvolvimento local com MySQL customizado:
+# DATABASE_URL="mysql://root:root@localhost:3306/play_box"
+# 
+# Nota: Para Docker, as variáveis são definidas no docker-compose.yml
+
 DATABASE_URL="mysql://root:root@localhost:3306/play_box"
 
 # Configuração do Servidor
-PORT=3000
+PORT=5000
 
+# JWT Secret
 JWT_SECRET="sua-chave-secreta-super-segura-aqui-com-pelo-menos-32-caracteres"
+
 
 EOF
     print_success "Arquivo .env criado para o server"

@@ -24,29 +24,64 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
 ### Autenticação e Segurança
 - **JWT (JSON Web Token)** - Autenticação baseada em tokens
 
-### Scripts e Utilitários
-- **Python** - Scripts para coleta de dados de jogos
-- **RAWG API** - API externa para dados de jogos
-- **requests** - Biblioteca Python para requisições HTTP
+### Containerização
+- **Docker** - Containerização da aplicação
+- **Docker Compose** - Orquestração de containers
+- **MySQL Docker Image** - Banco de dados containerizado
+
 
 ### Ferramentas de Desenvolvimento
 - **ESLint** - Linter para JavaScript
 - **Git** - Controle de versão
+- **Makefile** - Automação de comandos Docker
 
-## Instalação
+## Pré-requisitos
+
+- **Docker** - Para containerização da aplicação
+- **Docker Compose** - Para orquestração dos containers
+- **Make** (opcional) - Para usar comandos automatizados
+
+## Instalação e Execução
+
+### Opção 1: Usando Docker (Recomendado)
+
 1. Clone o repositório:
    ```bash
    git clone https://github.com/RenanCampista/Playbox.git
-    ```
+   ```
 
 2. Navegue até o diretório do projeto:
    ```bash
    cd Playbox
    ```
 
-3. O arquivo `setup.sh` contém os comandos para instalar as dependências do projeto. Execute-o:
+3. Inicie a aplicação completa:
    ```bash
-   ./setup.sh
+   make dev
+   ```
+
+Após a inicialização, você pode acessar:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **Banco MySQL**: localhost:3307
+  - Usuário: `playbox_user`
+  - Senha: `playbox_password`
+  - Database: `playbox`
+
+### Opção 2: Sem Docker
+Note: Nesta opção, você deve ter o Node.js e o MySQL instalados localmente.
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/RenanCampista/Playbox.git
+   ```
+
+2. Navegue até o diretório do projeto:
+   ```bash
+   cd Playbox
+   ```
+3. Instale as dependências do projeto:
+   ```bash
+   make setup
    ```
 
 4. Crie um banco de dados MySQL chamado `playbox` executando os seguintes comandos no MySQL:
@@ -104,70 +139,50 @@ Após seguir esses passos, você deve ser capaz de acessar:
 
 ```
 PlayBox/
-├── client/                 # Frontend React
-│   ├── public/            # Arquivos públicos
+├── client/                    # Frontend React
+│   ├── public/               # Arquivos públicos
 │   ├── src/
-│   │   ├── components/    # Componentes reutilizáveis
-│   │   ├── pages/         # Páginas da aplicação
-│   │   ├── services/      # Serviços da API
-│   │   ├── styles/        # Arquivos CSS
-│   │   └── utils/         # Utilitários
+│   │   ├── components/       # Componentes reutilizáveis
+│   │   ├── pages/           # Páginas da aplicação
+│   │   ├── services/        # Serviços da API
+│   │   ├── styles/          # Arquivos CSS
+│   │   └── utils/           # Utilitários
+│   ├── Dockerfile           # Configuração Docker do frontend
 │   └── package.json
-├── server/                # Backend Node.js
-│   ├── prisma/           # Configuração do banco
-│   ├── routes/           # Rotas da API
-│   ├── services/         # Lógica de negócio
-│   ├── scripts/          # Scripts utilitários
+├── server/                   # Backend Node.js
+│   ├── prisma/              # Configuração do banco
+│   ├── routes/              # Rotas da API
+│   ├── services/            # Lógica de negócio
+│   ├── scripts/             # Scripts utilitários
 │   │   └── game_data_collector/  # Coleta de dados de jogos
-│   ├── server.js         # Servidor principal
+│   ├── Dockerfile           # Configuração Docker do backend
+│   ├── server.js            # Servidor principal
 │   └── package.json
-├── setup.sh              # Script de instalação
-└── README.md
+├── docker-compose.yml       # Orquestração dos containers
+├── Makefile                # Comandos automatizados
+├── README-DOCKER.md        # Documentação detalhada do Docker
+└── README.md              # Este arquivo
 ```
 
-
-## Funcionalidades
-
-### Sistema de Autenticação
-- Login e registro de usuários
-- Autenticação JWT
-- Recuperação de senha
-- Controle de acesso (usuários e administradores)
-
-### Gestão de Jogos
-- Catálogo de jogos com informações detalhadas
-- Sistema de avaliações e comentários
-- Filtragem por gêneros
-- Catálogos personalizados (favoritos)
-
-### Coleta de Dados
-- Script Python para coleta automática de dados de jogos via RAWG API
-- Localizado em `server/scripts/game_data_collector/`
-
-### Estrutura do Banco de Dados
-- Usuários com perfis e permissões
-- Jogos com metadados completos
-- Sistema de reviews e ratings
-- Catálogos organizados por gênero ou usuário
 
 ## Scripts Adicionais
 
 ### Coleta de Dados de Jogos
-Para popular o banco de dados com jogos da RAWG API:
+Leia a [documentação](scripts/game_data_collector/README.md) do script.
 
-1. Configure a API key da RAWG no arquivo `.env` do servidor:
-   ```env
-   RAWG_API_KEY="sua-chave-da-rawg-api"
-   ```
+### Logs de Debug
+```bash
+# Ver logs de todos os serviços
+make logs-f
 
-2. Execute o script de coleta:
-   ```bash
-   cd server/scripts/game_data_collector
-   pip install -r requirements.txt
-   python main.py
-   ```
+# Ver logs específicos
+docker-compose logs frontend
+docker-compose logs backend
+docker-compose logs database
+```
 
 ## Próximos Passos
-- Terminar o frontend, incluindo a implementação de componentes de avaliação de jogos, sistema de comentários.
-- Implementar testes unitários e de integração com Jest e Supertest.
-- Gerar documentação de código com Swagger.
+- Implementar componentes de avaliação de jogos e sistema de comentários
+- Adicionar testes unitários e de integração
+- Implementar documentação da API com Swagger
+- Adicionar configuração de produção (quando necessário)

@@ -90,4 +90,18 @@ router.get('/genre/:genre', async (req, res) => {
     }
 });
 
+// Rota para recalcular todas as médias de avaliação (rota administrativa)
+router.post('/admin/recalculateAverages', async (req, res) => {
+    try {
+        const result = await gameServices.recalculateAllGameAverages();
+        res.status(200).json({ 
+            message: 'Médias de avaliação recalculadas com sucesso',
+            ...result
+        });
+    } catch (error) {
+        console.error('Erro ao recalcular médias:', error);
+        res.status(500).json({ error: 'Erro interno do servidor.' });
+    }
+});
+
 module.exports = router;

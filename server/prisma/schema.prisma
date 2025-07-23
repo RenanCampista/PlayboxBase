@@ -34,34 +34,41 @@ model User {
 }
 
 model Review {
-  id          Int       @id @default(autoincrement())
-  userId      Int
-  gameId      Int
-  rating      Int
-  comment     String?   @db.Text
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  gameId            Int
+  gameplayRating    Int       // 0-5 estrelas
+  visualRating      Int       // 0-5 estrelas
+  audioRating       Int       // 0-5 estrelas
+  difficultyRating  Int       // 0-5 estrelas
+  immersionRating   Int       // 0-5 estrelas
+  historyRating     Int       // 0-5 estrelas
+  averageRating     Float     // Média calculada dos ratings acima
+  comment           String?   @db.Text
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
-  user        User      @relation(fields: [userId], references: [id])
-  game        Game      @relation(fields: [gameId], references: [id])
+  user              User      @relation(fields: [userId], references: [id])
+  game              Game      @relation(fields: [gameId], references: [id])
 }
 
 model Game {
-  id                Int         @id @default(autoincrement())
-  name              String      @unique
-  releaseDate       DateTime    @db.Date
-  description       String?     @db.Text
-  backgroundImage   String
-  playtime          Int
-  platforms         String      // String separada por vírgulas: "PC,PlayStation,Xbox"
-  genres            String      // String separada por vírgulas: "ACTION,RPG"
-  publishers        String      // String separada por vírgulas: "Publisher1,Publisher2"
-  metacriticScore   Int?
-  screenshots       String      @db.Text // String separada por vírgulas (URLs)
-  reviews           Review[]
-  catalogs          Catalog[]   @relation("GameCatalogs")
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+  id                  Int         @id @default(autoincrement())
+  name                String      @unique
+  releaseDate         DateTime    @db.Date
+  description         String?     @db.Text
+  backgroundImage     String
+  playtime            Int
+  platforms           String      // String separada por vírgulas: "PC,PlayStation,Xbox"
+  genres              String      // String separada por vírgulas: "ACTION,RPG"
+  publishers          String      // String separada por vírgulas: "Publisher1,Publisher2"
+  metacriticScore     Int?
+  averageReviewRating Float?      // Média dos averageRating dos reviews
+  screenshots         String      @db.Text // String separada por vírgulas (URLs)
+  reviews             Review[]
+  catalogs            Catalog[]   @relation("GameCatalogs")
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
 }
 
 model Catalog {

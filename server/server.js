@@ -37,7 +37,7 @@ app.listen(PORT, async () => {
 
     // Carregar jogos do JSON 
     try {
-        const filePath = './scripts/game_data_collector/games.json'; // Caminho do arquivo JSON com os jogos
+        const filePath = './data/games.json';
         await loadGamesFromJson(filePath);
         console.log(`✅ Jogos carregados do JSON com sucesso.`);
     } catch (error) {

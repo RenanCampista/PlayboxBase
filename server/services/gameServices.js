@@ -105,6 +105,7 @@ const getGameById = async (id) => {
                 genres: true,
                 publishers: true,
                 metacriticScore: true,
+                averageReviewRating: true,
                 screenshots: true,
                 createdAt: true,
             }
@@ -252,6 +253,7 @@ const getAllGames = async () => {
                 genres: true,
                 publishers: true,
                 metacriticScore: true,
+                averageReviewRating: true,
                 screenshots: true,
                 createdAt: true,
             }
@@ -313,6 +315,59 @@ const loadGamesFromJson = async (filePath) => {
     }
 };
 
+// Função para recalcular todas as médias de avaliação dos jogos
+const recalculateAllGameAverages = async () => {
+    try {
+        const games = await prisma.game.findMany({
+            include: {
+                reviews: true
+            }
+        });
+
+        let updatedCount = 0;
+
+        for (const game of games) {
+            if (game.reviews.length === 0) {
+                // Se não há reviews, definir como null
+                await prisma.game.update({
+                    where: { id: game.id },
+                    data: { averageReviewRating: null }
+                });
+            } else {
+                // Verificar se todas as reviews têm averageRating válido
+                const validReviews = game.reviews.filter(review => 
+                    review.averageRating !== null && review.averageRating !== undefined
+                );
+                
+                if (validReviews.length === 0) {
+                    // Se não há reviews válidas, definir como null
+                    await prisma.game.update({
+                        where: { id: game.id },
+                        data: { averageReviewRating: null }
+                    });
+                } else {
+                    // Calcular a média dos averageRating de todas as reviews válidas do jogo
+                    const totalRating = validReviews.reduce((sum, review) => sum + review.averageRating, 0);
+                    const averageReviewRating = totalRating / validReviews.length;
+
+                    // Atualizar o jogo com a nova média
+                    await prisma.game.update({
+                        where: { id: game.id },
+                        data: { averageReviewRating: parseFloat(averageReviewRating.toFixed(2)) }
+                    });
+                }
+            }
+            updatedCount++;
+        }
+
+        console.log(`✅ Médias de avaliação recalculadas para ${updatedCount} jogos`);
+        return { success: true, updatedCount };
+    } catch (error) {
+        console.error('Erro ao recalcular médias de avaliação:', error);
+        throw new Error('Erro ao recalcular médias de avaliação: ' + error.message);
+    }
+};
+
 module.exports = {
     createGame,
     getGameById,
@@ -321,5 +376,6 @@ module.exports = {
     deleteGame,
     getGamesByGenre,
     getAllGames,
-    loadGamesFromJson
+    loadGamesFromJson,
+    recalculateAllGameAverages
 };
