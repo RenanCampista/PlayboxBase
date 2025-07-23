@@ -1,4 +1,4 @@
-.PHONY: help dev build up down logs logs-f status clean migrate shell-be shell-fe shell-db
+.PHONY: help dev build up down logs logs-f status clean migrate shell-be shell-fe
 
 # Ajuda
 help:
@@ -14,7 +14,6 @@ help:
 	@echo "  migrate    - Executa migrações do banco"
 	@echo "  shell-be   - Acessa shell do backend"
 	@echo "  shell-fe   - Acessa shell do frontend"
-	@echo "  shell-db   - Acessa PostgreSQL"
 	@echo "  setup      - Executa script de setup inicial para configuração sem Docker"
 	@echo "  reset      - Remove node_modules e executa setup completo"
 	@echo "  docker-permissions - Configura permissões do Docker"
@@ -46,18 +45,9 @@ logs-f:
 status:
 	@echo "📊 Status dos containers:"
 	docker-compose ps
-	@echo ""
-	@echo "🏥 Health checks:"
-	docker-compose exec database pg_isready -U playbox_user -d playbox && echo "✅ Database: OK" || echo "❌ Database: FAIL"
 
 # Utilitários
 migrate:
-	@echo "⏳ Aguardando banco de dados ficar disponível..."
-	@until docker-compose exec database pg_isready -U playbox_user -d playbox; do \
-		echo "Banco ainda não está pronto, aguardando 5 segundos..."; \
-		sleep 5; \
-	done
-	@echo "✅ Banco de dados está pronto!"
 	@echo "🗃️ Executando migrações..."
 	docker-compose exec backend npx prisma migrate deploy
 
@@ -66,9 +56,6 @@ shell-be:
 
 shell-fe:
 	docker-compose exec frontend sh
-
-shell-db:
-	docker-compose exec database psql -U playbox_user -d playbox
 
 # Limpeza
 clean:

@@ -165,53 +165,38 @@ else
     exit 1
 fi
 
-# Criar arquivo .env se não existir
+# Voltar para a raiz do projeto
+cd "$SCRIPT_DIR"
+
+# Criar arquivo .env centralizado na raiz se não existir
 if [ ! -f ".env" ]; then
-    print_info "Criando arquivo .env para o client..."
-    cat > .env << EOF
-# Configuração da API Backend
-REACT_APP_API_URL=http://localhost:3000
-EOF
-    print_success "Arquivo .env criado"
+    print_info "Criando arquivo .env centralizado na raiz do projeto..."
+    if [ -f ".env.example" ]; then
+        cp .env.example .env
+        print_success "Arquivo .env criado a partir do .env.example"
+        print_warning "IMPORTANTE: Configure a DATABASE_URL com suas credenciais do Neon.tech"
+    else
+        print_error "Arquivo .env.example não encontrado!"
+        exit 1
+    fi
 else
-    print_info "Arquivo .env já existe"
+    print_info "Arquivo .env já existe na raiz do projeto"
 fi
 
-# Verificar se o arquivo .env do server existe
+# Criar link simbólico no client para usar o .env da raiz
+print_info "Configurando client para usar .env centralizado..."
+cd "$SCRIPT_DIR/client"
+if [ -f ".env" ] && [ ! -L ".env" ]; then
+    rm .env
+fi
+if [ ! -L ".env" ]; then
+    ln -sf ../.env .env
+    print_success "Link simbólico criado para o client"
+fi
+
+# Verificar configuração do server
 print_info "Verificando configuração do server..."
 cd "$SCRIPT_DIR/server"
-
-if [ ! -f ".env" ]; then
-    print_warning "Arquivo .env não encontrado no server"
-    print_info "Criando arquivo .env básico para o server..."
-    cat > .env << EOF
-# ==========================================
-# CONFIGURAÇÃO DO BANCO DE DADOS
-# ==========================================
-# 
-# Para desenvolvimento local (sem Docker):
-# DATABASE_URL="mysql://root:root@localhost:3306/play_box"
-# 
-# Para desenvolvimento local com MySQL customizado:
-# DATABASE_URL="mysql://root:root@localhost:3306/play_box"
-# 
-# Nota: Para Docker, as variáveis são definidas no docker-compose.yml
-
-DATABASE_URL="mysql://root:root@localhost:3306/play_box"
-
-# Configuração do Servidor
-PORT=5000
-
-# JWT Secret
-JWT_SECRET="sua-chave-secreta-super-segura-aqui-com-pelo-menos-32-caracteres"
-
-
-EOF
-    print_success "Arquivo .env criado para o server"
-    print_warning "IMPORTANTE: Configure a DATABASE_URL com suas credenciais do banco"
-else
-    print_info "Arquivo .env do server já existe"
-fi
 
 # Resumo final
 echo ""
@@ -222,13 +207,19 @@ echo ""
 
 print_info "Próximos passos:"
 echo ""
-echo "   Terminal 1: cd server && npm run dev"
-echo "   Terminal 2: cd client && npm start"
+echo "   1. Configure o arquivo .env na raiz do projeto com suas credenciais do Neon.tech"
+echo "   2. Terminal 1: cd server && npm run dev"
+echo "   3. Terminal 2: cd client && npm start"
 echo ""
 
 print_info "URLs do projeto:"
-echo "   Backend:  http://localhost:3000"
-echo "   Frontend: http://localhost:3001"
+echo "   Backend:  http://localhost:5000"
+echo "   Frontend: http://localhost:3000"
+echo ""
+
+print_info "Configuração centralizada:"
+echo "   Arquivo .env na raiz controla todas as configurações"
+echo "   Tanto desenvolvimento local quanto Docker usam o mesmo arquivo"
 echo ""
 
 print_success "Setup concluído! 🚀"

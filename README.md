@@ -20,31 +20,17 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
 - **CORS** - Middleware para permitir requisições cross-origin
 - **dotenv** - Carregamento de variáveis de ambiente
 - **Nodemon** - Ferramenta de desenvolvimento para restart automático
-
-### Autenticação e Segurança
 - **JWT (JSON Web Token)** - Autenticação baseada em tokens
 
 ### Containerização
 - **Docker** - Containerização da aplicação
 - **Docker Compose** - Orquestração de containers
-- **PostgreSQL Docker Image** - Banco de dados containerizado
 
-
-### Ferramentas de Desenvolvimento
-- **ESLint** - Linter para JavaScript
-- **Git** - Controle de versão
-- **Makefile** - Automação de comandos Docker
-
-## Pré-requisitos
-
-- **Docker** - Para containerização da aplicação
-- **Docker Compose** - Para orquestração dos containers
-- **Make** (opcional) - Para usar comandos automatizados
 
 ## Instalação e Execução
 
 ### Opção 1: Usando Docker (Recomendado)
-
+Note: Nesta opção é necessário ter o Docker e Docker Compose instalados.
 1. Clone o repositório:
    ```bash
    git clone https://github.com/RenanCampista/Playbox.git
@@ -55,36 +41,27 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
    cd Playbox
    ```
 
-3. Inicie a aplicação completa:
+3. Execute o setup automático:
+   ```bash
+   make setup
+   ```
+
+   O script automaticamente:
+   - Instala dependências do backend e frontend
+   - Cria arquivo `.env` a partir do `.env.example`
+   - Configura links simbólicos necessários
+
+4. Edite o arquivo `.env` com suas configurações.
+
+5. Inicie a aplicação completa:
    ```bash
    make dev
    ```
 
-Após a inicialização, você pode acessar:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
-- **Banco PostgreSQL**: localhost:5432
-  - Usuário: `playbox_user`
-  - Senha: `playbox_password`
-  - Database: `playbox`
+Após seguir esses passos, você deve ser capaz de acessar:
+- **Backend**: `http://localhost:5000` 
+- **Frontend**: `http://localhost:5001`
 
-## Configuração do Banco de Dados
-
-O projeto utiliza **PostgreSQL** como banco de dados. Você pode escolher entre duas opções:
-
-### Opção A: Banco PostgreSQL na Nuvem (Neon.tech) - Recomendado
-1. Crie uma conta gratuita em [Neon.tech](https://neon.tech)
-2. Crie um novo banco de dados
-3. Copie a connection URL fornecida
-4. No arquivo `server/.env`, substitua a `DATABASE_URL` pela sua URL
-
-### Opção B: PostgreSQL Local
-1. Instale PostgreSQL na sua máquina
-2. Crie um banco de dados chamado `playbox`
-3. Configure a `DATABASE_URL` no arquivo `server/.env`:
-   ```
-   DATABASE_URL="postgresql://usuario:senha@localhost:5432/playbox"
-   ```
 
 ### Opção 2: Sem Docker
 Note: Nesta opção, você deve ter o Node.js instalado localmente.
@@ -97,12 +74,13 @@ Note: Nesta opção, você deve ter o Node.js instalado localmente.
    ```bash
    cd Playbox
    ```
-3. Instale as dependências do projeto:
+
+3. Execute o setup inicial:
    ```bash
    make setup
    ```
 
-4. Configure o banco de dados PostgreSQL (ver opções acima)
+4. Configure o arquivo `.env` na raiz do projeto:
 
 5. Execute as migrações do banco de dados:
    ```bash
@@ -122,49 +100,9 @@ Note: Nesta opção, você deve ter o Node.js instalado localmente.
    npm start
    ```
 
-Após a inicialização, você pode acessar:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
-   npm run dev
-   ```
-8. Abra outro terminal e inicie o cliente:
-   ```bash
-   cd client
-   npm start
-   ```
-
 Após seguir esses passos, você deve ser capaz de acessar:
-- **Backend**: `http://localhost:3000` 
-- **Frontend**: `http://localhost:3001`
-
-## Estrutura do Projeto
-
-```
-PlayBox/
-├── client/                    # Frontend React
-│   ├── public/               # Arquivos públicos
-│   ├── src/
-│   │   ├── components/       # Componentes reutilizáveis
-│   │   ├── pages/           # Páginas da aplicação
-│   │   ├── services/        # Serviços da API
-│   │   ├── styles/          # Arquivos CSS
-│   │   └── utils/           # Utilitários
-│   ├── Dockerfile           # Configuração Docker do frontend
-│   └── package.json
-├── server/                   # Backend Node.js
-│   ├── prisma/              # Configuração do banco
-│   ├── routes/              # Rotas da API
-│   ├── services/            # Lógica de negócio
-│   ├── scripts/             # Scripts utilitários
-│   │   └── game_data_collector/  # Coleta de dados de jogos
-│   ├── Dockerfile           # Configuração Docker do backend
-│   ├── server.js            # Servidor principal
-│   └── package.json
-├── docker-compose.yml       # Orquestração dos containers
-├── Makefile                # Comandos automatizados
-├── README-DOCKER.md        # Documentação detalhada do Docker
-└── README.md              # Este arquivo
-```
+- **Backend**: `http://localhost:5000` 
+- **Frontend**: `http://localhost:5001`
 
 
 ## Scripts Adicionais
@@ -172,7 +110,7 @@ PlayBox/
 ### Coleta de Dados de Jogos
 Leia a [documentação](scripts/game_data_collector/README.md) do script.
 
-### Logs de Debug
+### Logs de Debug (Docker)
 ```bash
 # Ver logs de todos os serviços
 make logs-f
@@ -186,5 +124,3 @@ docker-compose logs database
 ## Próximos Passos
 - Implementar componentes de avaliação de jogos e sistema de comentários
 - Adicionar testes unitários e de integração
-- Implementar documentação da API com Swagger
-- Adicionar configuração de produção (quando necessário)
