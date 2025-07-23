@@ -8,6 +8,8 @@ services:
       dockerfile: Dockerfile
     container_name: playbox-backend-dev
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
       NODE_ENV: ${NODE_ENV}
@@ -29,6 +31,8 @@ services:
       dockerfile: Dockerfile
     container_name: playbox-frontend-dev
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       - REACT_APP_API_URL=${REACT_APP_API_URL}
       - CHOKIDAR_USEPOLLING=true
