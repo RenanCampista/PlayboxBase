@@ -15,36 +15,22 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
 - **Node.js** - Runtime JavaScript para servidor
 - **Express** - Framework web para Node.js
 - **Prisma** - ORM moderno para TypeScript e JavaScript
-- **MySQL** - Sistema de gerenciamento de banco de dados
+- **PostgreSQL** - Sistema de gerenciamento de banco de dados
 - **bcryptjs** - Biblioteca para hash de senhas
 - **CORS** - Middleware para permitir requisições cross-origin
 - **dotenv** - Carregamento de variáveis de ambiente
 - **Nodemon** - Ferramenta de desenvolvimento para restart automático
-
-### Autenticação e Segurança
 - **JWT (JSON Web Token)** - Autenticação baseada em tokens
 
 ### Containerização
 - **Docker** - Containerização da aplicação
 - **Docker Compose** - Orquestração de containers
-- **MySQL Docker Image** - Banco de dados containerizado
 
-
-### Ferramentas de Desenvolvimento
-- **ESLint** - Linter para JavaScript
-- **Git** - Controle de versão
-- **Makefile** - Automação de comandos Docker
-
-## Pré-requisitos
-
-- **Docker** - Para containerização da aplicação
-- **Docker Compose** - Para orquestração dos containers
-- **Make** (opcional) - Para usar comandos automatizados
 
 ## Instalação e Execução
 
 ### Opção 1: Usando Docker (Recomendado)
-
+Note: Nesta opção é necessário ter o Docker e Docker Compose instalados.
 1. Clone o repositório:
    ```bash
    git clone https://github.com/RenanCampista/Playbox.git
@@ -55,114 +41,68 @@ Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina 
    cd Playbox
    ```
 
-3. Inicie a aplicação completa:
-   ```bash
-   make dev
-   ```
-
-Após a inicialização, você pode acessar:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
-- **Banco MySQL**: localhost:3307
-  - Usuário: `playbox_user`
-  - Senha: `playbox_password`
-  - Database: `playbox`
-
-### Opção 2: Sem Docker
-Note: Nesta opção, você deve ter o Node.js e o MySQL instalados localmente.
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/RenanCampista/Playbox.git
-   ```
-
-2. Navegue até o diretório do projeto:
-   ```bash
-   cd Playbox
-   ```
-3. Instale as dependências do projeto:
+3. Execute o setup automático:
    ```bash
    make setup
    ```
 
-4. Crie um banco de dados MySQL chamado `playbox` executando os seguintes comandos no MySQL:
-   
-   4.1. Abra o terminal MySQL e execute o seguinte comando:
+   O script automaticamente:
+   - Instala dependências do backend e frontend
+   - Cria arquivo `.env` a partir do `.env.example`
+   - Configura links simbólicos necessários
+
+4. Edite o arquivo `.env` com suas configurações.
+
+5. Inicie a aplicação completa:
    ```bash
-   mysql -u root -p
+   make dev
    ```
-   4.2. Insira a senha do usuário root do MySQL quando solicitado. Em seguida, crie o banco de dados:
+
+Após seguir esses passos, você deve ser capaz de acessar:
+- **Backend**: `http://localhost:5000` 
+- **Frontend**: `http://localhost:5001`
+
+
+### Opção 2: Sem Docker
+Note: Nesta opção, você deve ter o Node.js instalado localmente.
+1. Clone o repositório:
    ```bash
-   CREATE DATABASE play_box CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   git clone https://github.com/RenanCampista/Playbox.git
    ```
-   4.3. Saia do MySQL:
+
+2. Navegue até o diretório do projeto:
    ```bash
-   EXIT;
+   cd Playbox
    ```
 
-5. Configure as variáveis de ambiente:
-    Na pasta `server`, crie um arquivo `.env` e adicione as seguintes variáveis:
-   ```env
-    # Configuração do Banco de Dados
-    DATABASE_URL="mysql://root:root@localhost:3306/play_box"
-
-    # Configuração do Servidor
-    PORT=3000
-
-    JWT_SECRET="sua-chave-secreta-super-segura-aqui-com-pelo-menos-32-caracteres"
+3. Execute o setup inicial:
+   ```bash
+   make setup
    ```
 
-   **Observação**: O script `setup.sh` criará automaticamente os arquivos `.env` se eles não existirem.
+4. Configure o arquivo `.env` na raiz do projeto:
 
-6. Configure o Prisma:
+5. Execute as migrações do banco de dados:
    ```bash
    cd server
-   npx prisma generate
-   npx prisma db push
+   npx prisma migrate dev --name init
    ```
 
-7. Inicie o servidor de desenvolvimento:
+6. Inicie o servidor backend:
    ```bash
    cd server
    npm run dev
    ```
-8. Abra outro terminal e inicie o cliente:
+
+7. Em outro terminal, inicie o frontend:
    ```bash
    cd client
    npm start
    ```
 
 Após seguir esses passos, você deve ser capaz de acessar:
-- **Backend**: `http://localhost:3000` 
-- **Frontend**: `http://localhost:3001`
-
-## Estrutura do Projeto
-
-```
-PlayBox/
-├── client/                    # Frontend React
-│   ├── public/               # Arquivos públicos
-│   ├── src/
-│   │   ├── components/       # Componentes reutilizáveis
-│   │   ├── pages/           # Páginas da aplicação
-│   │   ├── services/        # Serviços da API
-│   │   ├── styles/          # Arquivos CSS
-│   │   └── utils/           # Utilitários
-│   ├── Dockerfile           # Configuração Docker do frontend
-│   └── package.json
-├── server/                   # Backend Node.js
-│   ├── prisma/              # Configuração do banco
-│   ├── routes/              # Rotas da API
-│   ├── services/            # Lógica de negócio
-│   ├── scripts/             # Scripts utilitários
-│   │   └── game_data_collector/  # Coleta de dados de jogos
-│   ├── Dockerfile           # Configuração Docker do backend
-│   ├── server.js            # Servidor principal
-│   └── package.json
-├── docker-compose.yml       # Orquestração dos containers
-├── Makefile                # Comandos automatizados
-├── README-DOCKER.md        # Documentação detalhada do Docker
-└── README.md              # Este arquivo
-```
+- **Backend**: `http://localhost:5000` 
+- **Frontend**: `http://localhost:5001`
 
 
 ## Scripts Adicionais
@@ -170,7 +110,7 @@ PlayBox/
 ### Coleta de Dados de Jogos
 Leia a [documentação](scripts/game_data_collector/README.md) do script.
 
-### Logs de Debug
+### Logs de Debug (Docker)
 ```bash
 # Ver logs de todos os serviços
 make logs-f
@@ -184,5 +124,3 @@ docker-compose logs database
 ## Próximos Passos
 - Implementar componentes de avaliação de jogos e sistema de comentários
 - Adicionar testes unitários e de integração
-- Implementar documentação da API com Swagger
-- Adicionar configuração de produção (quando necessário)

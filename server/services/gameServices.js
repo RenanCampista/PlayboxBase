@@ -307,7 +307,7 @@ const loadGamesFromJson = async (filePath) => {
             }
         }
         
-        console.log(`Carregamento concluído: ${successCount} novos jogos, ${duplicateCount} já existentes, ${errorCount} erros`);
+        console.log(`✅ Carregamento concluído: ${successCount} novos jogos, ${duplicateCount} já existentes, ${errorCount} erros`);
         return { successCount, duplicateCount, errorCount };
     } catch (error) {
         console.error('Erro ao ler arquivo JSON:', error);

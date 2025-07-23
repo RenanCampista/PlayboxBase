@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 const express = require('express'); // Framework para construir APIs
 const cors = require('cors'); // Middleware para habilitar CORS
 const { getUserByEmail, createAdmin } = require('./services/userServices.js');
@@ -13,7 +13,7 @@ app.use(cors()); // Habilita CORS para todas as rotas. CORS é necessário para 
 app.use(express.json()); // Middleware para interpretar JSON no corpo das requisições
 app.use(routes);
 
-const PORT = process.env.PORT || 3000; // Define a porta do servidor
+const PORT = process.env.SERVER_PORT || 5000; // Define a porta do servidor
 
 app.listen(PORT, async () => {
 
