@@ -1,4 +1,4 @@
-.PHONY: help dev build up down logs logs-f clean migrate shell-be shell-fe shell-db
+.PHONY: help dev build up down logs logs-f status clean migrate shell-be shell-fe shell-db
 
 # Ajuda
 help:
@@ -9,6 +9,7 @@ help:
 	@echo "  down       - Para todos os containers"
 	@echo "  logs       - Mostra logs dos containers"
 	@echo "  logs-f     - Mostra logs em tempo real"
+	@echo "  status     - Mostra status dos containers e health checks"
 	@echo "  clean      - Remove containers, volumes e imagens"
 	@echo "  migrate    - Executa migrações do banco"
 	@echo "  shell-be   - Acessa shell do backend"
@@ -41,10 +42,22 @@ logs:
 logs-f:
 	docker-compose logs -f
 
+# Status dos containers
+status:
+	@echo "📊 Status dos containers:"
+	docker-compose ps
+	@echo ""
+	@echo "🏥 Health checks:"
+	docker-compose exec database mysqladmin ping -h"localhost" --silent && echo "✅ Database: OK" || echo "❌ Database: FAIL"
+
 # Utilitários
 migrate:
-	@echo "⏳ Aguardando banco de dados..."
-	@sleep 15
+	@echo "⏳ Aguardando banco de dados ficar disponível..."
+	@until docker-compose exec database mysqladmin ping -h"localhost" --silent; do \
+		echo "Banco ainda não está pronto, aguardando 5 segundos..."; \
+		sleep 5; \
+	done
+	@echo "✅ Banco de dados está pronto!"
 	@echo "🗃️ Executando migrações..."
 	docker-compose exec backend npx prisma migrate deploy
 
@@ -73,9 +86,6 @@ reset:
 	sudo rm -rf server/node_modules client/node_modules || true
 	@echo "🧹 Limpando cache npm..."
 	npm cache clean --force || true
-	@echo "🔧 Executando setup..."
-	chmod +x ./scripts/setup.sh
-	./scripts/setup.sh
 
 # Permissões Docker
 docker-permissions:
