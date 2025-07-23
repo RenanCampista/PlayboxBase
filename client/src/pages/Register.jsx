@@ -63,13 +63,13 @@ const Register = ({ onRegisterSuccess, onBackToLogin }) => {
         password: formData.password
       };
 
-      await userService.createUser(userData);
+      const response = await userService.createUser(userData);
       setSuccess(true);
       
       // Após 2 segundos, volta para o login ou chama callback
       setTimeout(() => {
-        if (onRegisterSuccess) {
-          onRegisterSuccess();
+        if (onRegisterSuccess && response.user) {
+          onRegisterSuccess(response.user);
         } else {
           onBackToLogin();
         }

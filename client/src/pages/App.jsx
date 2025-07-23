@@ -341,14 +341,19 @@ function App() {
                 ) : (
                   <div className="user-profile">
                     <h2>Meu Perfil</h2>
-                    <div className="profile-info">
-                      <p><strong>Nome:</strong> {currentUser.name}</p>
-                      <p><strong>Email:</strong> {currentUser.email}</p>
-                      <p><strong>Tipo:</strong> {currentUser.isAdmin ? 'Administrador' : 'Usuário'}</p>
-                    </div>
+                    {currentUser ? (
+                      <div className="profile-info">
+                        <p><strong>Nome:</strong> {currentUser.name}</p>
+                        <p><strong>Email:</strong> {currentUser.email}</p>
+                        <p><strong>Tipo:</strong> {currentUser.isAdmin ? 'Administrador' : 'Usuário'}</p>
+                      </div>
+                    ) : (
+                      <div className="loading">Carregando dados do usuário...</div>
+                    )}
                     <button 
                       onClick={() => setEditingUser(currentUser) || setShowForm(true)}
                       className="btn btn-primary"
+                      disabled={!currentUser}
                     >
                       Editar Perfil
                     </button>
