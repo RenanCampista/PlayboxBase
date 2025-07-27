@@ -43,68 +43,74 @@ const Login = ({ onLoginSuccess, onShowRegister, onShowForgotPassword }) => {
 
   return (
     <div className="login-container">
-      <form onSubmit={handleSubmit} className="login-form">
-        <h2>Login</h2>
-        
-        {error && <div className="error-message">{error}</div>}
-        
-        <div className="form-group">
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            disabled={loading}
-          />
+      <div className="login-left">
+        <div className="logo-container">
+          <img src="/logo_site.png" alt="Playbox" className="logo" />
         </div>
+      </div>
+      
+      <div className="login-right">
+        <div className="login-form">
+          <h1>Preencha o formulário</h1>
+          
+          {error && <div className="error-message">{error}</div>}
+          
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                placeholder="E-mail"
+              />
+            </div>
 
-        <div className="form-group">
-          <label htmlFor="password">Senha:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            disabled={loading}
-          />
+            <div className="form-group">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                placeholder="Senha"
+              />
+            </div>
+
+            <div className="forgot-password-links">
+              <button 
+                type="button" 
+                className="forgot-password-button"
+                onClick={onShowForgotPassword}
+                disabled={loading}
+              >
+                Esqueceu a sua senha ?
+              </button>
+              <button 
+                type="button" 
+                className="no-account-button"
+                onClick={onShowRegister}
+                disabled={loading}
+              >
+                Não possui conta?
+              </button>
+            </div>
+
+            <button 
+              type="submit" 
+              className="submit-button"
+              disabled={loading}
+            >
+              {loading ? 'ENTRANDO...' : 'Entrar'}
+            </button>
+          </form>
         </div>
-
-        <button 
-          type="submit" 
-          className="submit-button"
-          disabled={loading}
-        >
-          {loading ? 'Entrando...' : 'Entrar'}
-        </button>
-
-        <div className="forgot-password-link">
-          <button 
-            type="button" 
-            className="forgot-password-button"
-            onClick={onShowForgotPassword}
-            disabled={loading}
-          >
-            Esqueci minha senha
-          </button>
-        </div>
-
-        <div className="register-link">
-          <p>Ainda não tem uma conta?</p>
-          <button 
-            type="button" 
-            className="register-button"
-            onClick={onShowRegister}
-            disabled={loading}
-          >
-            Criar Conta
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };

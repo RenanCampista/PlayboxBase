@@ -66,124 +66,127 @@ const ForgotPassword = ({ onBackToLogin }) => {
 
   return (
     <div className="forgot-password-container">
-      <div className="forgot-password-form">
-        {step === 1 ? (
-          <>
-            <h2>Esqueci minha senha</h2>
-            <p>Digite seu email para receber instruções de recuperação de senha.</p>
-            
-            <form onSubmit={handleEmailSubmit}>
-              {error && <div className="error-message">{error}</div>}
+      <div className="forgot-password-left">
+        <div className="logo-container">
+          <img src="/logo_site.png" alt="Playbox" className="logo" />
+        </div>
+      </div>
+      
+      <div className="forgot-password-right">
+        <div className="forgot-password-form">
+          {step === 1 ? (
+            <>
+              <h1>Informe seu e-mail para receber as instruções de recuperação da conta</h1>
               
-              <div className="form-group">
-                <label htmlFor="email">Email:</label>
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={loading}
-                  placeholder="seu@email.com"
-                />
-              </div>
-
-              <div className="form-buttons">
-                <button 
-                  type="submit" 
-                  className="submit-button"
-                  disabled={loading}
-                >
-                  {loading ? 'Enviando...' : 'Enviar Instruções'}
-                </button>
+              <form onSubmit={handleEmailSubmit}>
+                {error && <div className="error-message">{error}</div>}
                 
-                <button 
-                  type="button" 
-                  className="back-button"
-                  onClick={onBackToLogin}
-                  disabled={loading}
-                >
-                  Voltar ao Login
-                </button>
-              </div>
-            </form>
-          </>
-        ) : (
-          <>
-            <h2>Redefinir Senha</h2>
-            <p>Instruções enviadas! Use o token abaixo ou insira o token que você recebeu por email.</p>
-            
-            {resetToken && (
-              <div className="token-display">
-                <strong>Token de demonstração:</strong>
-                <code>{resetToken}</code>
-                <small>Em produção, este token seria enviado por email.</small>
-              </div>
-            )}
-            
-            <form onSubmit={handlePasswordReset}>
-              {error && <div className="error-message">{error}</div>}
+                <div className="form-group">
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={loading}
+                    placeholder="E-mail"
+                  />
+                </div>
+
+                <div className="form-buttons">
+                  <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={loading}
+                  >
+                    {loading ? 'ENVIANDO...' : 'Enviar'}
+                  </button>
+                  
+                  <button 
+                    type="button" 
+                    className="back-button"
+                    onClick={onBackToLogin}
+                    disabled={loading}
+                  >
+                    Voltar ao Login
+                  </button>
+                </div>
+              </form>
+            </>
+          ) : (
+            <>
+              <h1>Redefinir Senha</h1>
+              <p className="form-subtitle">Use o token abaixo ou insira o token que você recebeu por email.</p>
               
-              <div className="form-group">
-                <label htmlFor="token">Token de Recuperação:</label>
-                <input
-                  type="text"
-                  id="token"
-                  value={token}
-                  onChange={(e) => setToken(e.target.value)}
-                  disabled={loading}
-                  placeholder={resetToken ? "Token preenchido automaticamente" : "Cole o token aqui"}
-                />
-                <small>Se você não inserir um token, usaremos o token gerado automaticamente acima.</small>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="newPassword">Nova Senha:</label>
-                <input
-                  type="password"
-                  id="newPassword"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  disabled={loading}
-                  placeholder="Mínimo 6 caracteres"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="confirmPassword">Confirmar Nova Senha:</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  disabled={loading}
-                  placeholder="Digite a nova senha novamente"
-                />
-              </div>
-
-              <div className="form-buttons">
-                <button 
-                  type="submit" 
-                  className="submit-button"
-                  disabled={loading}
-                >
-                  {loading ? 'Redefinindo...' : 'Redefinir Senha'}
-                </button>
+              {resetToken && (
+                <div className="token-display">
+                  <strong>Token de demonstração:</strong>
+                  <code>{resetToken}</code>
+                  <small>Em produção, este token seria enviado por email.</small>
+                </div>
+              )}
+              
+              <form onSubmit={handlePasswordReset}>
+                {error && <div className="error-message">{error}</div>}
                 
-                <button 
-                  type="button" 
-                  className="back-button"
-                  onClick={() => setStep(1)}
-                  disabled={loading}
-                >
-                  Voltar
-                </button>
-              </div>
-            </form>
-          </>
-        )}
+                <div className="form-group">
+                  <input
+                    type="text"
+                    id="token"
+                    value={token}
+                    onChange={(e) => setToken(e.target.value)}
+                    disabled={loading}
+                    placeholder={resetToken ? "Token preenchido automaticamente" : "Cole o token aqui"}
+                  />
+                  <small>Se você não inserir um token, usaremos o token gerado automaticamente acima.</small>
+                </div>
+
+                <div className="form-group">
+                  <input
+                    type="password"
+                    id="newPassword"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                    placeholder="Nova Senha"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                    placeholder="Confirmar Nova Senha"
+                  />
+                </div>
+
+                <div className="form-buttons">
+                  <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={loading}
+                  >
+                    {loading ? 'REDEFININDO...' : 'REDEFINIR SENHA'}
+                  </button>
+                  
+                  <button 
+                    type="button" 
+                    className="back-button"
+                    onClick={() => setStep(1)}
+                    disabled={loading}
+                  >
+                    Voltar
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

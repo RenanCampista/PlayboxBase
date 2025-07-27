@@ -98,86 +98,77 @@ const Register = ({ onRegisterSuccess, onBackToLogin }) => {
 
   return (
     <div className="register-container">
-      <form onSubmit={handleSubmit} className="register-form">
-        <h2>Criar Conta</h2>
-        
-        {error && <div className="error-message">{error}</div>}
-        
-        <div className="form-group">
-          <label htmlFor="name">Nome:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            disabled={loading}
-            placeholder="Seu nome completo"
-          />
+      <div className="register-left">
+        <div className="logo-container">
+          <img src="/logo_site.png" alt="Playbox" className="logo" />
         </div>
-
-        <div className="form-group">
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            disabled={loading}
-            placeholder="seu@email.com"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password">Senha:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            disabled={loading}
-            placeholder="Mínimo 6 caracteres"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="confirmPassword">Confirmar Senha:</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-            disabled={loading}
-            placeholder="Digite a senha novamente"
-          />
-        </div>
-
-        <div className="form-buttons">
-          <button 
-            type="submit" 
-            className="submit-button"
-            disabled={loading}
-          >
-            {loading ? 'Criando conta...' : 'Criar Conta'}
-          </button>
+        <button 
+          type="button" 
+          className="login-button"
+          onClick={onBackToLogin}
+          disabled={loading}
+        >
+          ENTRAR
+        </button>
+      </div>
+      
+      <div className="register-right">
+        <div className="register-form">
+          <h1>CRIAR A SUA CONTA</h1>
+          <p className="form-subtitle">Preencha o formulário</p>
           
-          <button 
-            type="button" 
-            className="back-button"
-            onClick={onBackToLogin}
-            disabled={loading}
-          >
-            Voltar ao Login
-          </button>
+          {error && <div className="error-message">{error}</div>}
+          
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                placeholder="Nome"
+              />
+            </div>
+
+            <div className="form-group">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                placeholder="E-mail"
+              />
+            </div>
+
+            <div className="form-group">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                placeholder="Senha"
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              className="submit-button"
+              disabled={loading}
+            >
+              {loading ? 'CRIANDO...' : 'CRIAR'}
+            </button>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
