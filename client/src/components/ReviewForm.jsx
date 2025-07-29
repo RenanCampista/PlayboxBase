@@ -156,7 +156,7 @@ const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser }) => {
               className="btn btn-primary"
               disabled={loading}
             >
-              {loading ? 'Enviando...' : 'Enviar Avaliação'}
+              {loading ? 'Publicando...' : 'Publicar Avaliação'}
             </button>
           </div>
         </form>
