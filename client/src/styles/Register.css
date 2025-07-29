@@ -224,14 +224,7 @@
   }
 }
 
-.back-button:hover:not(:disabled) {
-  background-color: #5a6268;
-}
-
-.back-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+/* Estilos removidos - back-button deve ser definido nos arquivos específicos */
 
 .error-message {
   background-color: #f8d7da;
