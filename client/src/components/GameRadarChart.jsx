@@ -153,8 +153,49 @@ const GameRadarChart = ({ reviews }) => {
   if (!reviews || reviews.length === 0) {
     return (
       <div className="radar-chart-container">
-        <div className="no-data-message">
-          <p>Nenhuma avaliação disponível para gerar o gráfico</p>
+        <div className="chart-header">
+          <h3>Avaliação Geral por Aspectos</h3>
+          <p>Ainda não há avaliações para este jogo</p>
+        </div>
+        <div className="chart-wrapper">
+          <Radar data={{
+            ...data,
+            datasets: [{
+              ...data.datasets[0],
+              data: [0, 0, 0, 0, 0, 0],
+              backgroundColor: 'rgba(128, 128, 128, 0.2)',
+              borderColor: 'rgba(128, 128, 128, 1)',
+              pointBackgroundColor: 'rgba(128, 128, 128, 1)',
+            }]
+          }} options={options} />
+        </div>
+        <div className="chart-legend">
+          <div className="legend-stats">
+            <div className="stat-item">
+              <span className="stat-label">Gameplay:</span>
+              <span className="stat-value">-/5</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Visual:</span>
+              <span className="stat-value">-/5</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Áudio:</span>
+              <span className="stat-value">-/5</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Dificuldade:</span>
+              <span className="stat-value">-/5</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Imersão:</span>
+              <span className="stat-value">-/5</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">História:</span>
+              <span className="stat-value">-/5</span>
+            </div>
+          </div>
         </div>
       </div>
     );

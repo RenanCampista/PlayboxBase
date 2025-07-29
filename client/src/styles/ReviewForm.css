@@ -100,10 +100,6 @@
   color: #ffc107;
 }
 
-.star:hover ~ .star {
-  color: #ddd;
-}
-
 .comment-section {
   margin-bottom: 24px;
 }

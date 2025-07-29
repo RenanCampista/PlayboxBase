@@ -58,6 +58,8 @@ const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser }) => {
   };
 
   const StarRating = ({ value, onChange, label }) => {
+    const [hoverValue, setHoverValue] = useState(0);
+
     return (
       <div className="star-rating-container">
         <label className="rating-label">{label}</label>
@@ -66,8 +68,10 @@ const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser }) => {
             <button
               key={star}
               type="button"
-              className={`star ${star <= value ? 'filled' : ''}`}
+              className={`star ${star <= (hoverValue || value) ? 'filled' : ''}`}
               onClick={() => onChange(star)}
+              onMouseEnter={() => setHoverValue(star)}
+              onMouseLeave={() => setHoverValue(0)}
             >
               ★
             </button>

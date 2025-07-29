@@ -130,12 +130,12 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                   <span className="score-value">{gameDetails.metacriticScore}/100</span>
                 </div>
               )}
-              {gameDetails.averageReviewRating && (
-                <div className="score-badge">
-                  <span className="score-label">Avaliação dos Usuários</span>
-                  <span className="score-value">{gameDetails.averageReviewRating}/5 ⭐</span>
-                </div>
-              )}
+              <div className="score-badge">
+                <span className="score-label">Avaliação dos Usuários</span>
+                <span className="score-value">
+                  {gameDetails.averageReviewRating ? `${gameDetails.averageReviewRating}/5 ⭐` : '-/5 ⭐'}
+                </span>
+              </div>
               {gameDetails.releaseDate && (
                 <div className="release-date">
                   <span className="label">Lançamento:</span>
@@ -200,7 +200,32 @@ const GameDetail = ({ game, onBack, currentUser }) => {
           </div>
         </div>
 
-        {/* Botão de Avaliar - separado e acima da seção de reviews */}
+        {/* Screenshots */}
+        {gameDetails.screenshots && gameDetails.screenshots.length > 0 && (
+          <div className="screenshots-section">
+            <h2>Screenshots</h2>
+            <div className="screenshots-grid">
+              {gameDetails.screenshots.slice(0, 6).map((screenshot, index) => (
+                <div key={index} className="screenshot-item">
+                  <img 
+                    src={screenshot} 
+                    alt={`Screenshot ${index + 1}`}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Avaliação Geral por Aspectos - aparece sempre */}
+        <div className="radar-chart-section">
+          <GameRadarChart reviews={reviews} />
+        </div>
+
+        {/* Botão de Avaliar */}
         {currentUser && (
           <div className="review-action-section">
             <button 
@@ -210,11 +235,6 @@ const GameDetail = ({ game, onBack, currentUser }) => {
               ✍️ Avaliar Jogo
             </button>
           </div>
-        )}
-
-        {/* Gráfico Radar - só aparece se houver reviews */}
-        {reviews.length > 0 && (
-          <GameRadarChart reviews={reviews} />
         )}
 
         {/* Seção de Reviews */}
@@ -234,6 +254,28 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                   {review.comment && (
                     <p className="review-comment">{review.comment}</p>
                   )}
+                  <div className="review-aspects">
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Jogabilidade:</span>
+                      <span className="aspect-value">{review.gameplayRating || '-'}/5</span>
+                    </div>
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Gráficos:</span>
+                      <span className="aspect-value">{review.graphicsRating || '-'}/5</span>
+                    </div>
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Som:</span>
+                      <span className="aspect-value">{review.soundRating || '-'}/5</span>
+                    </div>
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Inovação:</span>
+                      <span className="aspect-value">{review.innovationRating || '-'}/5</span>
+                    </div>
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Valor:</span>
+                      <span className="aspect-value">{review.valueRating || '-'}/5</span>
+                    </div>
+                  </div>
                 </div>
               ))}
               {reviews.length > 5 && (
@@ -244,25 +286,6 @@ const GameDetail = ({ game, onBack, currentUser }) => {
             <p className="no-reviews">Ainda não há avaliações para este jogo.</p>
           )}
         </div>
-
-        {gameDetails.screenshots && gameDetails.screenshots.length > 0 && (
-          <div className="screenshots-section">
-            <h2>Screenshots</h2>
-            <div className="screenshots-grid">
-              {gameDetails.screenshots.slice(0, 6).map((screenshot, index) => (
-                <div key={index} className="screenshot-item">
-                  <img 
-                    src={screenshot} 
-                    alt={`Screenshot ${index + 1}`}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Modal de Review */}
