@@ -159,6 +159,19 @@ const Register = ({ onRegisterSuccess, onBackToLogin }) => {
               />
             </div>
 
+            <div className="form-group">
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                placeholder="Confirmar Senha"
+              />
+            </div>
+
             <button 
               type="submit" 
               className="submit-button"
