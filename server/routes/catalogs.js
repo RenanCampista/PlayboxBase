@@ -89,18 +89,6 @@ router.delete('/:catalogId/games/:gameId', async (req, res) => {
     }
 });
 
-// Listar jogos por gênero
-router.get('/genre/:genre', async (req, res) => {
-    try {
-        const { genre } = req.params;
-        const result = await catalogServices.getGamesByGenre(genre);
-        res.status(result.status).json(result);
-    } catch (error) {
-        console.error('Erro ao buscar jogos por gênero:', error);
-        res.status(500).json({ error: 'Erro interno do servidor.' });
-    }
-});
-
 // Listar todos os catálogos
 router.get('/', async (req, res) => {
     try {

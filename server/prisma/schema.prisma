@@ -75,7 +75,6 @@ model Catalog {
   id            Int         @id @default(autoincrement())
   name          String      @unique
   userId        Int?        // Para catálogos de usuários (favoritos)
-  genre         Genre?      // Para catálogos de gêneros
   games         Game[]      @relation("GameCatalogs")
   user          User?       @relation(fields: [userId], references: [id])
   createdAt     DateTime    @default(now())

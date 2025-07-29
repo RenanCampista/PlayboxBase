@@ -25,8 +25,7 @@ const createUser = async (userData) => {
                 isAdmin: false, // Setado para false por padrão
                 catalogs: {
                     create: {
-                        name: `Favoritos de ${name}`,
-                        genre: 'PLACEHOLDER', // Placeholder para gênero
+                        name: `Favoritos de ${name}`
                     }
                 }
             },
@@ -357,8 +356,7 @@ const createAdmin = async (adminData) => {
                 isAdmin: true,
                 catalogs: {
                     create: {
-                        name: `Favoritos de ${name}`,
-                        genre: 'PLACEHOLDER'
+                        name: `Favoritos de ${name}`
                     }
                 }
             },
