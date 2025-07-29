@@ -106,7 +106,7 @@ const Register = ({ onRegisterSuccess, onBackToLogin }) => {
           onClick={onBackToLogin}
           disabled={loading}
         >
-          ENTRAR
+          JÁ POSSUO CONTA
         </button>
       </div>
       
