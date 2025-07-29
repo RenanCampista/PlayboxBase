@@ -85,12 +85,10 @@ const Register = ({ onRegisterSuccess, onBackToLogin }) => {
 
   if (success) {
     return (
-      <div className="register-container">
-        <div className="register-form">
-          <div className="success-message">
-            <h2>✅ Conta criada com sucesso!</h2>
-            <p>Você será redirecionado para o login em alguns segundos...</p>
-          </div>
+      <div className="register-container success-container">
+        <div className="success-message">
+          <h2>✅ Conta criada com sucesso!</h2>
+          <p>Você será redirecionado para o login em alguns segundos...</p>
         </div>
       </div>
     );

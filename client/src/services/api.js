@@ -115,47 +115,35 @@ export const authService = {
 
 // Serviços para usuários
 export const userService = {
-  // Listar todos os usuários
-  getUsers: async () => {
+  // Listar todos os usuários (admin)
+  getAllUsers: async () => {
     const response = await api.get('/users');
     return response.data;
   },
 
-  // Obter um usuário específico
-  getUser: async (id) => {
+  // Obter usuário por ID
+  getUserById: async (id) => {
     const response = await api.get(`/users/${id}`);
     return response.data;
   },
 
-  // Criar um novo usuário
+  // Criar usuário
   createUser: async (userData) => {
     const response = await api.post('/users', userData);
     return response.data;
   },
 
-  // Atualizar um usuário
+  // Atualizar usuário
   updateUser: async (id, userData) => {
     const response = await api.put(`/users/${id}`, userData);
     return response.data;
   },
 
-  // Deletar um usuário
+  // Deletar usuário (admin)
   deleteUser: async (id) => {
     const response = await api.delete(`/users/${id}`);
     return response.data;
-  },
-
-  // Testar conexão com a API
-  testConnection: async () => {
-    const response = await api.get('/');
-    return response.data;
-  },
-
-  // Obter informações da API
-  getApiInfo: async () => {
-    const response = await api.get('/');
-    return response.data;
-  },
+  }
 };
 
 // Serviços para jogos

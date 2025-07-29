@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
 import { UserList, UserForm, Header } from '../components';
-import { Login, Register, ForgotPassword, Home, GameDetail } from './';
+import { Login, Register, ForgotPassword, Home, GameDetail, AdminPanel } from './';
 import { userService, authService } from '../services/api';
 
 function App() {
@@ -135,9 +135,8 @@ function App() {
 
   const checkApiConnection = async () => {
     try {
-      const response = await userService.getApiInfo();
-      setApiStatus(`${response.message} (v${response.version})`);
-      console.log('📡 Endpoints disponíveis:', response.endpoints);
+      const response = await authService.verifyToken();
+      setApiStatus(`API conectada - ${response.message || 'OK'}`);
     } catch (err) {
       setApiStatus('Erro ao conectar com a API');
       console.error('Erro ao testar conexão:', err);
@@ -147,7 +146,7 @@ function App() {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const usersData = await userService.getUsers();
+      const usersData = await userService.getAllUsers();
       setUsers(usersData);
       setError(null);
     } catch (err) {
@@ -275,54 +274,10 @@ function App() {
             )}
 
             {currentPage === 'admin' && currentUser?.isAdmin && (
-              <>
-                <div className="api-status">
-                  Status da API: {apiStatus || 'Verificando...'}
-                </div>
-
-                {error && (
-                  <div className="error-message">
-                    {error}
-                  </div>
-                )}
-
-                {!showForm && (
-                  <div className="toolbar">
-                    <button 
-                      onClick={handleNewUser}
-                      className="btn btn-primary"
-                    >
-                      Novo Usuário
-                    </button>
-                    <button 
-                      onClick={loadUsers}
-                      className="btn btn-secondary"
-                    >
-                      Recarregar
-                    </button>
-                  </div>
-                )}
-
-                {showForm ? (
-                  <UserForm
-                    user={editingUser}
-                    onSubmit={handleFormSubmit}
-                    onCancel={handleCancelForm}
-                  />
-                ) : (
-                  <>
-                    {loading ? (
-                      <div className="loading">Carregando usuários...</div>
-                    ) : (
-                      <UserList
-                        users={users}
-                        onEdit={handleEditUser}
-                        onDelete={handleDeleteUser}
-                      />
-                    )}
-                  </>
-                )}
-              </>
+              <AdminPanel 
+                currentUser={currentUser}
+                onBack={handleBackToHome}
+              />
             )}
 
             {currentPage === 'profile' && (
