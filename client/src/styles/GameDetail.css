@@ -6,6 +6,9 @@
 
 .game-detail-header {
   margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .back-button {
@@ -21,6 +24,12 @@
 
 .back-button:hover {
   background: #5a6268;
+}
+
+.review-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .game-hero {
@@ -242,6 +251,97 @@
   margin-bottom: 20px;
 }
 
+/* Seção de Reviews */
+.reviews-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.reviews-section h2 {
+  color: #333;
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fafafa;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.reviewer-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.review-rating {
+  background-color: #4caf50;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.review-comment {
+  color: #555;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.no-reviews {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+.more-reviews {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Seção do botão de avaliar - acima das reviews */
+.review-action-section {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0 20px 0;
+  padding: 20px;
+}
+
+.review-button-standalone {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-button-standalone:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   .game-hero {
@@ -266,6 +366,16 @@
   .screenshots-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 10px;
+  }
+
+  .review-action-section {
+    margin: 20px 0 15px 0;
+    padding: 15px;
+  }
+  
+  .review-button-standalone {
+    width: 100%;
+    padding: 14px 20px;
   }
 }
 

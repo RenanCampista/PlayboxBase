@@ -266,10 +266,11 @@ function App() {
               <Home onGameSelect={handleGameSelect} />
             )}
 
-            {currentPage === 'game-detail' && (
+            {currentPage === 'game-detail' && selectedGame && (
               <GameDetail 
                 game={selectedGame} 
-                onBack={handleBackToHome} 
+                onBack={handleBackToHome}
+                currentUser={currentUser}
               />
             )}
 

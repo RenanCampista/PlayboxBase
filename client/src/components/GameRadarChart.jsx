@@ -1,0 +1,197 @@
+import React from 'react';
+import {
+  Chart as ChartJS,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Radar } from 'react-chartjs-2';
+
+ChartJS.register(
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend
+);
+
+const GameRadarChart = ({ reviews }) => {
+  // Calcular médias de cada aspecto
+  const calculateAverages = () => {
+    if (!reviews || reviews.length === 0) {
+      return {
+        gameplayRating: 0,
+        visualRating: 0,
+        audioRating: 0,
+        difficultyRating: 0,
+        immersionRating: 0,
+        historyRating: 0
+      };
+    }
+
+    const totals = reviews.reduce((acc, review) => {
+      acc.gameplayRating += review.gameplayRating || 0;
+      acc.visualRating += review.visualRating || 0;
+      acc.audioRating += review.audioRating || 0;
+      acc.difficultyRating += review.difficultyRating || 0;
+      acc.immersionRating += review.immersionRating || 0;
+      acc.historyRating += review.historyRating || 0;
+      return acc;
+    }, {
+      gameplayRating: 0,
+      visualRating: 0,
+      audioRating: 0,
+      difficultyRating: 0,
+      immersionRating: 0,
+      historyRating: 0
+    });
+
+    const count = reviews.length;
+    
+    return {
+      gameplayRating: (totals.gameplayRating / count).toFixed(1),
+      visualRating: (totals.visualRating / count).toFixed(1),
+      audioRating: (totals.audioRating / count).toFixed(1),
+      difficultyRating: (totals.difficultyRating / count).toFixed(1),
+      immersionRating: (totals.immersionRating / count).toFixed(1),
+      historyRating: (totals.historyRating / count).toFixed(1)
+    };
+  };
+
+  const averages = calculateAverages();
+
+  const data = {
+    labels: [
+      'Gameplay',
+      'Visual',
+      'Áudio',
+      'Dificuldade',
+      'Imersão',
+      'História'
+    ],
+    datasets: [
+      {
+        label: 'Avaliação Média',
+        data: [
+          averages.gameplayRating,
+          averages.visualRating,
+          averages.audioRating,
+          averages.difficultyRating,
+          averages.immersionRating,
+          averages.historyRating
+        ],
+        backgroundColor: 'rgba(25, 118, 210, 0.2)',
+        borderColor: 'rgba(25, 118, 210, 1)',
+        borderWidth: 2,
+        pointBackgroundColor: 'rgba(25, 118, 210, 1)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(25, 118, 210, 1)',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          font: {
+            size: 12,
+            weight: 'bold'
+          },
+          color: '#333'
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return `${context.label}: ${context.parsed.r}/5`;
+          }
+        }
+      },
+    },
+    scales: {
+      r: {
+        angleLines: {
+          display: true,
+          color: 'rgba(0, 0, 0, 0.1)'
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)'
+        },
+        pointLabels: {
+          font: {
+            size: 11,
+            weight: 'bold'
+          },
+          color: '#555'
+        },
+        suggestedMin: 0,
+        suggestedMax: 5,
+        ticks: {
+          display: true,
+          stepSize: 1,
+          font: {
+            size: 10
+          },
+          color: '#666',
+          backdropColor: 'transparent'
+        }
+      },
+    },
+  };
+
+  if (!reviews || reviews.length === 0) {
+    return (
+      <div className="radar-chart-container">
+        <div className="no-data-message">
+          <p>Nenhuma avaliação disponível para gerar o gráfico</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="radar-chart-container">
+      <div className="chart-header">
+        <h3>Avaliação Geral por Aspectos</h3>
+        <p>Baseado em {reviews.length} avaliação{reviews.length !== 1 ? 'ões' : ''}</p>
+      </div>
+      <div className="chart-wrapper">
+        <Radar data={data} options={options} />
+      </div>
+      <div className="chart-legend">
+        <div className="legend-stats">
+          {Object.entries(averages).map(([key, value]) => {
+            const labels = {
+              gameplayRating: 'Gameplay',
+              visualRating: 'Visual',
+              audioRating: 'Áudio',
+              difficultyRating: 'Dificuldade',
+              immersionRating: 'Imersão',
+              historyRating: 'História'
+            };
+            
+            return (
+              <div key={key} className="stat-item">
+                <span className="stat-label">{labels[key]}:</span>
+                <span className="stat-value">{value}/5</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default GameRadarChart;

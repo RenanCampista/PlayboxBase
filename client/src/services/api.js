@@ -246,4 +246,37 @@ export const devService = {
   }
 };
 
+// Serviços para reviews
+export const reviewService = {
+  // Criar nova review
+  createReview: async (reviewData) => {
+    const response = await api.post('/reviews', reviewData);
+    return response.data;
+  },
+
+  // Buscar reviews por ID do jogo
+  getReviewsByGame: async (gameId) => {
+    const response = await api.get(`/reviews/game/${gameId}`);
+    return response.data;
+  },
+
+  // Buscar reviews por ID do usuário
+  getReviewsByUser: async (userId) => {
+    const response = await api.get(`/reviews/user/${userId}`);
+    return response.data;
+  },
+
+  // Atualizar review
+  updateReview: async (reviewId, reviewData) => {
+    const response = await api.put(`/reviews/${reviewId}`, reviewData);
+    return response.data;
+  },
+
+  // Deletar review
+  deleteReview: async (reviewId) => {
+    const response = await api.delete(`/reviews/${reviewId}`);
+    return response.data;
+  }
+};
+
 export default api;

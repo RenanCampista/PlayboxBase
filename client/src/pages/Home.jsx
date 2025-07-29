@@ -2,14 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { gameService } from '../services/api';
 import '../styles/Home.css';
 
-const Home = ({ onGameSelect }) => {
+const Home = ({ onGameSelect, searchTerm = '' }) => {
   const [games, setGames] = useState([]);
+  const [filteredGames, setFilteredGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     loadGames();
   }, []);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = games.filter(game => 
+        game.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (game.genres && game.genres.some(genre => 
+          genre.toLowerCase().includes(searchTerm.toLowerCase())
+        ))
+      );
+      setFilteredGames(filtered);
+    } else {
+      setFilteredGames(games);
+    }
+  }, [searchTerm, games]);
 
   const loadGames = async () => {
     try {
@@ -50,20 +65,27 @@ const Home = ({ onGameSelect }) => {
     );
   }
 
+  const displayGames = searchTerm ? filteredGames : games;
+
   return (
     <div className="home-container">
       <div className="home-header">
         <h1>Biblioteca de Jogos</h1>
         <p>Descubra e explore nossa coleção de jogos</p>
+        {searchTerm && (
+          <p className="search-results">
+            Resultados para: "{searchTerm}" ({displayGames.length} jogos encontrados)
+          </p>
+        )}
       </div>
 
-      {games.length === 0 ? (
+      {displayGames.length === 0 ? (
         <div className="no-games">
-          <p>Nenhum jogo encontrado.</p>
+          <p>{searchTerm ? 'Nenhum jogo encontrado para sua busca.' : 'Nenhum jogo encontrado.'}</p>
         </div>
       ) : (
         <div className="games-grid">
-          {games.map((game) => (
+          {displayGames.map((game) => (
             <div 
               key={game.id} 
               className="game-card" 
