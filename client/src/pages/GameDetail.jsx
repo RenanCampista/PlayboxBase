@@ -232,7 +232,7 @@ const GameDetail = ({ game, onBack, currentUser }) => {
               onClick={() => setShowReviewForm(true)}
               className="btn btn-primary review-button-standalone"
             >
-              ✍️ Avaliar Jogo
+             Avaliar Jogo
             </button>
           </div>
         )}
@@ -249,31 +249,35 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                 <div key={review.id} className="review-item">
                   <div className="review-header">
                     <span className="reviewer-name">{review.user?.name || 'Usuário'}</span>
-                    <span className="review-rating">⭐ {review.averageRating}/5</span>
+                    <span className="review-rating">⭐ {review.ratings.average}/5</span>
                   </div>
                   {review.comment && (
                     <p className="review-comment">{review.comment}</p>
                   )}
                   <div className="review-aspects">
                     <div className="aspect-rating">
-                      <span className="aspect-label">Jogabilidade:</span>
-                      <span className="aspect-value">{review.gameplayRating || '-'}/5</span>
+                      <span className="aspect-label">Gameplay:</span>
+                      <span className="aspect-value">{review.ratings.gameplay || '-'}/5</span>
                     </div>
                     <div className="aspect-rating">
-                      <span className="aspect-label">Gráficos:</span>
-                      <span className="aspect-value">{review.graphicsRating || '-'}/5</span>
+                      <span className="aspect-label">Visual:</span>
+                      <span className="aspect-value">{review.ratings.visual || '-'}/5</span>
                     </div>
                     <div className="aspect-rating">
-                      <span className="aspect-label">Som:</span>
-                      <span className="aspect-value">{review.soundRating || '-'}/5</span>
+                      <span className="aspect-label">Áudio:</span>
+                      <span className="aspect-value">{review.ratings.audio || '-'}/5</span>
                     </div>
                     <div className="aspect-rating">
-                      <span className="aspect-label">Inovação:</span>
-                      <span className="aspect-value">{review.innovationRating || '-'}/5</span>
+                      <span className="aspect-label">Dificuldade:</span>
+                      <span className="aspect-value">{review.ratings.difficulty || '-'}/5</span>
                     </div>
                     <div className="aspect-rating">
-                      <span className="aspect-label">Valor:</span>
-                      <span className="aspect-value">{review.valueRating || '-'}/5</span>
+                      <span className="aspect-label">Imersão:</span>
+                      <span className="aspect-value">{review.ratings.immersion || '-'}/5</span>
+                    </div>
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Hisrória:</span>
+                      <span className="aspect-value">{review.ratings.history || '-'}/5</span>
                     </div>
                   </div>
                 </div>
