@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { gameService } from '../services/api';
+import { gameService, reviewService } from '../services/api';
+import ReviewForm from '../components/ReviewForm';
+import GameRadarChart from '../components/GameRadarChart';
 import '../styles/GameDetail.css';
+import '../styles/GameRadarChart.css';
 
-const GameDetail = ({ game, onBack }) => {
+const GameDetail = ({ game, onBack, currentUser }) => {
   const [gameDetails, setGameDetails] = useState(game);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
 
   useEffect(() => {
     if (game && game.id) {
       loadGameDetails(game.id);
+      loadReviews(game.id);
     }
   }, [game]);
 
@@ -24,6 +31,32 @@ const GameDetail = ({ game, onBack }) => {
       console.error('Erro ao carregar detalhes:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadReviews = async (gameId) => {
+    try {
+      setReviewsLoading(true);
+      const response = await reviewService.getReviewsByGame(gameId);
+      setReviews(response.reviews || []);
+    } catch (err) {
+      // Se não há reviews, não é um erro crítico
+      console.log('Nenhuma review encontrada ou erro ao carregar:', err.message);
+      setReviews([]);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  const handleCreateReview = async (reviewData) => {
+    try {
+      await reviewService.createReview(reviewData);
+      setShowReviewForm(false);
+      // Recarregar reviews e detalhes do jogo para atualizar a média
+      await loadReviews(game.id);
+      await loadGameDetails(game.id);
+    } catch (error) {
+      throw error; // Repassar erro para o componente de formulário
     }
   };
 
@@ -97,6 +130,12 @@ const GameDetail = ({ game, onBack }) => {
                   <span className="score-value">{gameDetails.metacriticScore}/100</span>
                 </div>
               )}
+              <div className="score-badge">
+                <span className="score-label">Avaliação dos Usuários</span>
+                <span className="score-value">
+                  {gameDetails.averageReviewRating ? `${gameDetails.averageReviewRating}/5 ⭐` : '-/5 ⭐'}
+                </span>
+              </div>
               {gameDetails.releaseDate && (
                 <div className="release-date">
                   <span className="label">Lançamento:</span>
@@ -161,6 +200,7 @@ const GameDetail = ({ game, onBack }) => {
           </div>
         </div>
 
+        {/* Screenshots */}
         {gameDetails.screenshots && gameDetails.screenshots.length > 0 && (
           <div className="screenshots-section">
             <h2>Screenshots</h2>
@@ -179,7 +219,88 @@ const GameDetail = ({ game, onBack }) => {
             </div>
           </div>
         )}
+
+        {/* Avaliação Geral por Aspectos - aparece sempre */}
+        <div className="radar-chart-section">
+          <GameRadarChart reviews={reviews} />
+        </div>
+
+        {/* Botão de Avaliar */}
+        {currentUser && (
+          <div className="review-action-section">
+            <button 
+              onClick={() => setShowReviewForm(true)}
+              className="btn btn-primary review-button-standalone"
+            >
+             Avaliar Jogo
+            </button>
+          </div>
+        )}
+
+        {/* Seção de Reviews */}
+        <div className="reviews-section">
+          <h2>Avaliações dos Usuários ({reviews.length})</h2>
+          
+          {reviewsLoading ? (
+            <div className="loading">Carregando avaliações...</div>
+          ) : reviews.length > 0 ? (
+            <div className="reviews-list">
+              {reviews.slice(0, 5).map((review) => (
+                <div key={review.id} className="review-item">
+                  <div className="review-header">
+                    <span className="reviewer-name">{review.user?.name || 'Usuário'}</span>
+                    <span className="review-rating">⭐ {review.ratings.average}/5</span>
+                  </div>
+                  {review.comment && (
+                    <p className="review-comment">{review.comment}</p>
+                  )}
+                  <div className="review-aspects">
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Gameplay:</span>
+                      <span className="aspect-value">{review.ratings.gameplay || '-'}/5</span>
+                    </div>
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Visual:</span>
+                      <span className="aspect-value">{review.ratings.visual || '-'}/5</span>
+                    </div>
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Áudio:</span>
+                      <span className="aspect-value">{review.ratings.audio || '-'}/5</span>
+                    </div>
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Dificuldade:</span>
+                      <span className="aspect-value">{review.ratings.difficulty || '-'}/5</span>
+                    </div>
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Imersão:</span>
+                      <span className="aspect-value">{review.ratings.immersion || '-'}/5</span>
+                    </div>
+                    <div className="aspect-rating">
+                      <span className="aspect-label">Hisrória:</span>
+                      <span className="aspect-value">{review.ratings.history || '-'}/5</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {reviews.length > 5 && (
+                <p className="more-reviews">E mais {reviews.length - 5} avaliações...</p>
+              )}
+            </div>
+          ) : (
+            <p className="no-reviews">Ainda não há avaliações para este jogo.</p>
+          )}
+        </div>
       </div>
+
+      {/* Modal de Review */}
+      {showReviewForm && (
+        <ReviewForm
+          gameId={gameDetails.id}
+          currentUser={currentUser}
+          onSubmit={handleCreateReview}
+          onCancel={() => setShowReviewForm(false)}
+        />
+      )}
     </div>
   );
 };

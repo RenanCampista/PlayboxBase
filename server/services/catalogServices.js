@@ -3,7 +3,7 @@ const prisma = require("./prisma.js")
 
 const createCatalog = async (catalogData) => {
     try {
-        const { name, userId, genre } = catalogData;
+        const { name, userId } = catalogData;
 
         // Verificar se o catálogo já existe
         const existingCatalog = await prisma.catalog.findFirst({
@@ -17,8 +17,7 @@ const createCatalog = async (catalogData) => {
         const catalog = await prisma.catalog.create({
             data: {
                 name,
-                userId,
-                genre
+                userId
             }
         });
 
@@ -26,24 +25,6 @@ const createCatalog = async (catalogData) => {
     } catch (error) {
         console.error('Erro ao criar catálogo:', error);
         throw new Error('Erro ao criar catálogo');
-    }
-}
-
-const initializeCatalogs = async () => {
-    // Para cada gênero, criar um catálogo padrão
-    const genres = ['ACTION', 'ADVENTURE', 'RPG', 'RACING', 'SHOOTER', 'SPORTS', 'PUZZLE'];
-    try {
-        for (const genre of genres) {
-            const existingCatalog = await prisma.catalog.findFirst({
-                where: { genre }
-            });
-            if (!existingCatalog) {
-                await createCatalog({ name: `Catálogo ${genre}`, userId: null, genre });
-            } 
-        }
-    } catch (error) {
-        console.error('Erro ao inicializar catálogos:', error);
-        throw new Error('Erro ao inicializar catálogos');
     }
 }
 
@@ -178,7 +159,7 @@ const deleteCatalog = async (id) => {
 
 const updateCatalog = async (id, catalogData) => {
     try {
-        const { name, userId, genre } = catalogData;
+        const { name, userId } = catalogData;
 
         // Verificar se o catálogo existe
         const existingCatalog = await prisma.catalog.findUnique({
@@ -193,8 +174,7 @@ const updateCatalog = async (id, catalogData) => {
             where: { id },
             data: {
                 name,
-                userId,
-                genre
+                userId
             }
         });
 
@@ -222,7 +202,6 @@ const getAllCatalogs = async () => {
 
 module.exports = {
     createCatalog,
-    initializeCatalogs,
     getCatalogById,
     getCatalogsByUserId,
     addGameToCatalog,

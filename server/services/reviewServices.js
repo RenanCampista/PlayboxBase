@@ -90,8 +90,28 @@ const getReviewsByGameId = async (gameId) => {
     try {
         const reviews = await prisma.review.findMany({
             where: { gameId },
-            include: {
-                user: true
+            select: {
+                id: true,
+                gameplayRating: true,
+                visualRating: true,
+                audioRating: true,
+                difficultyRating: true,
+                immersionRating: true,
+                historyRating: true,
+                averageRating: true,
+                comment: true,
+                createdAt: true,
+                updatedAt: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
             }
         });
 
@@ -99,7 +119,28 @@ const getReviewsByGameId = async (gameId) => {
             return { status: 404, message: 'Nenhuma avaliação encontrada para este jogo.' };
         }
 
-        return { status: 200, reviews };
+        // Formatando os dados para melhor apresentação
+        const formattedReviews = reviews.map(review => ({
+            id: review.id,
+            ratings: {
+                gameplay: review.gameplayRating,
+                visual: review.visualRating,
+                audio: review.audioRating,
+                difficulty: review.difficultyRating,
+                immersion: review.immersionRating,
+                history: review.historyRating,
+                average: review.averageRating
+            },
+            comment: review.comment,
+            user: {
+                id: review.user.id,
+                name: review.user.name
+            },
+            createdAt: review.createdAt,
+            updatedAt: review.updatedAt
+        }));
+
+        return { status: 200, reviews: formattedReviews };
     } catch (error) {
         console.error('Erro ao buscar avaliações:', error);
         throw new Error('Erro ao buscar avaliações');
