@@ -114,11 +114,16 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
                       {game.genres[0]}
                     </span>
                   )}
-                  {game.metacriticScore && (
-                    <span className="game-score">
-                      {game.metacriticScore}/100
+                  <div className="game-ratings">
+                    {game.metacriticScore && (
+                      <span className="game-score">
+                        MC: {game.metacriticScore}/100
+                      </span>
+                    )}
+                    <span className="game-user-rating">
+                      ★ {game.averageReviewRating ? `${game.averageReviewRating}/5` : '-/5'}
                     </span>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>

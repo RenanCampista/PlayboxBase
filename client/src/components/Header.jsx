@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { authService } from '../services/api';
 import '../styles/Header.css';
 
-const Header = ({ user, onLogout, onNavigate, currentPage }) => {
+const Header = ({ user, onLogout, onNavigate, currentPage, onSearchChange }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
   const handleLogout = async () => {
     try {
       await authService.logout();
@@ -11,6 +13,14 @@ const Header = ({ user, onLogout, onNavigate, currentPage }) => {
       }
     } catch (error) {
       console.error('Erro no logout:', error);
+    }
+  };
+
+  const handleSearchInput = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    if (onSearchChange) {
+      onSearchChange(value);
     }
   };
 
@@ -23,6 +33,18 @@ const Header = ({ user, onLogout, onNavigate, currentPage }) => {
         >
           Playbox
         </h1>
+        
+        {currentPage === 'home' && (
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Buscar jogos..."
+              value={searchTerm}
+              onChange={handleSearchInput}
+              className="search-input"
+            />
+          </div>
+        )}
         
         <nav className="header-nav">
           <button 

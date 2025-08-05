@@ -84,13 +84,13 @@ const GameRadarChart = ({ reviews }) => {
           averages.immersionRating,
           averages.historyRating
         ],
-        backgroundColor: 'rgba(25, 118, 210, 0.2)',
-        borderColor: 'rgba(25, 118, 210, 1)',
+        backgroundColor: 'rgba(41, 182, 246, 0.2)',
+        borderColor: 'rgba(41, 182, 246, 1)',
         borderWidth: 2,
-        pointBackgroundColor: 'rgba(25, 118, 210, 1)',
+        pointBackgroundColor: 'rgba(41, 182, 246, 1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(25, 118, 210, 1)',
+        pointHoverBorderColor: 'rgba(41, 182, 246, 1)',
         pointRadius: 5,
         pointHoverRadius: 7,
       },
@@ -108,7 +108,7 @@ const GameRadarChart = ({ reviews }) => {
             size: 12,
             weight: 'bold'
           },
-          color: '#333'
+          color: '#fff'
         }
       },
       tooltip: {
@@ -123,17 +123,17 @@ const GameRadarChart = ({ reviews }) => {
       r: {
         angleLines: {
           display: true,
-          color: 'rgba(0, 0, 0, 0.1)'
+          color: 'rgba(255, 255, 255, 0.2)'
         },
         grid: {
-          color: 'rgba(0, 0, 0, 0.1)'
+          color: 'rgba(255, 255, 255, 0.2)'
         },
         pointLabels: {
           font: {
             size: 11,
             weight: 'bold'
           },
-          color: '#555'
+          color: '#ccc'
         },
         suggestedMin: 0,
         suggestedMax: 5,
@@ -143,7 +143,7 @@ const GameRadarChart = ({ reviews }) => {
           font: {
             size: 10
           },
-          color: '#666',
+          color: '#ccc',
           backdropColor: 'transparent'
         }
       },

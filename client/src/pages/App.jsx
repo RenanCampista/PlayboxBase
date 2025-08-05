@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
-import { UserList, UserForm, Header } from '../components';
+import { UserForm, Header } from '../components';
 import { Login, Register, ForgotPassword, Home, GameDetail, AdminPanel } from './';
 import { userService, authService } from '../services/api';
 
 function App() {
-  const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [apiStatus, setApiStatus] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -20,22 +17,12 @@ function App() {
   // Estados para navegação
   const [currentPage, setCurrentPage] = useState('home'); // 'home', 'admin', 'profile', 'game-detail'
   const [selectedGame, setSelectedGame] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Verificar autenticação ao carregar o app
   useEffect(() => {
     checkAuthentication();
   }, []);
-
-  // Carregar usuários quando está logado e é administrador
-  useEffect(() => {
-    if (isLoggedIn && currentUser?.isAdmin) {
-      loadUsers();
-      checkApiConnection();
-    } else if (isLoggedIn) {
-      // Para usuários comuns, apenas verificar conexão da API
-      checkApiConnection();
-    }
-  }, [isLoggedIn, currentUser]);
 
   const checkAuthentication = async () => {
     try {
@@ -74,7 +61,6 @@ function App() {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser(null);
-    setUsers([]);
     setEditingUser(null);
     setShowForm(false);
     setShowRegister(false);
@@ -133,37 +119,10 @@ function App() {
     setCurrentPage('home');
   };
 
-  const checkApiConnection = async () => {
-    try {
-      const response = await authService.verifyToken();
-      setApiStatus(`API conectada - ${response.message || 'OK'}`);
-    } catch (err) {
-      setApiStatus('Erro ao conectar com a API');
-      console.error('Erro ao testar conexão:', err);
-    }
-  };
-
-  const loadUsers = async () => {
-    try {
-      setLoading(true);
-      const usersData = await userService.getAllUsers();
-      setUsers(usersData);
-      setError(null);
-    } catch (err) {
-      setError('Erro ao carregar usuários: ' + (err.response?.data?.error || err.message));
-      console.error('Erro ao carregar usuários:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleCreateUser = async (userData) => {
     try {
       await userService.createUser(userData);
       setShowForm(false);
-      if (currentUser?.isAdmin) {
-        loadUsers();
-      }
       setError(null);
     } catch (err) {
       setError('Erro ao criar usuário: ' + (err.response?.data?.error || err.message));
@@ -176,34 +135,11 @@ function App() {
       await userService.updateUser(editingUser.id, userData);
       setEditingUser(null);
       setShowForm(false);
-      if (currentUser?.isAdmin) {
-        loadUsers();
-      }
       setError(null);
     } catch (err) {
       setError('Erro ao atualizar usuário: ' + (err.response?.data?.error || err.message));
       console.error('Erro ao atualizar usuário:', err);
     }
-  };
-
-  const handleDeleteUser = async (userId) => {
-    if (window.confirm('Tem certeza que deseja deletar este usuário?')) {
-      try {
-        await userService.deleteUser(userId);
-        if (currentUser?.isAdmin) {
-          loadUsers();
-        }
-        setError(null);
-      } catch (err) {
-        setError('Erro ao deletar usuário: ' + (err.response?.data?.error || err.message));
-        console.error('Erro ao deletar usuário:', err);
-      }
-    }
-  };
-
-  const handleEditUser = (user) => {
-    setEditingUser(user);
-    setShowForm(true);
   };
 
   const handleFormSubmit = (userData) => {
@@ -219,9 +155,8 @@ function App() {
     setShowForm(false);
   };
 
-  const handleNewUser = () => {
-    setEditingUser(null);
-    setShowForm(true);
+  const handleSearchChange = (term) => {
+    setSearchTerm(term);
   };
 
   return (
@@ -258,11 +193,12 @@ function App() {
               else if (page === 'profile') handleShowProfile();
             }}
             currentPage={currentPage}
+            onSearchChange={handleSearchChange}
           />
           
           <main className="App-main">
             {currentPage === 'home' && (
-              <Home onGameSelect={handleGameSelect} />
+              <Home onGameSelect={handleGameSelect} searchTerm={searchTerm} />
             )}
 
             {currentPage === 'game-detail' && selectedGame && (

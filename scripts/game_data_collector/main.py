@@ -76,33 +76,40 @@ class RawgClient:
             print(f"Error fetching data: {e}")
             return {}
 
-    def get_games_by_platform(self, platforms: list, page_size: int = 5):
-        """Fetch games from the RAWG API based on platforms."""
-        params = {
-            'key': self.api_key,
-            'platforms': ','.join(map(str, platforms)),
-            'page_size': page_size
-        }
+    def get_games_by_platform(self, platforms: list, page_size: int = 40, max_pages: int = 5):
+        """Fetch games from the RAWG API based on platforms, with pagination support."""
+        all_games = []
         
-        try:
-            response = requests.get(f'{self.base_url}/games', params=params)
-            response.raise_for_status() 
-            data = response.json()
-            data['results']
-            
-            # Details for each game
-            games = []
-            for game in data['results']:
-                game_id = game.get('id')
-                game_screenshots = [item['image'] for item in game.get('short_screenshots', [])]
-                if game_details := self.get_game_details(game_id):
-                    game_details = self.format_game_data(game_details, game_screenshots)
-                    games.append(game_details)
-                    
-            return games
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching data: {e}")
-            return []
+        for page in range(1, max_pages + 1):
+            params = {
+                'key': self.api_key,
+                'platforms': ','.join(map(str, platforms)),
+                'page_size': page_size,
+                'page': page
+            }
+
+            try:
+                response = requests.get(f'{self.base_url}/games', params=params)
+                response.raise_for_status() 
+                data = response.json()
+
+                for game in data['results']:
+                    game_id = game.get('id')
+                    game_screenshots = [item['image'] for item in game.get('short_screenshots', [])]
+                    if game_details := self.get_game_details(game_id):
+                        formatted = self.format_game_data(game_details, game_screenshots)
+                        all_games.append(formatted)
+
+                # Para de paginar se não há mais resultados
+                if not data.get('next'):
+                    break
+
+            except requests.exceptions.RequestException as e:
+                print(f"Error fetching data on page {page}: {e}")
+                break
+
+        return all_games
+
         
     def get_platforms_ids(self):
         """Fetch all platform IDs from the RAWG API."""
@@ -163,7 +170,7 @@ if __name__ == "__main__":
     platforms = api.get_platforms_ids()
     platforms_ids = [platform_id for _, platform_id in platforms.items()]
     
-    if games := api.get_games_by_platform(platforms_ids, page_size=90):
+    if games := api.get_games_by_platform(platforms_ids, max_pages=10):
         save_to_json(games, filename='../../server/data/games.json')
         print(f"Saved {len(games)} games to games.json")
     else:
