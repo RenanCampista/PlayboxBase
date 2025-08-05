@@ -225,7 +225,6 @@ const GameDetail = ({ game, onBack, currentUser }) => {
           <GameRadarChart reviews={reviews} />
         </div>
 
-        {/* Botão de Avaliar */}
         {currentUser && (
           <div className="review-action-section">
             <button 

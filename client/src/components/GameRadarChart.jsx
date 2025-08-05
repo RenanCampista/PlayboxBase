@@ -34,12 +34,12 @@ const GameRadarChart = ({ reviews }) => {
     }
 
     const totals = reviews.reduce((acc, review) => {
-      acc.gameplayRating += review.gameplayRating || 0;
-      acc.visualRating += review.visualRating || 0;
-      acc.audioRating += review.audioRating || 0;
-      acc.difficultyRating += review.difficultyRating || 0;
-      acc.immersionRating += review.immersionRating || 0;
-      acc.historyRating += review.historyRating || 0;
+      acc.gameplayRating += review.ratings.gameplay || 0;
+      acc.visualRating += review.ratings.visual || 0;
+      acc.audioRating += review.ratings.audio   || 0;
+      acc.difficultyRating += review.ratings.difficulty || 0;
+      acc.immersionRating += review.ratings.immersion || 0;
+      acc.historyRating += review.ratings.history || 0;
       return acc;
     }, {
       gameplayRating: 0,
