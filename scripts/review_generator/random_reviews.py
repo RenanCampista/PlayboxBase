@@ -34,7 +34,7 @@ def main():
             print("Cadastre alguns jogos primeiro")
             return
             
-        print(f"✅ {len(games)} jogos encontrados")   
+        print(f"{len(games)} jogos encontrados")   
     except requests.exceptions.RequestException as e:
         print(f"Erro de conexão: {e}")
         print("Certifique-se que o servidor está rodando em", API_URL)
