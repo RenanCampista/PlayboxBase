@@ -9,10 +9,16 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (activeTab === 'favorites' && currentUser) {
+    if (currentUser) {
       loadFavoriteGames();
     }
-  }, [activeTab, currentUser]);
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (activeTab === 'favorites' && currentUser && favoriteGames.length === 0 && !loading) {
+      loadFavoriteGames();
+    }
+  }, [activeTab, currentUser, favoriteGames.length, loading]);
 
   const loadFavoriteGames = async () => {
     try {
