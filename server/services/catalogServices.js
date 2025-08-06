@@ -1,5 +1,21 @@
 const prisma = require("./prisma.js")
 
+// Formatar strings separadas por vírgula em arrays (facilitar o carregamento do jogo)
+const stringToArray = (str) => {
+    return str ? str.split(',').map(item => item.trim()).filter(item => item.length > 0) : [];
+};
+
+const formatGameForResponse = (game) => {
+    if (!game) return null;
+    
+    return {
+        ...game,
+        platforms: stringToArray(game.platforms),
+        genres: stringToArray(game.genres),
+        publishers: stringToArray(game.publishers),
+        screenshots: stringToArray(game.screenshots)
+    };
+};
 
 const createCatalog = async (catalogData) => {
     try {
@@ -42,7 +58,13 @@ const getCatalogById = async (id) => {
             return { status: 404, message: 'Catálogo não encontrado.' };
         }
 
-        return { status: 200, catalog };
+        // Formatar os jogos para retorno
+        const formattedCatalog = {
+            ...catalog,
+            games: catalog.games.map(formatGameForResponse)
+        };
+
+        return { status: 200, catalog: formattedCatalog };
     } catch (error) {
         console.error('Erro ao buscar catálogo:', error);
         throw new Error('Erro ao buscar catálogo');
@@ -58,7 +80,13 @@ const getCatalogsByUserId = async (userId) => {
             }
         });
 
-        return { status: 200, catalogs };
+        // Formatar os jogos para retorno
+        const formattedCatalogs = catalogs.map(catalog => ({
+            ...catalog,
+            games: catalog.games.map(formatGameForResponse)
+        }));
+
+        return { status: 200, catalogs: formattedCatalogs };
     } catch (error) {
         console.error('Erro ao buscar catálogos do usuário:', error);
         throw new Error('Erro ao buscar catálogos do usuário');
@@ -193,7 +221,14 @@ const getAllCatalogs = async () => {
                 user: true
             }
         });
-        return { status: 200, catalogs };
+
+        // Formatar os jogos para retorno
+        const formattedCatalogs = catalogs.map(catalog => ({
+            ...catalog,
+            games: catalog.games.map(formatGameForResponse)
+        }));
+
+        return { status: 200, catalogs: formattedCatalogs };
     } catch (error) {
         console.error('Erro ao listar catálogos:', error);
         throw new Error('Erro ao listar catálogos');
