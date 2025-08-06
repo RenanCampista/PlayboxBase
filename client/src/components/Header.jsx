@@ -27,12 +27,12 @@ const Header = ({ user, onLogout, onNavigate, currentPage, onSearchChange }) => 
   return (
     <header className="header">
       <div className="header-content">
-        <h1 
+        <div 
           onClick={() => onNavigate && onNavigate('home')}
-          className="header-title"
+          className="header-logo"
         >
-          Playbox
-        </h1>
+          <img src="/header_logo.png" alt="Playbox" className="logo-image" />
+        </div>
         
         {currentPage === 'home' && (
           <div className="search-container">
