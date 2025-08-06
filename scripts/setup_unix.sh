@@ -176,8 +176,23 @@ if [ ! -f ".env" ]; then
         print_success "Arquivo .env criado a partir do .env.example"
         print_warning "IMPORTANTE: Configure a DATABASE_URL com suas credenciais do Neon.tech"
     else
-        print_error "Arquivo .env.example não encontrado!"
-        exit 1
+        print_warning "Arquivo .env.example não encontrado. Criando .env básico..."
+        cat > .env << 'EOF'
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/playbox?schema=public"
+
+# JWT
+JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
+
+# Server
+SERVER_PORT=5000
+NODE_ENV=development
+
+# Client
+REACT_APP_API_URL=http://localhost:5000
+EOF
+        print_success "Arquivo .env básico criado"
+        print_warning "IMPORTANTE: Configure o arquivo .env com suas credenciais reais!"
     fi
 else
     print_info "Arquivo .env já existe na raiz do projeto"

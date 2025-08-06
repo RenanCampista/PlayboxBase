@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { gameService, reviewService } from '../services/api';
+import { gameService, reviewService, catalogService } from '../services/api';
 import ReviewForm from '../components/ReviewForm';
 import GameRadarChart from '../components/GameRadarChart';
 import '../styles/GameDetail.css';
@@ -12,13 +12,18 @@ const GameDetail = ({ game, onBack, currentUser }) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
 
   useEffect(() => {
     if (game && game.id) {
       loadGameDetails(game.id);
       loadReviews(game.id);
+      if (currentUser) {
+        checkIfFavorite(game.id);
+      }
     }
-  }, [game]);
+  }, [game, currentUser]);
 
   const loadGameDetails = async (gameId) => {
     try {
@@ -45,6 +50,36 @@ const GameDetail = ({ game, onBack, currentUser }) => {
       setReviews([]);
     } finally {
       setReviewsLoading(false);
+    }
+  };
+
+  const checkIfFavorite = async (gameId) => {
+    try {
+      const isFav = await catalogService.isGameInFavorites(currentUser.id, gameId);
+      setIsFavorite(isFav);
+    } catch (err) {
+      console.error('Erro ao verificar favoritos:', err);
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!currentUser) return;
+    
+    try {
+      setFavoriteLoading(true);
+      
+      if (isFavorite) {
+        await catalogService.removeGameFromFavorites(currentUser.id, gameDetails.id);
+        setIsFavorite(false);
+      } else {
+        await catalogService.addGameToFavorites(currentUser.id, gameDetails.id);
+        setIsFavorite(true);
+      }
+    } catch (err) {
+      console.error('Erro ao atualizar favoritos:', err);
+      setError('Erro ao atualizar favoritos: ' + (err.response?.data?.error || err.message));
+    } finally {
+      setFavoriteLoading(false);
     }
   };
 
@@ -226,12 +261,26 @@ const GameDetail = ({ game, onBack, currentUser }) => {
         </div>
 
         {currentUser && (
-          <div className="review-action-section">
+          <div className="game-actions-section">
+            <button 
+              onClick={handleToggleFavorite}
+              className={`btn ${isFavorite ? 'btn-favorite-active' : 'btn-favorite'}`}
+              disabled={favoriteLoading}
+            >
+              {favoriteLoading ? (
+                'Carregando...'
+              ) : isFavorite ? (
+                <>❤️ Remover dos Favoritos</>
+              ) : (
+                <>🤍 Adicionar aos Favoritos</>
+              )}
+            </button>
+            
             <button 
               onClick={() => setShowReviewForm(true)}
               className="btn btn-primary review-button-standalone"
             >
-             Avaliar Jogo
+             📝 Avaliar Jogo
             </button>
           </div>
         )}
