@@ -183,6 +183,31 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                   <span className="value">{gameDetails.playtime}h</span>
                 </div>
               )}
+              {currentUser && (
+              <div className="game-actions-section">
+                <button 
+                  onClick={handleToggleFavorite}
+                  className={`btn ${isFavorite ? 'btn-favorite-active' : 'btn-favorite'}`}
+                  disabled={favoriteLoading}
+                >
+                  {favoriteLoading ? (
+                    'Carregando...'
+                  ) : isFavorite ? (
+                    <>❤️ Remover dos Favoritos</>
+                  ) : (
+                    <>🤍 Adicionar aos Favoritos</>
+                  )}
+                </button>
+                
+                <button 
+                  onClick={() => setShowReviewForm(true)}
+                  className="btn btn-primary review-button-standalone"
+                >
+                📝 Avaliar Jogo
+                </button>
+              </div>
+            )}
+
             </div>
           </div>
         </div>
@@ -259,31 +284,6 @@ const GameDetail = ({ game, onBack, currentUser }) => {
         <div className="radar-chart-section">
           <GameRadarChart reviews={reviews} />
         </div>
-
-        {currentUser && (
-          <div className="game-actions-section">
-            <button 
-              onClick={handleToggleFavorite}
-              className={`btn ${isFavorite ? 'btn-favorite-active' : 'btn-favorite'}`}
-              disabled={favoriteLoading}
-            >
-              {favoriteLoading ? (
-                'Carregando...'
-              ) : isFavorite ? (
-                <>❤️ Remover dos Favoritos</>
-              ) : (
-                <>🤍 Adicionar aos Favoritos</>
-              )}
-            </button>
-            
-            <button 
-              onClick={() => setShowReviewForm(true)}
-              className="btn btn-primary review-button-standalone"
-            >
-             📝 Avaliar Jogo
-            </button>
-          </div>
-        )}
 
         {/* Seção de Reviews */}
         <div className="reviews-section">

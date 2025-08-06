@@ -291,7 +291,7 @@ export const catalogService = {
   addGameToFavorites: async (userId, gameId) => {
     // Primeiro, verificar se já existe um catálogo "Favoritos" para o usuário
     const catalogs = await api.get(`/catalogs/user/${userId}`);
-    let favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.name === 'Favoritos');
+    let favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.userId === userId);
     
     // Se não existir, criar o catálogo "Favoritos"
     if (!favoritesCatalog) {
@@ -313,7 +313,7 @@ export const catalogService = {
   removeGameFromFavorites: async (userId, gameId) => {
     // Buscar o catálogo "Favoritos" do usuário
     const catalogs = await api.get(`/catalogs/user/${userId}`);
-    const favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.name === 'Favoritos');
+    const favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.userId === userId);
     
     if (!favoritesCatalog) {
       throw new Error('Catálogo de favoritos não encontrado');
@@ -328,7 +328,7 @@ export const catalogService = {
   isGameInFavorites: async (userId, gameId) => {
     try {
       const catalogs = await api.get(`/catalogs/user/${userId}`);
-      const favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.name === 'Favoritos');
+      const favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.userId === userId);
       
       if (!favoritesCatalog) {
         return false;
@@ -345,7 +345,7 @@ export const catalogService = {
   getFavoriteGames: async (userId) => {
     try {
       const catalogs = await api.get(`/catalogs/user/${userId}`);
-      const favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.name === 'Favoritos');
+      const favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.userId === userId);
       
       if (!favoritesCatalog) {
         return { games: [] };
