@@ -1,5 +1,25 @@
+/**
+ * @fileoverview Serviços de avaliações (reviews)
+ * @description Contém todas as funções relacionadas ao gerenciamento de avaliações de jogos
+ */
+
 const prisma = require("./prisma.js")
 
+/**
+ * Cria uma nova avaliação para um jogo
+ * @param {Object} reviewData - Dados da avaliação
+ * @param {number} reviewData.gameId - ID do jogo
+ * @param {number} reviewData.userId - ID do usuário
+ * @param {number} reviewData.gameplayRating - Avaliação do gameplay (0-5)
+ * @param {number} reviewData.visualRating - Avaliação visual (0-5)
+ * @param {number} reviewData.audioRating - Avaliação do áudio (0-5)
+ * @param {number} reviewData.difficultyRating - Avaliação da dificuldade (0-5)
+ * @param {number} reviewData.immersionRating - Avaliação da imersão (0-5)
+ * @param {number} reviewData.historyRating - Avaliação da história (0-5)
+ * @param {string} reviewData.comment - Comentário da avaliação
+ * @returns {Promise<Object>} Resultado da operação com dados da avaliação
+ * @throws {Error} Erro se dados inválidos ou jogo não encontrado
+ */
 const createReview = async (reviewData) => {
     try {
         const { 
@@ -67,6 +87,11 @@ const createReview = async (reviewData) => {
     }
 }
 
+/**
+ * Busca avaliação por ID
+ * @param {number} id - ID da avaliação
+ * @returns {Promise<Object>} Dados da avaliação com informações do jogo e usuário
+ */
 const getReviewById = async (id) => {
     try {
         const review = await prisma.review.findUnique({
@@ -86,6 +111,12 @@ const getReviewById = async (id) => {
     }
 }
 
+/**
+ * Busca todas as avaliações de um jogo específico
+ * @param {number} gameId - ID do jogo
+ * @returns {Promise<Object>} Lista de avaliações formatadas do jogo
+ * @description Retorna avaliações ordenadas por data de criação (mais recentes primeiro)
+ */
 const getReviewsByGameId = async (gameId) => {
     try {
         const reviews = await prisma.review.findMany({
@@ -147,6 +178,20 @@ const getReviewsByGameId = async (gameId) => {
     }
 }
 
+/**
+ * Atualiza uma avaliação existente
+ * @param {number} reviewId - ID da avaliação
+ * @param {Object} reviewData - Novos dados da avaliação
+ * @param {number} reviewData.gameplayRating - Nova avaliação do gameplay (0-5)
+ * @param {number} reviewData.visualRating - Nova avaliação visual (0-5)
+ * @param {number} reviewData.audioRating - Nova avaliação do áudio (0-5)
+ * @param {number} reviewData.difficultyRating - Nova avaliação da dificuldade (0-5)
+ * @param {number} reviewData.immersionRating - Nova avaliação da imersão (0-5)
+ * @param {number} reviewData.historyRating - Nova avaliação da história (0-5)
+ * @param {string} reviewData.comment - Novo comentário da avaliação
+ * @returns {Promise<Object>} Dados da avaliação atualizada
+ * @throws {Error} Erro se avaliação não encontrada ou dados inválidos
+ */
 const updateReview = async (reviewId, reviewData) => {
     try {
         const { 
@@ -211,6 +256,13 @@ const updateReview = async (reviewId, reviewData) => {
     }
 }
 
+/**
+ * Remove uma avaliação do sistema
+ * @param {number} reviewId - ID da avaliação
+ * @returns {Promise<Object>} Mensagem de sucesso
+ * @throws {Error} Erro se avaliação não encontrada
+ * @description Também atualiza a média de avaliação do jogo relacionado
+ */
 const deleteReview = async (reviewId) => {
     try {
         // Verificar se a avaliação existe
@@ -239,6 +291,11 @@ const deleteReview = async (reviewId) => {
     }
 }
 
+/**
+ * Busca todas as avaliações de um usuário específico
+ * @param {number} userId - ID do usuário
+ * @returns {Promise<Object>} Lista de avaliações do usuário com informações dos jogos
+ */
 const getReviewsByUserId = async (userId) => {
     try {
         const reviews = await prisma.review.findMany({
@@ -259,7 +316,13 @@ const getReviewsByUserId = async (userId) => {
     }
 }
 
-// Função para atualizar a média de avaliação do jogo
+/**
+ * Atualiza a média de avaliação do jogo
+ * @param {number} gameId - ID do jogo
+ * @returns {Promise<void>}
+ * @throws {Error} Erro se falha na atualização
+ * @description Recalcula e atualiza a média baseada em todas as avaliações do jogo
+ */
 const updateGameAverageRating = async (gameId) => {
     try {
         const reviews = await prisma.review.findMany({

@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Roteador principal da API
+ * @description Organiza e centraliza todas as rotas da aplicação
+ */
+
 const express = require('express');
 const router = express.Router();
 
@@ -8,7 +13,12 @@ const gameRoutes = require('./games.js');
 const reviewRoutes = require('./reviews.js');
 const catalogRoutes = require('./catalogs.js');
 
-// Rota de teste
+/**
+ * Rota de teste e informações da API
+ * @route GET /
+ * @description Retorna informações básicas da API e endpoints disponíveis
+ * @returns {Object} Informações da API
+ */
 router.get('/', (req, res) => {
     res.json({ 
         message: 'API Playbox funcionando!',

@@ -1,9 +1,20 @@
+/**
+ * @fileoverview Rotas de jogos
+ * @description Contém todas as rotas relacionadas ao gerenciamento de jogos
+ */
+
 const express = require('express');
 const gameServices = require('../services/gameServices.js');
 const router = express.Router();
 
 // === ROTAS DE JOGOS ===
-// Criar jogo
+
+/**
+ * Criar jogo
+ * @route POST /games
+ * @param {Object} req.body - Dados do jogo
+ * @returns {Object} Dados do jogo criado
+ */
 router.post('/', async (req, res) => {
     try {
         const gameData = req.body;
@@ -15,7 +26,12 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Buscar jogo por ID
+/**
+ * Buscar jogo por ID
+ * @route GET /games/:id
+ * @param {string} req.params.id - ID do jogo
+ * @returns {Object} Dados do jogo
+ */
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -27,7 +43,12 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Buscar jogo por nome
+/**
+ * Buscar jogo por nome
+ * @route GET /games/search
+ * @param {string} req.query.name - Nome do jogo para busca
+ * @returns {Object} Dados do jogo encontrado
+ */
 router.get('/search', async (req, res) => {
     try {
         const { name } = req.query;
@@ -42,7 +63,11 @@ router.get('/search', async (req, res) => {
     }
 });
 
-// Listar todos os jogos
+/**
+ * Listar todos os jogos
+ * @route GET /games
+ * @returns {Object} Lista de todos os jogos
+ */
 router.get('/', async (req, res) => {
     try {
         const result = await gameServices.getAllGames();
@@ -53,7 +78,13 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Atualizar jogo
+/**
+ * Atualizar jogo
+ * @route PUT /games/:id
+ * @param {string} req.params.id - ID do jogo
+ * @param {Object} req.body - Novos dados do jogo
+ * @returns {Object} Dados do jogo atualizado
+ */
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -66,7 +97,12 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Deletar jogo
+/**
+ * Deletar jogo
+ * @route DELETE /games/:id
+ * @param {string} req.params.id - ID do jogo
+ * @returns {Object} Mensagem de sucesso
+ */
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -78,7 +114,12 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// Buscar jogos por gênero
+/**
+ * Buscar jogos por gênero
+ * @route GET /games/genre/:genre
+ * @param {string} req.params.genre - Gênero para filtrar
+ * @returns {Object} Lista de jogos do gênero especificado
+ */
 router.get('/genre/:genre', async (req, res) => {
     try {
         const { genre } = req.params;
@@ -90,7 +131,11 @@ router.get('/genre/:genre', async (req, res) => {
     }
 });
 
-// Rota para recalcular todas as médias de avaliação (rota administrativa)
+/**
+ * Rota para recalcular todas as médias de avaliação (rota administrativa)
+ * @route POST /games/admin/recalculateAverages
+ * @returns {Object} Resultado da operação de recálculo
+ */
 router.post('/admin/recalculateAverages', async (req, res) => {
     try {
         const result = await gameServices.recalculateAllGameAverages();

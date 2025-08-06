@@ -1,9 +1,29 @@
+/**
+ * @fileoverview Rotas de avaliações (reviews)
+ * @description Contém todas as rotas relacionadas ao gerenciamento de avaliações de jogos
+ */
+
 const express = require('express');
 const reviewServices = require('../services/reviewServices.js');
 const router = express.Router();
 
 // === ROTAS DE AVALIAÇÕES ===
-// Criar avaliação
+
+/**
+ * Criar avaliação
+ * @route POST /reviews
+ * @param {Object} req.body - Dados da avaliação
+ * @param {number} req.body.gameId - ID do jogo
+ * @param {number} req.body.userId - ID do usuário
+ * @param {number} req.body.gameplayRating - Avaliação do gameplay (0-5)
+ * @param {number} req.body.visualRating - Avaliação visual (0-5)
+ * @param {number} req.body.audioRating - Avaliação do áudio (0-5)
+ * @param {number} req.body.difficultyRating - Avaliação da dificuldade (0-5)
+ * @param {number} req.body.immersionRating - Avaliação da imersão (0-5)
+ * @param {number} req.body.historyRating - Avaliação da história (0-5)
+ * @param {string} req.body.comment - Comentário da avaliação
+ * @returns {Object} Dados da avaliação criada
+ */
 router.post('/', async (req, res) => {
     try {
         const reviewData = req.body;
@@ -15,7 +35,12 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Buscar avaliação por ID
+/**
+ * Buscar avaliação por ID
+ * @route GET /reviews/:id
+ * @param {string} req.params.id - ID da avaliação
+ * @returns {Object} Dados da avaliação com informações do jogo e usuário
+ */
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -27,7 +52,13 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Listar avaliações por ID de jogo
+/**
+ * Listar avaliações por ID de jogo
+ * @route GET /reviews/game/:gameId
+ * @param {string} req.params.gameId - ID do jogo
+ * @returns {Object} Lista de avaliações do jogo ordenadas por data
+ * @description Retorna avaliações formatadas ordenadas por data de criação (mais recentes primeiro)
+ */
 router.get('/game/:gameId', async (req, res) => {
     try {
         const { gameId } = req.params;
@@ -39,7 +70,12 @@ router.get('/game/:gameId', async (req, res) => {
     }
 });
 
-// Listar avaliações por ID de usuário
+/**
+ * Listar avaliações por ID de usuário
+ * @route GET /reviews/user/:userId
+ * @param {string} req.params.userId - ID do usuário
+ * @returns {Object} Lista de avaliações do usuário com informações dos jogos
+ */
 router.get('/user/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
@@ -51,7 +87,20 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
-// Atualizar avaliação
+/**
+ * Atualizar avaliação
+ * @route PUT /reviews/:id
+ * @param {string} req.params.id - ID da avaliação
+ * @param {Object} req.body - Novos dados da avaliação
+ * @param {number} req.body.gameplayRating - Nova avaliação do gameplay (0-5)
+ * @param {number} req.body.visualRating - Nova avaliação visual (0-5)
+ * @param {number} req.body.audioRating - Nova avaliação do áudio (0-5)
+ * @param {number} req.body.difficultyRating - Nova avaliação da dificuldade (0-5)
+ * @param {number} req.body.immersionRating - Nova avaliação da imersão (0-5)
+ * @param {number} req.body.historyRating - Nova avaliação da história (0-5)
+ * @param {string} req.body.comment - Novo comentário da avaliação
+ * @returns {Object} Dados da avaliação atualizada
+ */
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -64,7 +113,13 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Deletar avaliação
+/**
+ * Deletar avaliação
+ * @route DELETE /reviews/:id
+ * @param {string} req.params.id - ID da avaliação
+ * @returns {Object} Mensagem de sucesso
+ * @description Remove a avaliação e atualiza a média do jogo relacionado
+ */
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

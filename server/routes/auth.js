@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Rotas de autenticação
+ * @description Contém todas as rotas relacionadas à autenticação e recuperação de senha
+ */
+
 const express = require('express');
 const userServices = require('../services/userServices.js');
 const { authenticateToken } = require('../services/userServices.js');
@@ -8,7 +13,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'chave-secreta';
 
 // === ROTAS DE AUTENTICAÇÃO ===
 
-// Login do usuário
+/**
+ * Login do usuário
+ * @route POST /auth/login
+ * @param {Object} req.body - Dados de login
+ * @param {string} req.body.email - Email do usuário
+ * @param {string} req.body.password - Senha do usuário
+ * @returns {Object} Token JWT e dados do usuário
+ */
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -25,7 +37,12 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Verificar se o token é válido
+/**
+ * Verificar se o token é válido
+ * @route GET /auth/verify
+ * @middleware authenticateToken
+ * @returns {Object} Dados do usuário logado
+ */
 router.get('/verify', authenticateToken, (req, res) => {
     res.json({
         message: 'Token válido',
@@ -38,7 +55,15 @@ router.get('/verify', authenticateToken, (req, res) => {
     });
 });
 
-// Alterar senha do usuário logado
+/**
+ * Alterar senha do usuário logado
+ * @route PUT /auth/changePassword
+ * @middleware authenticateToken
+ * @param {Object} req.body - Dados para alteração de senha
+ * @param {string} req.body.currentPassword - Senha atual
+ * @param {string} req.body.newPassword - Nova senha
+ * @returns {Object} Mensagem de sucesso
+ */
 router.put('/changePassword', authenticateToken, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
@@ -54,14 +79,24 @@ router.put('/changePassword', authenticateToken, async (req, res) => {
     }
 });
 
-// Logout (opcional - no frontend, basta remover o token do localStorage)
+/**
+ * Logout (opcional - no frontend, basta remover o token do localStorage)
+ * @route POST /auth/logout
+ * @returns {Object} Mensagem de logout
+ */
 router.post('/logout', (req, res) => {
     res.json({ message: 'Logout realizado com sucesso!' });
 });
 
 // === ROTAS DE RECUPERAÇÃO DE SENHA ===
 
-// Solicitar recuperação de senha
+/**
+ * Solicitar recuperação de senha
+ * @route POST /auth/forgotPassword
+ * @param {Object} req.body - Dados para recuperação
+ * @param {string} req.body.email - Email do usuário
+ * @returns {Object} Token de recuperação (desenvolvimento) ou mensagem
+ */
 router.post('/forgotPassword', async (req, res) => {
     try {
         const { email } = req.body;
@@ -77,7 +112,14 @@ router.post('/forgotPassword', async (req, res) => {
     }
 });
 
-// Redefinir senha com token
+/**
+ * Redefinir senha com token
+ * @route POST /auth/resetPassword
+ * @param {Object} req.body - Dados para redefinição
+ * @param {string} req.body.token - Token de recuperação
+ * @param {string} req.body.newPassword - Nova senha
+ * @returns {Object} Mensagem de sucesso
+ */
 router.post('/resetPassword', async (req, res) => {
     try {
         const { token, newPassword } = req.body;

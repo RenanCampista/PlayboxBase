@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Rotas de usuários
+ * @description Contém todas as rotas relacionadas ao gerenciamento de usuários
+ */
+
 const express = require('express');
 const userServices = require('../services/userServices.js');
 const { authenticateToken, requireAdmin } = require('../services/userServices.js');
@@ -5,7 +10,15 @@ const router = express.Router();
 
 // === ROTAS DE USUÁRIOS ===
 
-// Criar usuário
+/**
+ * Criar usuário
+ * @route POST /users
+ * @param {Object} req.body - Dados do usuário
+ * @param {string} req.body.name - Nome do usuário
+ * @param {string} req.body.email - Email do usuário
+ * @param {string} req.body.password - Senha do usuário
+ * @returns {Object} Dados do usuário criado
+ */
 router.post('/', async (req, res) => {
     try {
         const userData = req.body;
@@ -17,7 +30,12 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Listar todos os usuários (apenas admins)
+/**
+ * Listar todos os usuários (apenas admins)
+ * @route GET /users
+ * @middleware authenticateToken, requireAdmin
+ * @returns {Object} Lista de todos os usuários
+ */
 router.get('/', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const result = await userServices.getAllUsers();
@@ -28,7 +46,14 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
     }
 });
 
-// Buscar usuário por ID (usuário autenticado pode ver seu próprio perfil ou admin pode ver qualquer um)
+/**
+ * Buscar usuário por ID
+ * @route GET /users/:id
+ * @middleware authenticateToken
+ * @param {string} req.params.id - ID do usuário
+ * @returns {Object} Dados do usuário
+ * @description Usuário pode ver seu próprio perfil ou admin pode ver qualquer um
+ */
 router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
@@ -47,7 +72,15 @@ router.get('/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// Atualizar usuário (usuário pode atualizar seu próprio perfil ou admin pode atualizar qualquer um)
+/**
+ * Atualizar usuário
+ * @route PUT /users/:id
+ * @middleware authenticateToken
+ * @param {string} req.params.id - ID do usuário
+ * @param {Object} req.body - Novos dados do usuário
+ * @returns {Object} Dados do usuário atualizado
+ * @description Usuário pode atualizar seu próprio perfil ou admin pode atualizar qualquer um
+ */
 router.put('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
@@ -66,7 +99,13 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// Deletar usuário (apenas admins)
+/**
+ * Deletar usuário (apenas admins)
+ * @route DELETE /users/:id
+ * @middleware authenticateToken, requireAdmin
+ * @param {string} req.params.id - ID do usuário
+ * @returns {Object} Mensagem de sucesso
+ */
 router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;

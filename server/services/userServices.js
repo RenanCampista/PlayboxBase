@@ -1,11 +1,24 @@
+/**
+ * @fileoverview Serviços de usuário
+ * @description Contém todas as funções relacionadas ao gerenciamento de usuários
+ */
+
 const prisma = require("./prisma.js")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 
-
 // Chave secreta para JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'chave-secreta';
 
+/**
+ * Cria um novo usuário no sistema
+ * @param {Object} userData - Dados do usuário
+ * @param {string} userData.name - Nome do usuário
+ * @param {string} userData.email - Email do usuário
+ * @param {string} userData.password - Senha do usuário
+ * @returns {Promise<Object>} Resultado da operação com status e dados do usuário
+ * @throws {Error} Erro se dados obrigatórios não fornecidos ou email/nome já em uso
+ */
 const createUser = async (userData) => {
     try {
         const { name, email, password } = userData;
@@ -62,6 +75,11 @@ const createUser = async (userData) => {
     }
 }
 
+/**
+ * Busca todos os usuários do sistema
+ * @returns {Promise<Object>} Lista de usuários com status 200
+ * @throws {Error} Erro se falha na busca
+ */
 const getAllUsers = async () => {
     try {
         const users = await prisma.user.findMany({
@@ -80,6 +98,12 @@ const getAllUsers = async () => {
     }
 }
 
+/**
+ * Busca usuário por ID
+ * @param {number} userId - ID do usuário
+ * @returns {Promise<Object>} Dados do usuário com status 200
+ * @throws {Error} Erro se usuário não encontrado
+ */
 const getUserById = async (userId) => {
     try {
         const user = await prisma.user.findUnique({
@@ -104,6 +128,11 @@ const getUserById = async (userId) => {
     }
 }
 
+/**
+ * Busca usuário por email
+ * @param {string} email - Email do usuário
+ * @returns {Promise<Object>} Dados do usuário ou mensagem de não encontrado
+ */
 const getUserByEmail = async (email) => {
     try {
         const user = await prisma.user.findUnique({
@@ -128,6 +157,17 @@ const getUserByEmail = async (email) => {
     }
 }
 
+/**
+ * Atualiza dados de um usuário
+ * @param {number} userId - ID do usuário
+ * @param {Object} userData - Novos dados do usuário
+ * @param {string} userData.name - Nome do usuário
+ * @param {string} userData.email - Email do usuário
+ * @param {string} [userData.password] - Nova senha (opcional)
+ * @param {boolean} [userData.isAdmin] - Status de admin (opcional)
+ * @returns {Promise<Object>} Dados do usuário atualizado
+ * @throws {Error} Erro se usuário não encontrado ou dados inválidos
+ */
 const updateUser = async (userId, userData) => {
     try {
         const { name, email, password, isAdmin } = userData;
@@ -183,6 +223,12 @@ const updateUser = async (userId, userData) => {
     }
 }
 
+/**
+ * Remove um usuário do sistema
+ * @param {number} userId - ID do usuário
+ * @returns {Promise<Object>} Mensagem de sucesso
+ * @throws {Error} Erro se usuário não encontrado
+ */
 const deleteUser = async (userId) => {
     try {
         const user = await prisma.user.findUnique({
@@ -207,6 +253,13 @@ const deleteUser = async (userId) => {
     }
 }
 
+/**
+ * Autentica um usuário no sistema
+ * @param {string} email - Email do usuário
+ * @param {string} password - Senha do usuário
+ * @returns {Promise<Object>} Token JWT e dados do usuário
+ * @throws {Error} Erro se credenciais inválidas
+ */
 const authenticateUser = async (email, password) => {
     try {
         const user = await prisma.user.findUnique({
@@ -231,6 +284,12 @@ const authenticateUser = async (email, password) => {
     }
 }
 
+/**
+ * Verifica se um token JWT é válido
+ * @param {string} token - Token JWT
+ * @returns {Object} Status e dados do usuário decodificados
+ * @throws {Error} Erro se token inválido ou expirado
+ */
 const verifyToken = (token) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -241,6 +300,13 @@ const verifyToken = (token) => {
     }
 }
 
+/**
+ * Middleware para autenticação de rotas
+ * @param {Object} req - Objeto de requisição Express
+ * @param {Object} res - Objeto de resposta Express
+ * @param {Function} next - Função next do Express
+ * @returns {void} Chama next() se autenticado ou retorna erro
+ */
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -258,6 +324,14 @@ const authenticateToken = (req, res, next) => {
     });
 }
 
+/**
+ * Altera a senha de um usuário
+ * @param {number} userId - ID do usuário
+ * @param {string} currentPassword - Senha atual
+ * @param {string} newPassword - Nova senha
+ * @returns {Promise<Object>} Mensagem de sucesso
+ * @throws {Error} Erro se senha atual incorreta ou usuário não encontrado
+ */
 const changePassword = async (userId, currentPassword, newPassword) => {
     try {
         const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -285,6 +359,13 @@ const changePassword = async (userId, currentPassword, newPassword) => {
     }
 };
 
+/**
+ * Solicita recuperação de senha
+ * @param {string} email - Email do usuário
+ * @param {string} jwtSecret - Chave secreta JWT
+ * @returns {Promise<Object>} Token de recuperação (em desenvolvimento)
+ * @throws {Error} Erro na geração do token
+ */
 const requestPasswordReset = async (email, jwtSecret) => {
     try {
         const user = await prisma.user.findUnique({ where: { email } });
@@ -310,6 +391,14 @@ const requestPasswordReset = async (email, jwtSecret) => {
     }
 };
 
+/**
+ * Redefine senha usando token de recuperação
+ * @param {string} token - Token de recuperação
+ * @param {string} newPassword - Nova senha
+ * @param {string} jwtSecret - Chave secreta JWT
+ * @returns {Promise<Object>} Mensagem de sucesso
+ * @throws {Error} Erro se token inválido ou usuário não encontrado
+ */
 const resetPassword = async (token, newPassword, jwtSecret) => {
     try {
         const decoded = jwt.verify(token, jwtSecret);
@@ -338,6 +427,15 @@ const resetPassword = async (token, newPassword, jwtSecret) => {
     }
 };
 
+/**
+ * Cria um usuário administrador
+ * @param {Object} adminData - Dados do administrador
+ * @param {string} adminData.name - Nome do administrador
+ * @param {string} adminData.email - Email do administrador
+ * @param {string} adminData.password - Senha do administrador
+ * @returns {Promise<Object>} Dados do administrador criado
+ * @throws {Error} Erro se dados obrigatórios não fornecidos
+ */
 const createAdmin = async (adminData) => {
     try {
         const { name, email, password } = adminData;
@@ -382,6 +480,13 @@ const createAdmin = async (adminData) => {
     }
 };
 
+/**
+ * Middleware para verificar permissões de administrador
+ * @param {Object} req - Objeto de requisição Express
+ * @param {Object} res - Objeto de resposta Express
+ * @param {Function} next - Função next do Express
+ * @returns {void} Chama next() se for admin ou retorna erro 403
+ */
 const requireAdmin = (req, res, next) => {
     if (!req.user.isAdmin) {
         return res.status(403).json({ error: 'Acesso negado. Apenas administradores podem acessar.' });

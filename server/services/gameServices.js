@@ -1,7 +1,16 @@
+/**
+ * @fileoverview Serviços de jogos
+ * @description Contém todas as funções relacionadas ao gerenciamento de jogos
+ */
+
 const prisma = require("./prisma.js")
 const fs = require('fs');
 
-// Função para converter gêneros do JSON para o formato do enum
+/**
+ * Converte gêneros do JSON para o formato do enum
+ * @param {string[]} genres - Array de gêneros
+ * @returns {string} Gêneros convertidos separados por vírgula
+ */
 const convertGenresToEnum = (genres) => {
     const genreMap = {
         'Action': 'ACTION',
@@ -20,17 +29,29 @@ const convertGenresToEnum = (genres) => {
     return convertedGenres.join(',');
 };
 
-// Função para converter arrays em strings separadas por vírgula
+/**
+ * Converte arrays em strings separadas por vírgula
+ * @param {Array} array - Array para converter
+ * @returns {string} String separada por vírgulas
+ */
 const arrayToString = (array) => {
     return Array.isArray(array) ? array.join(',') : '';
 };
 
-// Função para converter strings em arrays
+/**
+ * Converte strings em arrays
+ * @param {string} str - String separada por vírgulas
+ * @returns {Array} Array de strings
+ */
 const stringToArray = (str) => {
     return str ? str.split(',').map(item => item.trim()).filter(item => item.length > 0) : [];
 };
 
-// Função para formatar o jogo para retorno (converter strings em arrays)
+/**
+ * Formata o jogo para retorno (converter strings em arrays)
+ * @param {Object} game - Objeto do jogo
+ * @returns {Object|null} Jogo formatado ou null
+ */
 const formatGameForResponse = (game) => {
     if (!game) return null;
     
@@ -43,7 +64,22 @@ const formatGameForResponse = (game) => {
     };
 };
 
-
+/**
+ * Cria um novo jogo no sistema
+ * @param {Object} gameData - Dados do jogo
+ * @param {string} gameData.name - Nome do jogo
+ * @param {string} gameData.description - Descrição do jogo
+ * @param {string} gameData.backgroundImage - URL da imagem de fundo
+ * @param {string} gameData.releaseDate - Data de lançamento
+ * @param {number} gameData.playtime - Tempo de jogo em horas
+ * @param {string[]} gameData.platforms - Plataformas disponíveis
+ * @param {string[]} gameData.genres - Gêneros do jogo
+ * @param {string[]} gameData.publishers - Editoras do jogo
+ * @param {number} gameData.metacriticScore - Pontuação no Metacritic
+ * @param {string[]} gameData.screenshots - URLs das capturas de tela
+ * @returns {Promise<Object>} Resultado da operação com dados do jogo
+ * @throws {Error} Erro se jogo já existe ou falha na criação
+ */
 const createGame = async (gameData) => {
     const { name, description, backgroundImage, releaseDate, playtime, platforms, genres, publishers, metacriticScore, screenshots } = gameData;
 
@@ -90,6 +126,11 @@ const createGame = async (gameData) => {
     }
 }
 
+/**
+ * Busca jogo por ID
+ * @param {number} id - ID do jogo
+ * @returns {Promise<Object>} Dados do jogo ou mensagem de erro
+ */
 const getGameById = async (id) => {
     try {
         const game = await prisma.game.findUnique({
@@ -124,6 +165,11 @@ const getGameById = async (id) => {
     }
 }
 
+/**
+ * Busca jogo por nome
+ * @param {string} name - Nome do jogo
+ * @returns {Promise<Object>} Dados do jogo ou mensagem de erro
+ */
 const getGameByName = async (name) => {
     try {
         const game = await prisma.game.findFirst({
@@ -157,6 +203,13 @@ const getGameByName = async (name) => {
     }
 }
 
+/**
+ * Atualiza dados de um jogo
+ * @param {number} id - ID do jogo
+ * @param {Object} gameData - Novos dados do jogo
+ * @returns {Promise<Object>} Dados do jogo atualizado
+ * @throws {Error} Erro se falha na atualização
+ */
 const updateGame = async (id, gameData) => {
     const { name, description, backgroundImage, releaseDate, playtime, platforms, genres, publishers, metacriticScore, screenshots } = gameData;
 
@@ -193,6 +246,12 @@ const updateGame = async (id, gameData) => {
     }
 }
 
+/**
+ * Remove um jogo do sistema
+ * @param {number} id - ID do jogo
+ * @returns {Promise<Object>} Mensagem de sucesso
+ * @throws {Error} Erro se jogo não encontrado
+ */
 const deleteGame = async (id) => {
     try {
         const deletedGame = await prisma.game.delete({
@@ -205,6 +264,12 @@ const deleteGame = async (id) => {
     }
 }
 
+/**
+ * Busca jogos por gênero
+ * @param {string} genre - Gênero para filtrar
+ * @returns {Promise<Object>} Lista de jogos do gênero especificado
+ * @throws {Error} Erro se falha na busca
+ */
 const getGamesByGenre = async (genre) => {
     try {
         const games = await prisma.game.findMany({
@@ -239,6 +304,11 @@ const getGamesByGenre = async (genre) => {
     }
 }
 
+/**
+ * Busca todos os jogos do sistema
+ * @returns {Promise<Object>} Lista de todos os jogos
+ * @throws {Error} Erro se falha na busca
+ */
 const getAllGames = async () => {
     try {
         const games = await prisma.game.findMany({
@@ -269,7 +339,12 @@ const getAllGames = async () => {
     }
 }
 
-// Função para recalcular todas as médias de avaliação dos jogos
+/**
+ * Recalcula todas as médias de avaliação dos jogos
+ * @returns {Promise<Object>} Resultado da operação com contagem de jogos atualizados
+ * @throws {Error} Erro se falha no recálculo
+ * @description Percorre todos os jogos e recalcula a média baseada nas reviews
+ */
 const recalculateAllGameAverages = async () => {
     try {
         const games = await prisma.game.findMany({

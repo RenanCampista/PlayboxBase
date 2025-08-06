@@ -1,10 +1,24 @@
+/**
+ * @fileoverview Serviços de catálogos
+ * @description Contém todas as funções relacionadas ao gerenciamento de catálogos de jogos
+ */
+
 const prisma = require("./prisma.js")
 
-// Formatar strings separadas por vírgula em arrays (facilitar o carregamento do jogo)
+/**
+ * Formatar strings separadas por vírgula em arrays (facilitar o carregamento do jogo)
+ * @param {string} str - String separada por vírgulas
+ * @returns {Array} Array de strings
+ */
 const stringToArray = (str) => {
     return str ? str.split(',').map(item => item.trim()).filter(item => item.length > 0) : [];
 };
 
+/**
+ * Formata o jogo para retorno convertendo strings em arrays
+ * @param {Object} game - Objeto do jogo
+ * @returns {Object|null} Jogo formatado ou null
+ */
 const formatGameForResponse = (game) => {
     if (!game) return null;
     
@@ -17,6 +31,14 @@ const formatGameForResponse = (game) => {
     };
 };
 
+/**
+ * Cria um novo catálogo
+ * @param {Object} catalogData - Dados do catálogo
+ * @param {string} catalogData.name - Nome do catálogo
+ * @param {number} catalogData.userId - ID do usuário proprietário
+ * @returns {Promise<Object>} Resultado da operação com dados do catálogo
+ * @throws {Error} Erro se catálogo já existe ou falha na criação
+ */
 const createCatalog = async (catalogData) => {
     try {
         const { name, userId } = catalogData;
@@ -44,6 +66,11 @@ const createCatalog = async (catalogData) => {
     }
 }
 
+/**
+ * Busca catálogo por ID
+ * @param {number} id - ID do catálogo
+ * @returns {Promise<Object>} Dados do catálogo com jogos e informações do usuário
+ */
 const getCatalogById = async (id) => {
     try {
         const catalog = await prisma.catalog.findUnique({
@@ -71,6 +98,11 @@ const getCatalogById = async (id) => {
     }
 }
 
+/**
+ * Busca todos os catálogos de um usuário específico
+ * @param {number} userId - ID do usuário
+ * @returns {Promise<Object>} Lista de catálogos do usuário com jogos formatados
+ */
 const getCatalogsByUserId = async (userId) => {
     try {
         const catalogs = await prisma.catalog.findMany({
@@ -93,6 +125,13 @@ const getCatalogsByUserId = async (userId) => {
     }
 }
 
+/**
+ * Adiciona um jogo a um catálogo
+ * @param {number} catalogId - ID do catálogo
+ * @param {number} gameId - ID do jogo
+ * @returns {Promise<Object>} Mensagem de sucesso
+ * @throws {Error} Erro se catálogo não encontrado ou jogo já está no catálogo
+ */
 const addGameToCatalog = async (catalogId, gameId) => {
     try {
         // Verificar se o catálogo existe
@@ -133,6 +172,13 @@ const addGameToCatalog = async (catalogId, gameId) => {
     }
 }
 
+/**
+ * Remove um jogo de um catálogo
+ * @param {number} catalogId - ID do catálogo
+ * @param {number} gameId - ID do jogo
+ * @returns {Promise<Object>} Mensagem de sucesso
+ * @throws {Error} Erro se catálogo não encontrado ou jogo não está no catálogo
+ */
 const removeGameFromCatalog = async (catalogId, gameId) => {
     try {
         // Verificar se o catálogo existe
@@ -173,6 +219,12 @@ const removeGameFromCatalog = async (catalogId, gameId) => {
     }
 }
 
+/**
+ * Remove um catálogo do sistema
+ * @param {number} id - ID do catálogo
+ * @returns {Promise<Object>} Mensagem de sucesso
+ * @throws {Error} Erro se catálogo não encontrado
+ */
 const deleteCatalog = async (id) => {
     try {
         const deletedCatalog = await prisma.catalog.delete({
@@ -185,6 +237,15 @@ const deleteCatalog = async (id) => {
     }
 }
 
+/**
+ * Atualiza dados de um catálogo
+ * @param {number} id - ID do catálogo
+ * @param {Object} catalogData - Novos dados do catálogo
+ * @param {string} catalogData.name - Novo nome do catálogo
+ * @param {number} catalogData.userId - Novo ID do usuário proprietário
+ * @returns {Promise<Object>} Dados do catálogo atualizado
+ * @throws {Error} Erro se catálogo não encontrado
+ */
 const updateCatalog = async (id, catalogData) => {
     try {
         const { name, userId } = catalogData;
@@ -213,6 +274,11 @@ const updateCatalog = async (id, catalogData) => {
     }
 }
 
+/**
+ * Busca todos os catálogos do sistema
+ * @returns {Promise<Object>} Lista de todos os catálogos com jogos e usuários
+ * @throws {Error} Erro se falha na busca
+ */
 const getAllCatalogs = async () => {
     try {
         const catalogs = await prisma.catalog.findMany({

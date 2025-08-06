@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Servidor principal da API Playbox
+ * @description Configura e inicia o servidor Express com conexão ao banco de dados
+ */
+
 require('dotenv').config({ path: '../.env' });
 const express = require('express'); // Framework para construir APIs
 const cors = require('cors'); // Middleware para habilitar CORS
@@ -13,6 +18,10 @@ app.use(routes);
 
 const PORT = process.env.SERVER_PORT || 5000; // Define a porta do servidor
 
+/**
+ * Inicia o servidor e configura conexões iniciais
+ * @description Conecta ao banco de dados e cria usuário admin se necessário
+ */
 app.listen(PORT, async () => {
 
     // Verificar se a conexão com o banco de dados foi bem-sucedida
@@ -47,7 +56,10 @@ app.listen(PORT, async () => {
     console.log(`📡 API disponível em http://localhost:${PORT}`);
 });
 
-// Graceful shutdown
+/**
+ * Encerramento gracioso do servidor
+ * @description Desconecta do banco de dados antes de encerrar o processo
+ */
 process.on('SIGINT', async () => {
     console.log('🔄 Encerrando servidor graciosamente...');
     await prisma.$disconnect();
@@ -55,6 +67,10 @@ process.on('SIGINT', async () => {
     process.exit(0);
 });
 
+/**
+ * Encerramento gracioso do servidor
+ * @description Desconecta do banco de dados antes de encerrar o processo
+ */
 process.on('SIGTERM', async () => {
     console.log('🔄 Encerrando servidor graciosamente...');
     await prisma.$disconnect();

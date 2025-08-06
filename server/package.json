@@ -6,7 +6,10 @@
     "test": "jest --testTimeout=10000",
     "test:watch": "jest --watch",
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "docs": "jsdoc -c jsdoc.conf.json",
+    "docs:watch": "nodemon --watch . --ext js --exec \"npm run docs\"",
+    "docs:serve": "npm run docs && cd docs && python3 -m http.server 8080"
   },
   "keywords": [],
   "author": "",
@@ -22,8 +25,9 @@
     "prisma": "^6.11.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10",
     "jest": "^29.7.0",
+    "jsdoc": "^4.0.4",
+    "nodemon": "^3.1.10",
     "supertest": "^6.3.3"
   }
 }
