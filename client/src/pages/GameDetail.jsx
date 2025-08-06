@@ -292,7 +292,7 @@ const GameDetail = ({ game, onBack, currentUser }) => {
             <div className="loading">Carregando avaliações...</div>
           ) : reviews.length > 0 ? (
             <div className="reviews-list">
-              {reviews.slice(0, 5).map((review) => (
+              {reviews.slice(0, reviews.length).map((review) => (
                 <div key={review.id} className="review-item">
                   <div className="review-header">
                     <span className="reviewer-name">{review.user?.name || 'Usuário'}</span>
@@ -329,9 +329,6 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                   </div>
                 </div>
               ))}
-              {reviews.length > 5 && (
-                <p className="more-reviews">E mais {reviews.length - 5} avaliações...</p>
-              )}
             </div>
           ) : (
             <p className="no-reviews">Ainda não há avaliações para este jogo.</p>
