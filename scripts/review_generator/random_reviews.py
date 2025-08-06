@@ -5,7 +5,7 @@ import requests
 
 # Configuração
 API_URL = "http://localhost:5000"
-NUM_REVIEWS = 200
+NUM_REVIEWS = 500
 USER_IDS = [1, 3, 5, 7, 8, 9, 10]  # AJUSTE com IDs reais de usuários 
 
 # Comentários simples
@@ -23,21 +23,21 @@ def main():
     try:
         response = requests.get(f"{API_URL}/games", timeout=5)
         if response.status_code != 200:
-            print(f"❌ Erro ao buscar jogos: Status {response.status_code}")
+            print(f"Erro ao buscar jogos: Status {response.status_code}")
             return
         
         games_data = response.json()
         games = games_data.get('games', [])
         
         if not games:
-            print("❌ Nenhum jogo encontrado!")
-            print("💡 Cadastre alguns jogos primeiro")
+            print("Nenhum jogo encontrado!")
+            print("Cadastre alguns jogos primeiro")
             return
             
         print(f"✅ {len(games)} jogos encontrados")   
     except requests.exceptions.RequestException as e:
-        print(f"❌ Erro de conexão: {e}")
-        print("💡 Certifique-se que o servidor está rodando em", API_URL)
+        print(f"Erro de conexão: {e}")
+        print("Certifique-se que o servidor está rodando em", API_URL)
         return
     
     print(f"\nGerando {NUM_REVIEWS} reviews...")
