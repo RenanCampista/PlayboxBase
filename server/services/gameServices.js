@@ -269,52 +269,6 @@ const getAllGames = async () => {
     }
 }
 
-const loadGamesFromJson = async (filePath) => {
-    try {
-        const data = fs.readFileSync(filePath, 'utf-8');
-        const games = JSON.parse(data);
-        
-        let successCount = 0;
-        let duplicateCount = 0;
-        let errorCount = 0;
-
-        for (const game of games) {
-            try {
-                const result = await createGame({
-                    name: game.name,
-                    description: game.description,
-                    backgroundImage: game.background_image,
-                    releaseDate: new Date(game.released),
-                    playtime: game.playtime,
-                    platforms: game.platforms,
-                    genres: game.genres,
-                    publishers: game.publishers,
-                    metacriticScore: game.metacritic,
-                    screenshots: game.screenshots
-                });
-                
-                if (result.status === 200) {
-                    successCount++;
-                } else if (result.status === 409) {
-                    duplicateCount++;
-                } else {
-                    console.error(`Erro inesperado ao carregar jogo "${game.name}":`, result.message);
-                    errorCount++;
-                }
-            } catch (error) {
-                console.error(`Erro ao carregar jogo "${game.name}":`, error);
-                errorCount++;
-            }
-        }
-        
-        console.log(`✅ Carregamento concluído: ${successCount} novos jogos, ${duplicateCount} já existentes, ${errorCount} erros`);
-        return { successCount, duplicateCount, errorCount };
-    } catch (error) {
-        console.error('Erro ao ler arquivo JSON:', error);
-        throw error;
-    }
-};
-
 // Função para recalcular todas as médias de avaliação dos jogos
 const recalculateAllGameAverages = async () => {
     try {
@@ -376,6 +330,5 @@ module.exports = {
     deleteGame,
     getGamesByGenre,
     getAllGames,
-    loadGamesFromJson,
     recalculateAllGameAverages
 };

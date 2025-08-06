@@ -67,6 +67,9 @@ setup:
 	chmod +x ./scripts/setup.sh
 	./scripts/setup.sh
 
+test_backend:
+	cd server && npm test
+	
 # Reset completo do projeto (remove node_modules e reinstala)
 reset:
 	@echo "🧹 Limpando node_modules..."
