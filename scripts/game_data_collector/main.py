@@ -1,11 +1,36 @@
+"""Script para coletar dados de jogos da RAWG API e enviar para o banco de dados"""
+
 import requests
-import json
 from dotenv import load_dotenv
 import os
+import sys
 import re
 
 load_dotenv()
 API_KEY = os.getenv('RAWG_API_KEY')
+BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:5000')
+MAX_NUM_GAMES = 100
+
+
+class GameIngestionClient:
+    """Client for sending games to the backend API."""
+    def __init__(self, backend_url: str):
+        self.backend_url = backend_url
+        self.games_endpoint = f"{backend_url}/games"
+        
+    def send_game(self, game_data: dict):
+        """Send a single game to the backend API."""
+        try:
+            response = requests.post(self.games_endpoint, json=game_data)
+            response.raise_for_status()
+            return {'success': True, 'status': 'inserted', 'data': response.json()}
+        except requests.exceptions.HTTPError as e:
+            if response.status_code == 409:  # Conflict - game already exists
+                return {'success': True, 'status': 'exists', 'message': 'Game already exists'}
+            else:
+                return {'success': False, 'status': 'error', 'message': str(e)}
+        except requests.exceptions.RequestException as e:
+            return {'success': False, 'status': 'error', 'message': str(e)}
 
 
 class RawgClient:
@@ -73,14 +98,16 @@ class RawgClient:
             data = response.json()
             return data
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching data: {e}")
+            print(f"Erro ao buscar dados: {e}")
             return {}
 
-    def get_games_by_platform(self, platforms: list, page_size: int = 40, max_pages: int = 5):
+    def get_games_by_platform(self, platforms: list, max_games: int = 100):
         """Fetch games from the RAWG API based on platforms, with pagination support."""
         all_games = []
+        page = 1
+        page_size = 40  # Tamanho fixo da página
         
-        for page in range(1, max_pages + 1):
+        while len(all_games) < max_games:
             params = {
                 'key': self.api_key,
                 'platforms': ','.join(map(str, platforms)),
@@ -93,19 +120,28 @@ class RawgClient:
                 response.raise_for_status() 
                 data = response.json()
 
+                games_in_page = 0
                 for game in data['results']:
+                    if len(all_games) >= max_games:
+                        break
+                        
                     game_id = game.get('id')
                     game_screenshots = [item['image'] for item in game.get('short_screenshots', [])]
                     if game_details := self.get_game_details(game_id):
                         formatted = self.format_game_data(game_details, game_screenshots)
                         all_games.append(formatted)
+                        games_in_page += 1
 
-                # Para de paginar se não há mais resultados
-                if not data.get('next'):
+                print(f"Página {page}: coletados {games_in_page} jogos (total: {len(all_games)}/{max_games})")
+
+                # Para de paginar se não há mais resultados ou atingiu o limite
+                if not data.get('next') or len(all_games) >= max_games:
                     break
+                
+                page += 1
 
             except requests.exceptions.RequestException as e:
-                print(f"Error fetching data on page {page}: {e}")
+                print(f"Erro ao buscar dados na página {page}: {e}")
                 break
 
         return all_games
@@ -123,15 +159,53 @@ class RawgClient:
             data = response.json()
             return {platform['name']: platform['id'] for platform in data['results']}
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching data: {e}")
+            print(f"Erro ao buscar dados: {e}")
             return {}
 
 
-def save_to_json(data, filename='games.json'):
-    with open(filename, encoding= 'UTF-8', mode='w') as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
+def collect_and_ingest_games(api: RawgClient, ingestion_client: GameIngestionClient, max_games: int = 100):
+    """Collect games from RAWG API and send them directly to the backend."""
+    platforms = api.get_platforms_ids()
+    platforms_ids = [platform_id for _, platform_id in platforms.items()]
+    
+    print(f"Iniciando a coleta dos jogos...")
+    games = api.get_games_by_platform(platforms_ids, max_games=max_games)
+    
+    if not games:
+        print("Nenhum jogo encontrado ou ocorreu um erro durante a coleta.")
+        return
+    
+    print(f"Coletados {len(games)} jogos da API RAWG")
+    print(f"Iniciando inserção no banco de dados...")
+    
+    stats = {
+        'collected': len(games),
+        'inserted': 0,
+        'updated': 0,
+        'exists': 0,
+        'errors': 0
+    }
+    
+    for i, game in enumerate(games, 1):
+        result = ingestion_client.send_game(game)
         
-        
+        if result['success']:
+            if result['status'] == 'inserted':
+                stats['inserted'] += 1
+                print(f"[{i}/{len(games)}] Inserido: {game['name']}")
+            elif result['status'] == 'exists':
+                stats['exists'] += 1
+                print(f"[{i}/{len(games)}] Já existe: {game['name']}")
+        else:
+            stats['errors'] += 1
+            print(f"[{i}/{len(games)}] Erro com {game['name']}: {result['message']}")
+    
+    print(f"Jogos coletados: {stats['collected']}")
+    print(f"Jogos inseridos: {stats['inserted']}")
+    print(f"Jogos já existentes: {stats['exists']}")
+    print(f"Erros: {stats['errors']}")
+
+
 def clean_html_tags(text):
     """Remove HTML tags from text"""
     if not text:
@@ -165,13 +239,23 @@ def clean_html_tags(text):
     
     
 if __name__ == "__main__":
-    api = RawgClient(API_KEY)
+    if not API_KEY:
+        print("RAWG_API_KEY não encontrada nas variáveis de ambiente")
+        print("Por favor, configure RAWG_API_KEY no seu arquivo .env")
+        sys.exit(1)
     
-    platforms = api.get_platforms_ids()
-    platforms_ids = [platform_id for _, platform_id in platforms.items()]
+    rawg_api = RawgClient(API_KEY)
+    ingestion_client = GameIngestionClient(BACKEND_URL)
     
-    if games := api.get_games_by_platform(platforms_ids, max_pages=10):
-        save_to_json(games, filename='../../server/data/games.json')
-        print(f"Saved {len(games)} games to games.json")
-    else:
-        print("No games found or an error occurred.")
+    try:
+        response = requests.get(f"{BACKEND_URL}/games")
+        if response.status_code in [200, 404]:  # 404 is fine, means endpoint exists but no games
+            print("Conexão com o backend bem-sucedida")
+        else:
+            print(f"Backend respondeu com status {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"Não é possível conectar ao backend: {e}")
+        sys.exit(1)
+    
+    # Collect and ingest games
+    collect_and_ingest_games(rawg_api, ingestion_client, max_games=MAX_NUM_GAMES)
