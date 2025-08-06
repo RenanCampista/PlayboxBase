@@ -137,8 +137,8 @@
 }
 
 .game-score {
-  background: rgba(156, 39, 176, 0.2);
-  color: #9C27B0;
+  background: rgba(155, 39, 176, 0.418);
+  color: #ffffff;
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 0.8rem;
@@ -147,8 +147,8 @@
 }
 
 .game-user-rating {
-  background: rgba(76, 175, 80, 0.2);
-  color: #4CAF50;
+  background: rgba(255, 193, 7, 0.719);
+  color: #ffffff;
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 0.8rem;
