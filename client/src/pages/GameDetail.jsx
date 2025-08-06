@@ -193,9 +193,9 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                   {favoriteLoading ? (
                     'Carregando...'
                   ) : isFavorite ? (
-                    <>❤️ Remover dos Favoritos</>
+                    <>🤍 Desfavoritar</>
                   ) : (
-                    <>🤍 Adicionar aos Favoritos</>
+                    <>❤️ Favoritar</>
                   )}
                 </button>
                 
@@ -203,11 +203,10 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                   onClick={() => setShowReviewForm(true)}
                   className="btn btn-primary review-button-standalone"
                 >
-                📝 Avaliar Jogo
+                 Avaliar Jogo
                 </button>
               </div>
             )}
-
             </div>
           </div>
         </div>
