@@ -64,8 +64,8 @@ clean:
 
 # Setup inicial (usar script de setup)
 setup:
-	chmod +x ./scripts/setup.sh
-	./scripts/setup.sh
+	chmod +x ./scripts/setup_unix.sh
+	./scripts/setup_unix.sh
 
 test_backend:
 	cd server && npm test

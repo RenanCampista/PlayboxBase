@@ -267,4 +267,97 @@ export const reviewService = {
   }
 };
 
+// Serviços para catálogos (favoritos)
+export const catalogService = {
+  // Buscar catálogos do usuário
+  getUserCatalogs: async (userId) => {
+    const response = await api.get(`/catalogs/user/${userId}`);
+    return response.data;
+  },
+
+  // Criar catálogo
+  createCatalog: async (catalogData) => {
+    const response = await api.post('/catalogs', catalogData);
+    return response.data;
+  },
+
+  // Buscar catálogo por ID
+  getCatalogById: async (catalogId) => {
+    const response = await api.get(`/catalogs/${catalogId}`);
+    return response.data;
+  },
+
+  // Adicionar jogo aos favoritos
+  addGameToFavorites: async (userId, gameId) => {
+    // Primeiro, verificar se já existe um catálogo "Favoritos" para o usuário
+    const catalogs = await api.get(`/catalogs/user/${userId}`);
+    let favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.userId === userId);
+    
+    // Se não existir, criar o catálogo "Favoritos"
+    if (!favoritesCatalog) {
+      const newCatalog = await api.post('/catalogs', {
+        name: 'Favoritos',
+        userId: userId
+      });
+      favoritesCatalog = newCatalog.data.catalog;
+    }
+    
+    // Adicionar o jogo ao catálogo de favoritos
+    const response = await api.post(`/catalogs/${favoritesCatalog.id}/games`, {
+      gameId: gameId
+    });
+    return response.data;
+  },
+
+  // Remover jogo dos favoritos
+  removeGameFromFavorites: async (userId, gameId) => {
+    // Buscar o catálogo "Favoritos" do usuário
+    const catalogs = await api.get(`/catalogs/user/${userId}`);
+    const favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.userId === userId);
+    
+    if (!favoritesCatalog) {
+      throw new Error('Catálogo de favoritos não encontrado');
+    }
+    
+    // Remover o jogo do catálogo de favoritos
+    const response = await api.delete(`/catalogs/${favoritesCatalog.id}/games/${gameId}`);
+    return response.data;
+  },
+
+  // Verificar se jogo está nos favoritos
+  isGameInFavorites: async (userId, gameId) => {
+    try {
+      const catalogs = await api.get(`/catalogs/user/${userId}`);
+      const favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.userId === userId);
+      
+      if (!favoritesCatalog) {
+        return false;
+      }
+      
+      return favoritesCatalog.games.some(game => game.id === gameId);
+    } catch (error) {
+      console.error('Erro ao verificar favoritos:', error);
+      return false;
+    }
+  },
+
+  // Buscar jogos favoritos do usuário
+  getFavoriteGames: async (userId) => {
+    try {
+      const catalogs = await api.get(`/catalogs/user/${userId}`);
+      const favoritesCatalog = catalogs.data.catalogs.find(catalog => catalog.userId === userId);
+      
+      if (!favoritesCatalog) {
+        return { games: [] };
+      }
+      
+      const catalogDetails = await api.get(`/catalogs/${favoritesCatalog.id}`);
+      return { games: catalogDetails.data.catalog.games || [] };
+    } catch (error) {
+      console.error('Erro ao buscar jogos favoritos:', error);
+      return { games: [] };
+    }
+  }
+};
+
 export default api;

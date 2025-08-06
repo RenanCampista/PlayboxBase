@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
 import { UserForm, Header } from '../components';
+import UserProfile from '../components/UserProfile';
 import { Login, Register, ForgotPassword, Home, GameDetail, AdminPanel } from './';
 import { userService, authService } from '../services/api';
 
@@ -231,25 +232,11 @@ function App() {
                     onCancel={handleCancelForm}
                   />
                 ) : (
-                  <div className="user-profile">
-                    <h2>Meu Perfil</h2>
-                    {currentUser ? (
-                      <div className="profile-info">
-                        <p><strong>Nome:</strong> {currentUser.name}</p>
-                        <p><strong>Email:</strong> {currentUser.email}</p>
-                        <p><strong>Tipo:</strong> {currentUser.isAdmin ? 'Administrador' : 'Usuário'}</p>
-                      </div>
-                    ) : (
-                      <div className="loading">Carregando dados do usuário...</div>
-                    )}
-                    <button 
-                      onClick={() => setEditingUser(currentUser) || setShowForm(true)}
-                      className="btn btn-primary"
-                      disabled={!currentUser}
-                    >
-                      Editar Perfil
-                    </button>
-                  </div>
+                  <UserProfile
+                    currentUser={currentUser}
+                    onEditProfile={() => setEditingUser(currentUser) || setShowForm(true)}
+                    onGameSelect={handleGameSelect}
+                  />
                 )}
               </>
             )}
