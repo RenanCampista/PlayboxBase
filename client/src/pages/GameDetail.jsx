@@ -6,6 +6,43 @@ import '../styles/GameDetail.css';
 import '../styles/GameRadarChart.css';
 
 const GameDetail = ({ game, onBack, currentUser }) => {
+  const [editingReview, setEditingReview] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [deletingReview, setDeletingReview] = useState(false);
+
+  // Função para editar review
+  const handleEditReview = (review) => {
+    setEditingReview(review);
+    setShowReviewForm(true);
+  };
+
+  // Função para deletar review
+  const handleDeleteReview = async (reviewId) => {
+    if (deletingReview) return; // Prevenir múltiplas execuções
+    
+    try {
+      setDeletingReview(true);
+      await reviewService.deleteReview(reviewId, { userId: currentUser.id });
+      await loadReviews(gameDetails.id);
+      await loadGameDetails(gameDetails.id);
+      setDeleteConfirm(null);
+    } catch (error) {
+      alert('Erro ao deletar avaliação: ' + (error.response?.data?.error || error.message));
+      setDeleteConfirm(null);
+    } finally {
+      setDeletingReview(false);
+    }
+  };
+
+  const confirmDeleteReview = (review) => {
+    if (deletingReview) return; // Prevenir abertura do modal durante deleção
+    setDeleteConfirm(review);
+  };
+
+  const cancelDeleteReview = () => {
+    if (deletingReview) return; // Prevenir fechamento durante deleção
+    setDeleteConfirm(null);
+  };
   const [gameDetails, setGameDetails] = useState(game);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -327,6 +364,25 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                       <span className="aspect-value">{review.ratings.history || '-'}/5</span>
                     </div>
                   </div>
+                  {/* Botões de editar/deletar visíveis apenas para o autor */}
+                  {currentUser && review.user?.id === currentUser.id && (
+                    <div className="review-actions">
+                      <button 
+                        className="btn btn-warning btn-sm" 
+                        onClick={() => handleEditReview(review)}
+                        disabled={deletingReview}
+                      >
+                        Editar
+                      </button>
+                      <button 
+                        className="btn btn-danger btn-sm" 
+                        onClick={() => confirmDeleteReview(review)}
+                        disabled={deletingReview}
+                      >
+                        {deletingReview ? 'Deletando...' : 'Deletar'}
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -336,14 +392,78 @@ const GameDetail = ({ game, onBack, currentUser }) => {
         </div>
       </div>
 
+
       {/* Modal de Review */}
       {showReviewForm && (
         <ReviewForm
           gameId={gameDetails.id}
           currentUser={currentUser}
-          onSubmit={handleCreateReview}
-          onCancel={() => setShowReviewForm(false)}
+          review={editingReview}
+          onSubmit={async (reviewData) => {
+            if (editingReview) {
+              // Editar review existente
+              try {
+                await reviewService.updateReview(editingReview.id, reviewData);
+                setEditingReview(null);
+                setShowReviewForm(false);
+                await loadReviews(gameDetails.id);
+                await loadGameDetails(gameDetails.id);
+              } catch (error) {
+                alert('Erro ao editar avaliação: ' + (error.response?.data?.error || error.message));
+              }
+            } else {
+              // Criar nova review
+              await handleCreateReview(reviewData);
+            }
+          }}
+          onCancel={() => {
+            setEditingReview(null);
+            setShowReviewForm(false);
+          }}
         />
+      )}
+
+      {/* Modal de confirmação de exclusão */}
+      {deleteConfirm && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal">
+            <div className="delete-modal-header">
+              <h3>Confirmar Exclusão</h3>
+            </div>
+            <div className="delete-modal-content">
+              <p>Tem certeza que deseja deletar sua avaliação:</p>
+              <div className="review-to-delete">
+                <div className="review-info">
+                  <strong>Avaliação: ⭐ {deleteConfirm.ratings.average}/5</strong>
+                  {deleteConfirm.comment && (
+                    <div className="review-comment-preview">
+                      <em>"{deleteConfirm.comment.length > 100 
+                        ? deleteConfirm.comment.substring(0, 100) + '...' 
+                        : deleteConfirm.comment}"</em>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <p className="warning-text">Esta ação não pode ser desfeita!</p>
+            </div>
+            <div className="delete-modal-actions">
+              <button
+                onClick={cancelDeleteReview}
+                className="btn btn-secondary"
+                disabled={deletingReview}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => handleDeleteReview(deleteConfirm.id)}
+                className="btn btn-danger"
+                disabled={deletingReview}
+              >
+                {deletingReview ? 'Deletando...' : 'Confirmar Exclusão'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

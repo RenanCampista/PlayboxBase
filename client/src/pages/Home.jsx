@@ -109,11 +109,6 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
               <div className="game-info">
                 <h3 className="game-title">{game.name}</h3>
                 <div className="game-meta">
-                  {game.genres && game.genres.length > 0 && (
-                    <span className="game-genre">
-                      {game.genres[0]}
-                    </span>
-                  )}
                   <div className="game-ratings">
                     {game.metacriticScore && (
                       <span className="game-score">

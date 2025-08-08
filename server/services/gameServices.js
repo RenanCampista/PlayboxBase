@@ -291,6 +291,9 @@ const getGamesByGenre = async (genre) => {
                 metacriticScore: true,
                 screenshots: true,
                 createdAt: true,
+            },
+            orderBy: {
+                name: 'asc' // Ordenar por nome, do A ao Z
             }
         });
         
@@ -326,6 +329,9 @@ const getAllGames = async () => {
                 averageReviewRating: true,
                 screenshots: true,
                 createdAt: true,
+            }, 
+            orderBy: {
+                name: 'asc' // Ordenar por data de criação, do mais recente para o mais antigo
             }
         });
         

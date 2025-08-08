@@ -105,6 +105,11 @@ router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const reviewData = req.body;
+        // Supondo que o userId do usuário autenticado está em req.user.id
+        const review = await reviewServices.getReviewById(Number(id));
+        if (!review || review.review.userId !== req.body.userId) {
+            return res.status(403).json({ error: 'Permissão negada: apenas o autor pode editar.' });
+        }
         const result = await reviewServices.updateReview(Number(id), reviewData);
         res.status(result.status).json(result);
     } catch (error) {
@@ -123,7 +128,26 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await reviewServices.deleteReview(Number(id));
+        console.log('Tentando deletar review com ID:', id);
+        console.log('req.params:', req.params);
+        console.log('req.body:', req.body);
+        
+        // Verificar se o ID é válido
+        if (!id || isNaN(Number(id))) {
+            return res.status(400).json({ error: 'ID da avaliação inválido.' });
+        }
+        
+        const review = await reviewServices.getReviewById(Number(id));
+        
+        if (!review || review.status !== 200) {
+            return res.status(404).json({ error: 'Avaliação não encontrada.' });
+        }
+        
+        if (review.review.userId !== req.body.userId) {
+            return res.status(403).json({ error: 'Permissão negada: apenas o autor pode deletar.' });
+        }
+        
+        const result = await reviewServices.deleteReview(Number(id), req.body);
         res.status(result.status).json(result);
     } catch (error) {
         console.error('Erro ao deletar avaliação:', error);
