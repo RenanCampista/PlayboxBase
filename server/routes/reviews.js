@@ -105,6 +105,11 @@ router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const reviewData = req.body;
+        // Supondo que o userId do usuário autenticado está em req.user.id
+        const review = await reviewServices.getReviewById(Number(id));
+        if (!review || !review.review || review.review.userId !== req.user.id) {
+            return res.status(403).json({ error: 'Permissão negada: apenas o autor pode editar.' });
+        }
         const result = await reviewServices.updateReview(Number(id), reviewData);
         res.status(result.status).json(result);
     } catch (error) {
@@ -123,6 +128,11 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        // Supondo que o userId do usuário autenticado está em req.user.id
+        const review = await reviewServices.getReviewById(Number(id));
+        if (!review || !review.review || review.review.userId !== req.user.id) {
+            return res.status(403).json({ error: 'Permissão negada: apenas o autor pode deletar.' });
+        }
         const result = await reviewServices.deleteReview(Number(id));
         res.status(result.status).json(result);
     } catch (error) {
