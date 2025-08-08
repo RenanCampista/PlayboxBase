@@ -15,10 +15,10 @@ const GameDetail = ({ game, onBack, currentUser }) => {
   };
 
   // Função para deletar review
-  const handleDeleteReview = async (reviewId) => {
+  const handleDeleteReview = async (review) => {
     if (window.confirm('Tem certeza que deseja deletar esta avaliação?')) {
       try {
-        await reviewService.deleteReview(reviewId);
+        await reviewService.deleteReview(review);
         await loadReviews(gameDetails.id);
         await loadGameDetails(gameDetails.id);
       } catch (error) {
@@ -353,7 +353,7 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                       <button className="btn btn-warning btn-sm" onClick={() => handleEditReview(review)}>
                         Editar
                       </button>
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDeleteReview(review.id)}>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDeleteReview(review)}>
                         Deletar
                       </button>
                     </div>

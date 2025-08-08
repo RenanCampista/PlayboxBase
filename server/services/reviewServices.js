@@ -97,14 +97,8 @@ const getReviewById = async (id) => {
         const review = await prisma.review.findUnique({
             where: { id },
             select: {
-                game: true,
-                user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true
-                    }
-                },
+                gameId: true,
+                userId: true,
                 gameplayRating: true,
                 visualRating: true,
                 audioRating: true,
@@ -217,7 +211,9 @@ const updateReview = async (reviewId, reviewData) => {
             difficultyRating, 
             immersionRating, 
             historyRating, 
-            comment 
+            comment,
+            gameId,
+            userId
         } = reviewData;
 
         // Validar que todos os ratings estão entre 0 e 5
@@ -279,8 +275,11 @@ const updateReview = async (reviewId, reviewData) => {
  * @throws {Error} Erro se avaliação não encontrada
  * @description Também atualiza a média de avaliação do jogo relacionado
  */
-const deleteReview = async (reviewId) => {
+const deleteReview = async (reviewId, reviewData) => {
     try {
+        const {
+            userId
+        } = reviewData;
         // Verificar se a avaliação existe
         const existingReview = await prisma.review.findUnique({
             where: { id: reviewId }
