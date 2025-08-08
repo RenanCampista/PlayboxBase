@@ -6,6 +6,26 @@ import '../styles/GameDetail.css';
 import '../styles/GameRadarChart.css';
 
 const GameDetail = ({ game, onBack, currentUser }) => {
+  const [editingReview, setEditingReview] = useState(null);
+
+  // Função para editar review
+  const handleEditReview = (review) => {
+    setEditingReview(review);
+    setShowReviewForm(true);
+  };
+
+  // Função para deletar review
+  const handleDeleteReview = async (reviewId) => {
+    if (window.confirm('Tem certeza que deseja deletar esta avaliação?')) {
+      try {
+        await reviewService.deleteReview(reviewId);
+        await loadReviews(gameDetails.id);
+        await loadGameDetails(gameDetails.id);
+      } catch (error) {
+        alert('Erro ao deletar avaliação: ' + (error.response?.data?.error || error.message));
+      }
+    }
+  };
   const [gameDetails, setGameDetails] = useState(game);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -327,6 +347,17 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                       <span className="aspect-value">{review.ratings.history || '-'}/5</span>
                     </div>
                   </div>
+                  {/* Botões de editar/deletar visíveis apenas para o autor */}
+                  {currentUser && review.user?.id === currentUser.id && (
+                    <div className="review-actions">
+                      <button className="btn btn-warning btn-sm" onClick={() => handleEditReview(review)}>
+                        Editar
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDeleteReview(review.id)}>
+                        Deletar
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -336,13 +367,34 @@ const GameDetail = ({ game, onBack, currentUser }) => {
         </div>
       </div>
 
+
       {/* Modal de Review */}
       {showReviewForm && (
         <ReviewForm
           gameId={gameDetails.id}
           currentUser={currentUser}
-          onSubmit={handleCreateReview}
-          onCancel={() => setShowReviewForm(false)}
+          review={editingReview}
+          onSubmit={async (reviewData) => {
+            if (editingReview) {
+              // Editar review existente
+              try {
+                await reviewService.updateReview(editingReview.id, reviewData);
+                setEditingReview(null);
+                setShowReviewForm(false);
+                await loadReviews(gameDetails.id);
+                await loadGameDetails(gameDetails.id);
+              } catch (error) {
+                alert('Erro ao editar avaliação: ' + (error.response?.data?.error || error.message));
+              }
+            } else {
+              // Criar nova review
+              await handleCreateReview(reviewData);
+            }
+          }}
+          onCancel={() => {
+            setEditingReview(null);
+            setShowReviewForm(false);
+          }}
         />
       )}
     </div>
