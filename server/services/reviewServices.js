@@ -94,8 +94,14 @@ const createReview = async (reviewData) => {
  */
 const getReviewById = async (id) => {
     try {
+        console.log('getReviewById called with id:', id, 'type:', typeof id);
+        
+        if (!id || isNaN(Number(id))) {
+            throw new Error('ID da avaliação inválido ou não fornecido');
+        }
+        
         const review = await prisma.review.findUnique({
-            where: { id },
+            where: { id: Number(id) },
             select: {
                 gameId: true,
                 userId: true,
@@ -111,9 +117,11 @@ const getReviewById = async (id) => {
                 updatedAt: true,
             }
         });
+        
         if (!review) {
             return { status: 404, message: 'Avaliação não encontrada.' };
         }
+        
         return { status: 200, review };
     } catch (error) {
         console.error('Erro ao buscar avaliação:', error);
@@ -277,31 +285,62 @@ const updateReview = async (reviewId, reviewData) => {
  */
 const deleteReview = async (reviewId, reviewData) => {
     try {
+        console.log('deleteReview called with:', { reviewId, reviewData });
+        
         const {
             userId
         } = reviewData;
-        // Verificar se a avaliação existe
-        const existingReview = await prisma.review.findUnique({
-            where: { id: reviewId }
+        
+        // Usar deleteMany para verificar se a review existe e é do usuário correto
+        // Esta operação é mais segura contra race conditions
+        const deletedReviews = await prisma.review.deleteMany({
+            where: { 
+                id: reviewId,
+                userId: userId
+            }
         });
-        if (!existingReview) {
-            return { status: 404, message: 'Avaliação não encontrada.' };
+        
+        if (deletedReviews.count === 0) {
+            return { status: 404, message: 'Avaliação não encontrada ou você não tem permissão para deletá-la.' };
         }
 
-        // Salvar o gameId antes de deletar
-        const gameId = existingReview.gameId;
-
-        // Deletar avaliação
-        await prisma.review.delete({
-            where: { id: reviewId }
+        // Como usamos deleteMany, precisamos buscar o gameId antes da deleção
+        // Vamos usar uma transação para garantir atomicidade
+        const result = await prisma.$transaction(async (prisma) => {
+            // Primeiro, buscar a review para obter o gameId
+            const existingReview = await prisma.review.findUnique({
+                where: { id: reviewId },
+                select: { gameId: true, userId: true }
+            });
+            
+            if (!existingReview) {
+                throw new Error('Review não encontrada');
+            }
+            
+            if (existingReview.userId !== userId) {
+                throw new Error('Permissão negada');
+            }
+            
+            // Deletar a review
+            await prisma.review.delete({
+                where: { id: reviewId }
+            });
+            
+            return existingReview.gameId;
         });
 
         // Atualizar a média de avaliação do jogo
-        await updateGameAverageRating(gameId);
+        await updateGameAverageRating(result);
 
         return { status: 200, message: 'Avaliação deletada com sucesso.' };
     } catch (error) {
         console.error('Erro ao deletar avaliação:', error);
+        
+        // Verificar se é um erro de record não encontrado
+        if (error.code === 'P2025') {
+            return { status: 404, message: 'Avaliação não encontrada ou já foi deletada.' };
+        }
+        
         throw new Error('Erro ao deletar avaliação');
     }
 }
