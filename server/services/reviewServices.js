@@ -94,8 +94,6 @@ const createReview = async (reviewData) => {
  */
 const getReviewById = async (id) => {
     try {
-        console.log('getReviewById called with id:', id, 'type:', typeof id);
-        
         if (!id || isNaN(Number(id))) {
             throw new Error('ID da avaliação inválido ou não fornecido');
         }

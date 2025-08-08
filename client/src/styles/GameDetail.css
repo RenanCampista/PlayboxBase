@@ -293,7 +293,9 @@
   border: 1px solid #555;
   border-radius: 8px;
   padding: 16px;
+  padding-bottom: 50px; /* Espaço extra para os botões */
   background-color: #404040;
+  position: relative; /* Para posicionamento absoluto dos botões */
 }
 
 .review-header {
@@ -586,6 +588,65 @@
   cursor: not-allowed;
 }
 
+/* Botões de ação das reviews (editar/deletar) */
+.review-actions {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.review-actions .btn {
+  padding: 8px 16px; /* Aumentado de 6px 12px */
+  font-size: 0.8rem; /* Aumentado de 0.75rem */
+  border-radius: 20px; /* Mais arredondado como os outros botões */
+  border: none;
+  cursor: pointer;
+  font-weight: 600; /* Peso da fonte similar aos outros botões */
+  transition: all 0.3s ease;
+  min-width: auto;
+  height: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.review-actions .btn-sm {
+  padding: 6px 12px; /* Aumentado de 4px 8px */
+  font-size: 0.75rem; /* Aumentado de 0.7rem */
+  border-radius: 18px; /* Proporcional ao tamanho menor */
+}
+
+.review-actions .btn-warning {
+  background: #29B6F6; /* Azul como antes */
+  color: white;
+  box-shadow: #29B6F6;
+}
+
+.review-actions .btn-warning:hover {
+  background: #29B6F6;
+  transform: translateY(-1px);
+}
+
+.review-actions .btn-danger {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
+}
+
+.review-actions .btn-danger:hover {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+}
+
+.review-actions .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   .game-hero {
@@ -662,5 +723,24 @@
     background: #f9f9f9;
     padding: 8px 12px;
     border-radius: 6px;
+  }
+}
+
+/* Responsividade para botões de ação das reviews */
+@media (max-width: 600px) {
+  .review-item {
+    padding-bottom: 60px; /* Mais espaço em mobile */
+  }
+  
+  .review-actions {
+    flex-direction: column;
+    gap: 4px;
+    bottom: 8px;
+    right: 8px;
+  }
+  
+  .review-actions .btn {
+    font-size: 0.75rem; /* Aumentado de 0.7rem */
+    padding: 6px 12px; /* Aumentado de 4px 8px */
   }
 }

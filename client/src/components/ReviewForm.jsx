@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/ReviewForm.css';
 
-const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser }) => {
+const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser, review }) => {
   const [formData, setFormData] = useState({
     gameplayRating: 0,
     visualRating: 0,
@@ -13,6 +13,32 @@ const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser }) => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Preencher formulário com dados da review existente quando estiver editando
+  useEffect(() => {
+    if (review) {
+      setFormData({
+        gameplayRating: review.ratings?.gameplay || 0,
+        visualRating: review.ratings?.visual || 0,
+        audioRating: review.ratings?.audio || 0,
+        difficultyRating: review.ratings?.difficulty || 0,
+        immersionRating: review.ratings?.immersion || 0,
+        historyRating: review.ratings?.history || 0,
+        comment: review.comment || ''
+      });
+    } else {
+      // Resetar formulário quando criar nova review
+      setFormData({
+        gameplayRating: 0,
+        visualRating: 0,
+        audioRating: 0,
+        difficultyRating: 0,
+        immersionRating: 0,
+        historyRating: 0,
+        comment: ''
+      });
+    }
+  }, [review]);
 
   const handleRatingChange = (category, rating) => {
     setFormData(prev => ({
@@ -85,7 +111,7 @@ const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser }) => {
     <div className="review-form-overlay">
       <div className="review-form-container">
         <div className="review-form-header">
-          <h2>Avaliar Jogo</h2>
+          <h2>{review ? 'Editar Avaliação' : 'Avaliar Jogo'}</h2>
           <button 
             type="button" 
             className="close-button"
@@ -156,7 +182,10 @@ const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser }) => {
               className="btn btn-primary"
               disabled={loading}
             >
-              {loading ? 'Publicando...' : 'Publicar Avaliação'}
+              {loading ? 
+                (review ? 'Salvando...' : 'Publicando...') : 
+                (review ? 'Salvar Alterações' : 'Publicar Avaliação')
+              }
             </button>
           </div>
         </form>
