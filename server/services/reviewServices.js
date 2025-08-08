@@ -96,9 +96,25 @@ const getReviewById = async (id) => {
     try {
         const review = await prisma.review.findUnique({
             where: { id },
-            include: {
+            select: {
                 game: true,
-                user: true
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                },
+                gameplayRating: true,
+                visualRating: true,
+                audioRating: true,
+                difficultyRating: true,
+                immersionRating: true,
+                historyRating: true,
+                averageRating: true,
+                comment: true,
+                createdAt: true,
+                updatedAt: true,
             }
         });
         if (!review) {
