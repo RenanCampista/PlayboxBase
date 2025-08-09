@@ -1,4 +1,26 @@
 /**
+ * Remove o próprio usuário do sistema
+ * @param {number} userId - ID do usuário
+ * @returns {Promise<Object>} Mensagem de sucesso
+ * @throws {Error} Erro se usuário não encontrado
+ */
+const deleteOwnUser = async (userId) => {
+    try {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            throw new Error("Usuário não encontrado.");
+        }
+        await prisma.user.delete({ where: { id: userId } });
+        return { status: 200, message: "Sua conta foi excluída com sucesso." };
+    } catch (error) {
+        if (error.code === 'P2025') {
+            throw new Error("Usuário não encontrado.");
+        }
+        console.error('Erro ao excluir a própria conta:', error);
+        throw new Error("Erro ao excluir a própria conta: " + error.message);
+    }
+}
+/**
  * @fileoverview Serviços de usuário
  * @description Contém todas as funções relacionadas ao gerenciamento de usuários
  */
@@ -6,6 +28,7 @@
 const prisma = require("./prisma.js")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+
 
 // Chave secreta para JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'chave-secreta';
@@ -312,14 +335,20 @@ const authenticateToken = (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ message: "Acesso negado. Token não fornecido." });
+        return res.status(401).json({ error: "Acesso negado. Token não fornecido." });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
-            return res.status(403).json({ message: "Token inválido." });
+            return res.status(403).json({ error: "Token inválido." });
         }
-        req.user = user;
+        // decoded contém id, isAdmin, etc
+        req.user = {
+            id: decoded.id,
+            name: decoded.name,
+            email: decoded.email,
+            isAdmin: decoded.isAdmin
+        };
         next();
     });
 }
@@ -502,6 +531,7 @@ module.exports = {
     getUserByEmail,
     updateUser,
     deleteUser,
+    deleteOwnUser,
     authenticateUser,
     verifyToken,
     authenticateToken,

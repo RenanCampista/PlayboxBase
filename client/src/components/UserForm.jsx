@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import '../styles/UserForm.css';
 
 const UserForm = ({ user, onSubmit, onCancel }) => {
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
+    password: '', // Para criação ou troca
+    newPassword: '', // Para edição de senha
   });
 
   useEffect(() => {
@@ -14,6 +16,7 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
         name: user.name || '',
         email: user.email || '',
         password: '', // Não mostra a senha atual
+        newPassword: '',
       });
     }
   }, [user]);
@@ -28,7 +31,13 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    // Se estiver editando e o campo newPassword estiver preenchido, envia como password
+    const dataToSend = { ...formData };
+    if (user && formData.newPassword) {
+      dataToSend.password = formData.newPassword;
+    }
+    delete dataToSend.newPassword;
+    onSubmit(dataToSend);
   };
 
   return (
@@ -69,6 +78,20 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
               value={formData.password}
               onChange={handleChange}
               required
+            />
+          </div>
+        )}
+
+        {user && (
+          <div className="form-group">
+            <label htmlFor="newPassword">Nova Senha:</label>
+            <input
+              type="password"
+              id="newPassword"
+              name="newPassword"
+              value={formData.newPassword}
+              onChange={handleChange}
+              placeholder="Deixe em branco para não alterar"
             />
           </div>
         )}

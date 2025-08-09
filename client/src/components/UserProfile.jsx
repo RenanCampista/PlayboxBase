@@ -122,6 +122,25 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
               >
                 Editar Perfil
               </button>
+              <button
+                onClick={async () => {
+                  if (window.confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')) {
+                    try {
+                      const { userService, authService } = await import('../services/api');
+                      const result = await userService.deleteOwnAccount();
+                      // Só remove o token após exclusão bem-sucedida
+                      await authService.logout();
+                      window.location.href = '/login';
+                    } catch (err) {
+                      alert('Erro ao excluir conta: ' + (err.response?.data?.error || err.message));
+                    }
+                  }
+                }}
+                className="btn btn-danger"
+                style={{ marginLeft: '1rem' }}
+              >
+                Excluir Conta
+              </button>
             </div>
           </div>
         )}
