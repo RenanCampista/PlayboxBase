@@ -10,7 +10,25 @@ const deleteOwnUser = async (userId) => {
         if (!user) {
             throw new Error("Usuário não encontrado.");
         }
-        await prisma.user.delete({ where: { id: userId } });
+
+        // Usar transação para garantir atomicidade
+        await prisma.$transaction(async (prisma) => {
+            // Deletar todas as reviews do usuário primeiro
+            await prisma.review.deleteMany({
+                where: { userId: userId }
+            });
+
+            // Deletar todos os catálogos do usuário
+            await prisma.catalog.deleteMany({
+                where: { userId: userId }
+            });
+
+            // Agora deletar o usuário
+            await prisma.user.delete({
+                where: { id: userId }
+            });
+        });
+
         return { status: 200, message: "Sua conta foi excluída com sucesso." };
     } catch (error) {
         if (error.code === 'P2025') {
@@ -262,8 +280,22 @@ const deleteUser = async (userId) => {
             throw new Error("Usuário não encontrado.");
         }
 
-        await prisma.user.delete({
-            where: { id: userId }
+        // Usar transação para garantir atomicidade
+        await prisma.$transaction(async (prisma) => {
+            // Deletar todas as reviews do usuário primeiro
+            await prisma.review.deleteMany({
+                where: { userId: userId }
+            });
+
+            // Deletar todos os catálogos do usuário
+            await prisma.catalog.deleteMany({
+                where: { userId: userId }
+            });
+
+            // Agora deletar o usuário
+            await prisma.user.delete({
+                where: { id: userId }
+            });
         });
 
         return { status: 200, message: "Usuário deletado com sucesso." };
