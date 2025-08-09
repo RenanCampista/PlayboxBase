@@ -3,6 +3,26 @@ import { gameService } from '../services/api';
 import '../styles/Home.css';
 
 const Home = ({ onGameSelect, searchTerm = '' }) => {
+  const [showGenreDropdown, setShowGenreDropdown] = useState(false);
+  const handleGenreCheckbox = (genre) => {
+    if (genreFilter.includes(genre)) {
+      setGenreFilter(genreFilter.filter(g => g !== genre));
+    } else {
+      setGenreFilter([...genreFilter, genre]);
+    }
+  };
+  const handleDropdownBlur = (e) => {
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setShowGenreDropdown(false);
+    }
+  };
+  const [games, setGames] = useState([]);
+  const [filteredGames, setFilteredGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [genreFilter, setGenreFilter] = useState([]);
+  // Extrair gêneros únicos dos jogos
+  const allGenres = Array.from(new Set(games.flatMap(game => game.genres || []))).sort();
   const [sortOption, setSortOption] = useState('nameAsc');
   // Função para ordenar os jogos
   const sortGames = (games) => {
@@ -31,10 +51,7 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
     }
     return sorted;
   };
-  const [games, setGames] = useState([]);
-  const [filteredGames, setFilteredGames] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
 
   useEffect(() => {
     loadGames();
@@ -93,7 +110,13 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
     );
   }
 
-  const displayGames = sortGames(searchTerm ? filteredGames : games);
+  let genreFilteredGames = searchTerm ? filteredGames : games;
+  if (genreFilter.length > 0) {
+    genreFilteredGames = genreFilteredGames.filter(game =>
+      game.genres && genreFilter.every(selected => game.genres.includes(selected))
+    );
+  }
+  const displayGames = sortGames(genreFilteredGames);
       <div className="sort-bar">
         <label htmlFor="sort-select">Ordenar por:</label>
         <select
@@ -125,7 +148,7 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
             value={sortOption}
             onChange={e => setSortOption(e.target.value)}
             className="sort-select"
-            style={{ padding: '4px 8px', borderRadius: 4 }}
+            style={{ padding: '4px 8px', borderRadius: 16 }}
           >
             <option value="nameAsc">Nome (A-Z)</option>
             <option value="nameDesc">Nome (Z-A)</option>
@@ -134,6 +157,29 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
             <option value="userRatingDesc">Nota Média dos Usuários decrescente</option>
             <option value="userRatingAsc">Nota Média dos Usuários crescente</option>
           </select>
+        </div>
+        <div className="sort-bar" style={{ marginTop: 20, marginBottom: 10, textAlign: 'center' }}>
+          <label style={{ marginRight: 8 }}>Filtrar por gênero:</label>
+          <div className="genre-dropdown" tabIndex={0} onBlur={handleDropdownBlur} style={{ position: 'relative', minWidth: 160 }}>
+            <button type="button" className="sort-select" style={{ padding: '8px 16px', borderRadius: 16, width: '100%' }} onClick={() => setShowGenreDropdown(s => !s)}>
+              {genreFilter.length > 0 ? `${genreFilter.length} selecionado(s)` : 'Selecionar gêneros'}
+            </button>
+            {showGenreDropdown && (
+              <div className="genre-dropdown-menu" style={{ position: 'absolute', top: '110%', left: 0, background: '#222', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.2)', zIndex: 10, padding: 12, minWidth: 180 }}>
+                {allGenres.map(genre => (
+                  <label key={genre} style={{ display: 'flex', alignItems: 'center', marginBottom: 6, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={genreFilter.includes(genre)}
+                      onChange={() => handleGenreCheckbox(genre)}
+                      style={{ marginRight: 8 }}
+                    />
+                    {genre}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
