@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { gameService, reviewService, catalogService } from '../services/api';
 import ReviewForm from '../components/ReviewForm';
 import GameRadarChart from '../components/GameRadarChart';
@@ -52,6 +52,17 @@ const GameDetail = ({ game, onBack, currentUser }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
 
+  const checkIfFavorite = useCallback(async (gameId) => {
+    if (!currentUser) return;
+    
+    try {
+      const isFav = await catalogService.isGameInFavorites(currentUser.id, gameId);
+      setIsFavorite(isFav);
+    } catch (err) {
+      console.error('Erro ao verificar favoritos:', err);
+    }
+  }, [currentUser]);
+
   useEffect(() => {
     if (game && game.id) {
       loadGameDetails(game.id);
@@ -60,7 +71,7 @@ const GameDetail = ({ game, onBack, currentUser }) => {
         checkIfFavorite(game.id);
       }
     }
-  }, [game, currentUser]);
+  }, [game, currentUser, checkIfFavorite]);
 
   const loadGameDetails = async (gameId) => {
     try {
@@ -87,15 +98,6 @@ const GameDetail = ({ game, onBack, currentUser }) => {
       setReviews([]);
     } finally {
       setReviewsLoading(false);
-    }
-  };
-
-  const checkIfFavorite = async (gameId) => {
-    try {
-      const isFav = await catalogService.isGameInFavorites(currentUser.id, gameId);
-      setIsFavorite(isFav);
-    } catch (err) {
-      console.error('Erro ao verificar favoritos:', err);
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { catalogService } from '../services/api';
 import '../styles/UserProfile.css';
 
@@ -8,19 +8,9 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (currentUser) {
-      loadFavoriteGames();
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (activeTab === 'favorites' && currentUser && favoriteGames.length === 0 && !loading) {
-      loadFavoriteGames();
-    }
-  }, [activeTab, currentUser, favoriteGames.length, loading]);
-
-  const loadFavoriteGames = async () => {
+  const loadFavoriteGames = useCallback(async () => {
+    if (!currentUser) return;
+    
     try {
       setLoading(true);
       setError(null);
@@ -32,7 +22,19 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser) {
+      loadFavoriteGames();
+    }
+  }, [currentUser, loadFavoriteGames]);
+
+  useEffect(() => {
+    if (activeTab === 'favorites' && currentUser && favoriteGames.length === 0 && !loading) {
+      loadFavoriteGames();
+    }
+  }, [activeTab, currentUser, favoriteGames.length, loading, loadFavoriteGames]);
 
   const handleGameClick = (game) => {
     if (onGameSelect) {
