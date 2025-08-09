@@ -3,6 +3,34 @@ import { gameService } from '../services/api';
 import '../styles/Home.css';
 
 const Home = ({ onGameSelect, searchTerm = '' }) => {
+  const [sortOption, setSortOption] = useState('nameAsc');
+  // Função para ordenar os jogos
+  const sortGames = (games) => {
+    const sorted = [...games];
+    switch (sortOption) {
+      case 'nameAsc':
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'nameDesc':
+        sorted.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'metacriticDesc':
+        sorted.sort((a, b) => (b.metacriticScore || 0) - (a.metacriticScore || 0));
+        break;
+      case 'metacriticAsc':
+        sorted.sort((a, b) => (a.metacriticScore || 0) - (b.metacriticScore || 0));
+        break;
+      case 'userRatingDesc':
+        sorted.sort((a, b) => (b.averageReviewRating || 0) - (a.averageReviewRating || 0));
+        break;
+      case 'userRatingAsc':
+        sorted.sort((a, b) => (a.averageReviewRating || 0) - (b.averageReviewRating || 0));
+        break;
+      default:
+        break;
+    }
+    return sorted;
+  };
   const [games, setGames] = useState([]);
   const [filteredGames, setFilteredGames] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +93,20 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
     );
   }
 
-  const displayGames = searchTerm ? filteredGames : games;
+  const displayGames = sortGames(searchTerm ? filteredGames : games);
+      <div className="sort-bar">
+        <label htmlFor="sort-select">Ordenar por:</label>
+        <select
+          id="sort-select"
+          value={sortOption}
+          onChange={e => setSortOption(e.target.value)}
+          className="sort-select"
+        >
+          <option value="name">Nome (A-Z)</option>
+          <option value="metacritic">Nota Metacritic</option>
+          <option value="userRating">Nota Média dos Usuários</option>
+        </select>
+      </div>
 
   return (
     <div className="home-container">
@@ -77,6 +118,23 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
             Resultados para: "{searchTerm}" ({displayGames.length} jogos encontrados)
           </p>
         )}
+        <div className="sort-bar" style={{ marginTop: 20, marginBottom: 10, textAlign: 'center' }}>
+          <label htmlFor="sort-select" style={{ marginRight: 8 }}>Ordenar por:</label>
+          <select
+            id="sort-select"
+            value={sortOption}
+            onChange={e => setSortOption(e.target.value)}
+            className="sort-select"
+            style={{ padding: '4px 8px', borderRadius: 4 }}
+          >
+            <option value="nameAsc">Nome (A-Z)</option>
+            <option value="nameDesc">Nome (Z-A)</option>
+            <option value="metacriticDesc">Nota Metacritic decrescente</option>
+            <option value="metacriticAsc">Nota Metacritic crescente</option>
+            <option value="userRatingDesc">Nota Média dos Usuários decrescente</option>
+            <option value="userRatingAsc">Nota Média dos Usuários crescente</option>
+          </select>
+        </div>
       </div>
 
       {displayGames.length === 0 ? (
