@@ -289,20 +289,6 @@ const deleteReview = async (reviewId, reviewData) => {
             userId
         } = reviewData;
         
-        // Usar deleteMany para verificar se a review existe e é do usuário correto
-        // Esta operação é mais segura contra race conditions
-        const deletedReviews = await prisma.review.deleteMany({
-            where: { 
-                id: reviewId,
-                userId: userId
-            }
-        });
-        
-        if (deletedReviews.count === 0) {
-            return { status: 404, message: 'Avaliação não encontrada ou você não tem permissão para deletá-la.' };
-        }
-
-        // Como usamos deleteMany, precisamos buscar o gameId antes da deleção
         // Vamos usar uma transação para garantir atomicidade
         const result = await prisma.$transaction(async (prisma) => {
             // Primeiro, buscar a review para obter o gameId
@@ -326,6 +312,7 @@ const deleteReview = async (reviewId, reviewData) => {
             
             return existingReview.gameId;
         });
+        console.log(result)
 
         // Atualizar a média de avaliação do jogo
         await updateGameAverageRating(result);
