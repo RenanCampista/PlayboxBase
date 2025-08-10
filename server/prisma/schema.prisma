@@ -62,7 +62,7 @@ model Game {
   platforms           String      // String separada por vírgulas: "PC,PlayStation,Xbox"
   genres              String      // String separada por vírgulas: "ACTION,RPG"
   publishers          String      // String separada por vírgulas: "Publisher1,Publisher2"
-  metacriticScore     Int?
+  metacriticScore     Int
   averageReviewRating Float?      // Média dos averageRating dos reviews
   screenshots         String      @db.Text // String separada por vírgulas (URLs)
   reviews             Review[]
