@@ -141,44 +141,45 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
             Resultados para: "{searchTerm}" ({displayGames.length} jogos encontrados)
           </p>
         )}
-        <div className="sort-bar" style={{ marginTop: 20, marginBottom: 10, textAlign: 'center' }}>
-          <label htmlFor="sort-select" style={{ marginRight: 8 }}>Ordenar por:</label>
-          <select
-            id="sort-select"
-            value={sortOption}
-            onChange={e => setSortOption(e.target.value)}
-            className="sort-select"
-            style={{ padding: '4px 8px', borderRadius: 16 }}
-          >
-            <option value="nameAsc">Nome (A-Z)</option>
-            <option value="nameDesc">Nome (Z-A)</option>
-            <option value="metacriticDesc">Nota Metacritic decrescente</option>
-            <option value="metacriticAsc">Nota Metacritic crescente</option>
-            <option value="userRatingDesc">Nota Média dos Usuários decrescente</option>
-            <option value="userRatingAsc">Nota Média dos Usuários crescente</option>
-          </select>
-        </div>
-        <div className="sort-bar" style={{ marginTop: 20, marginBottom: 10, textAlign: 'center' }}>
-          <label style={{ marginRight: 8 }}>Filtrar por gênero:</label>
-          <div className="genre-dropdown" tabIndex={0} onBlur={handleDropdownBlur} style={{ position: 'relative', minWidth: 160 }}>
-            <button type="button" className="sort-select" style={{ padding: '8px 16px', borderRadius: 16, width: '100%' }} onClick={() => setShowGenreDropdown(s => !s)}>
-              {genreFilter.length > 0 ? `${genreFilter.length} selecionado(s)` : 'Selecionar gêneros'}
-            </button>
-            {showGenreDropdown && (
-              <div className="genre-dropdown-menu" style={{ position: 'absolute', top: '110%', left: 0, background: '#222', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.2)', zIndex: 10, padding: 12, minWidth: 180 }}>
-                {allGenres.map(genre => (
-                  <label key={genre} style={{ display: 'flex', alignItems: 'center', marginBottom: 6, cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={genreFilter.includes(genre)}
-                      onChange={() => handleGenreCheckbox(genre)}
-                      style={{ marginRight: 8 }}
-                    />
-                    {genre}
-                  </label>
-                ))}
-              </div>
-            )}
+        <div className="filter-controls">
+          <div className="filter-left">
+            <label style={{ marginRight: 8, color: '#29B6F6', fontWeight: 500 }}>Filtrar por gênero:</label>
+            <div className="genre-dropdown" tabIndex={0} onBlur={handleDropdownBlur} style={{ position: 'relative', minWidth: 160 }}>
+              <button type="button" className="filter-button" onClick={() => setShowGenreDropdown(s => !s)}>
+                {genreFilter.length > 0 ? `${genreFilter.length} selecionado(s)` : 'Selecionar gêneros'}
+              </button>
+              {showGenreDropdown && (
+                <div className="genre-dropdown-menu" style={{ position: 'absolute', top: '110%', left: 0, background: '#222', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.2)', zIndex: 10, padding: 12, minWidth: 180 }}>
+                  {allGenres.map(genre => (
+                    <label key={genre} style={{ display: 'flex', alignItems: 'center', marginBottom: 6, cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={genreFilter.includes(genre)}
+                        onChange={() => handleGenreCheckbox(genre)}
+                        style={{ marginRight: 8 }}
+                      />
+                      {genre}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="filter-right">
+            <label htmlFor="sort-select" style={{ marginRight: 8, color: '#29B6F6', fontWeight: 500 }}>Ordenar por:</label>
+            <select
+              id="sort-select"
+              value={sortOption}
+              onChange={e => setSortOption(e.target.value)}
+              className="sort-button"
+            >
+              <option value="nameAsc">Nome (A-Z)</option>
+              <option value="nameDesc">Nome (Z-A)</option>
+              <option value="metacriticDesc">Metacritic ↓</option>
+              <option value="metacriticAsc">Metacritic ↑</option>
+              <option value="userRatingDesc">Usuários ↓</option>
+              <option value="userRatingAsc">Usuários ↑</option>
+            </select>
           </div>
         </div>
       </div>

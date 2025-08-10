@@ -1,4 +1,52 @@
-/* Estilo para o botão/dropdown de ordenação */
+/* Estilos para os controles de filtro e ordenação */
+.filter-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.filter-left,
+.filter-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-button,
+.sort-button {
+  background: #29B6F6;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(41, 182, 246, 0.2);
+}
+
+.filter-button:hover,
+.sort-button:hover {
+  background: #1e88e5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(41, 182, 246, 0.3);
+}
+
+.filter-button:focus,
+.sort-button:focus {
+  outline: none;
+  background: #1976d2;
+}
+
+.sort-button {
+  min-width: 140px;
+}
+
+/* Estilo para o botão/dropdown de ordenação - mantido para compatibilidade */
 .sort-bar {
   display: flex;
   align-items: center;
@@ -238,6 +286,21 @@
 
   .game-image {
     height: 180px;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+
+  .filter-left,
+  .filter-right {
+    justify-content: center;
+  }
+
+  .sort-button {
+    min-width: 120px;
   }
 }
 
