@@ -9,7 +9,7 @@ const fs = require('fs');
 /**
  * Converte gêneros do JSON para o formato do enum
  * @param {string[]} genres - Array de gêneros
- * @returns {string} Gêneros convertidos separados por vírgula
+ * @returns {string|null} Gêneros convertidos separados por vírgula, ou null se algum gênero for inválido
  */
 const convertGenresToEnum = (genres) => {
     const genreMap = {
@@ -25,7 +25,16 @@ const convertGenresToEnum = (genres) => {
         'Sports': 'SPORTS'
     };
     
-    const convertedGenres = genres.map(genre => genreMap[genre] || 'PLACEHOLDER');
+    const convertedGenres = [];
+    for (const genre of genres) {
+        const mappedGenre = genreMap[genre];
+        if (!mappedGenre) {
+            // Se algum gênero não é reconhecido, retorna null para rejeitar o jogo
+            return null;
+        }
+        convertedGenres.push(mappedGenre);
+    }
+    
     return convertedGenres.join(',');
 };
 
@@ -84,8 +93,27 @@ const createGame = async (gameData) => {
     const { name, description, backgroundImage, releaseDate, playtime, platforms, genres, publishers, metacriticScore, screenshots } = gameData;
 
     try {
+        // Validar campos obrigatórios
+        if (!name) {
+            throw new Error('Nome do jogo é obrigatório');
+        }
+        
+        if (!releaseDate) {
+            throw new Error('Data de lançamento é obrigatória');
+        }
+        
+        // Converter e validar releaseDate
+        const parsedReleaseDate = new Date(releaseDate);
+        if (isNaN(parsedReleaseDate.getTime())) {
+            throw new Error('Data de lançamento inválida');
+        }
+
         // Converter arrays para strings separadas por vírgula
         const convertedGenres = convertGenresToEnum(genres);
+        if (!convertedGenres) {
+            throw new Error('Jogo contém gêneros não suportados');
+        }
+        
         const platformsString = arrayToString(platforms);
         const publishersString = arrayToString(publishers);
         const screenshotsString = arrayToString(screenshots);
@@ -106,7 +134,7 @@ const createGame = async (gameData) => {
                 name,
                 description,
                 backgroundImage,
-                releaseDate,
+                releaseDate: parsedReleaseDate,
                 playtime,
                 platforms: platformsString,
                 genres: convertedGenres,
@@ -214,8 +242,24 @@ const updateGame = async (id, gameData) => {
     const { name, description, backgroundImage, releaseDate, playtime, platforms, genres, publishers, metacriticScore, screenshots } = gameData;
 
     try {
+        // Validar e converter releaseDate se fornecida
+        let parsedReleaseDate = undefined;
+        if (releaseDate) {
+            parsedReleaseDate = new Date(releaseDate);
+            if (isNaN(parsedReleaseDate.getTime())) {
+                throw new Error('Data de lançamento inválida');
+            }
+        }
+
         // Converter arrays para strings separadas por vírgula se fornecidos
-        const convertedGenres = genres ? convertGenresToEnum(genres) : undefined;
+        let convertedGenres = undefined;
+        if (genres) {
+            convertedGenres = convertGenresToEnum(genres);
+            if (convertedGenres === null) {
+                throw new Error('Jogo contém gêneros não suportados');
+            }
+        }
+        
         const platformsString = platforms ? arrayToString(platforms) : undefined;
         const publishersString = publishers ? arrayToString(publishers) : undefined;
         const screenshotsString = screenshots ? arrayToString(screenshots) : undefined;
@@ -226,7 +270,7 @@ const updateGame = async (id, gameData) => {
                 name,
                 description,
                 backgroundImage,
-                releaseDate,
+                releaseDate: parsedReleaseDate,
                 playtime,
                 platforms: platformsString,
                 genres: convertedGenres,

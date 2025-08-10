@@ -9,7 +9,7 @@ import re
 load_dotenv()
 API_KEY = os.getenv('RAWG_API_KEY')
 BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:5000')
-MAX_NUM_GAMES = 100
+MAX_NUM_GAMES = 120
 
 
 class GameIngestionClient:
@@ -41,20 +41,30 @@ class RawgClient:
 
     def format_game_data(self, game: dict, screenshots: list):
         """Format game data for better readability."""
+        # Verificar se o jogo tem pontuação no Metacritic
+        metacritic_score = game.get('metacritic')
+        if not metacritic_score:
+            return None  # Descartar jogos sem pontuação no Metacritic
+        
+        # Verificar se todos os gêneros são válidos
+        genres = self.get_genres_names(game.get('genres', []))
+        if not self.are_genres_valid(genres):
+            return None  # Descartar jogos com gêneros inválidos
+        
         # Clean HTML tags from description
         raw_description = game.get('description', '')
         clean_description = clean_html_tags(raw_description)
         
         formatted_game = {
                 'name': game.get('name'),
-                'released': game.get('released'),
+                'releaseDate': game.get('released'),
                 'description': clean_description,
-                'background_image': game.get('background_image'),
+                'backgroundImage': game.get('background_image'),
                 'playtime': game.get('playtime'),
                 'platforms': self.get_platforms_names(game.get('platforms', [])),
-                'genres': self.get_genres_names(game.get('genres', [])),
+                'genres': genres,
                 'publishers': self.get_publishers_names(game.get('publishers', [])),
-                'metacritic': game.get('metacritic'),
+                'metacriticScore': metacritic_score,
                 'screenshots': screenshots
             }
         return formatted_game
@@ -85,6 +95,24 @@ class RawgClient:
             if name:
                 genres_names.append(name)
         return genres_names
+    
+    def are_genres_valid(self, genres: list) -> bool:
+        """Check if all genres are valid according to the backend enum."""
+        valid_genres = {
+            'Action', 'Adventure', 'Indie', 'Massively Multiplayer',
+            'Platformer', 'Puzzle', 'RPG', 'Racing', 'Shooter', 'Sports'
+        }
+        
+        # Se não há gêneros, considera inválido
+        if not genres:
+            return False
+            
+        # Verifica se todos os gêneros estão na lista de válidos
+        for genre in genres:
+            if genre not in valid_genres:
+                return False
+        
+        return True
     
     def get_game_details(self, game_id: int):
         """Fetch detailed information about a specific game."""
@@ -129,8 +157,9 @@ class RawgClient:
                     game_screenshots = [item['image'] for item in game.get('short_screenshots', [])]
                     if game_details := self.get_game_details(game_id):
                         formatted = self.format_game_data(game_details, game_screenshots)
-                        all_games.append(formatted)
-                        games_in_page += 1
+                        if formatted:  # Só adiciona se o jogo tem Metacritic
+                            all_games.append(formatted)
+                            games_in_page += 1
 
                 print(f"Página {page}: coletados {games_in_page} jogos (total: {len(all_games)}/{max_games})")
 

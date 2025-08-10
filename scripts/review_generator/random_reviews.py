@@ -51,12 +51,12 @@ def main():
         review_data = {
             'userId': user_id,
             'gameId': game['id'],
-            'gameplayRating': random.randint(1, 5),
-            'visualRating': random.randint(1, 5),
-            'audioRating': random.randint(1, 5),
-            'difficultyRating': random.randint(1, 5),
-            'immersionRating': random.randint(1, 5),
-            'historyRating': random.randint(1, 5),
+            'gameplayRating': random.randint(3, 5),
+            'visualRating': random.randint(3, 5),
+            'audioRating': random.randint(3, 5),
+            'difficultyRating': random.randint(3, 5),
+            'immersionRating': random.randint(3, 5),
+            'historyRating': random.randint(3, 5),
             'comment': random.choice(COMENTARIOS)
         }
         
