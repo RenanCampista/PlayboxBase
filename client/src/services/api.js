@@ -143,6 +143,12 @@ export const userService = {
   deleteUser: async (id) => {
     const response = await api.delete(`/users/${id}`);
     return response.data;
+  },
+
+  // Deletar a própria conta
+  deleteOwnAccount: async () => {
+    const response = await api.delete('/users/me');
+    return response.data;
   }
 };
 
@@ -203,7 +209,8 @@ export const devService = {
         'GET /users/:id - Buscar usuário por ID',
         'POST /users - Criar usuário',
         'PUT /users/:id - Atualizar usuário',
-        'DELETE /users/:id - Deletar usuário (admin)'
+        'DELETE /users/:id - Deletar usuário (admin)',
+        'DELETE /users/me - Deletar a própria conta'
       ],
       games: [
         'GET /games - Listar todos os jogos',

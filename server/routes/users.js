@@ -5,7 +5,8 @@
 
 const express = require('express');
 const userServices = require('../services/userServices.js');
-const { authenticateToken, requireAdmin } = require('../services/userServices.js');
+const authenticateToken = userServices.authenticateToken;
+const requireAdmin = userServices.requireAdmin;
 const router = express.Router();
 
 // === ROTAS DE USUÁRIOS ===
@@ -99,18 +100,26 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 });
 
-/**
- * Deletar usuário (apenas admins)
- * @route DELETE /users/:id
- * @middleware authenticateToken, requireAdmin
- * @param {string} req.params.id - ID do usuário
- * @returns {Object} Mensagem de sucesso
- */
+// Rota para excluir a própria conta
+router.delete('/me', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const result = await userServices.deleteOwnUser(userId);
+        res.status(result.status).json(result);
+    } catch (error) {
+        console.error('Erro ao excluir a própria conta:', error);
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Rota para admin excluir qualquer usuário (exceto 'me')
 router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
+        if (id === 'me') {
+            return res.status(400).json({ error: "Use a rota /users/me para excluir a própria conta." });
+        }
         const userId = Number(id);
-
         const result = await userServices.deleteUser(userId);
         res.status(result.status).json(result);
     } catch (error) {

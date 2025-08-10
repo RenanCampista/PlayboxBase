@@ -7,6 +7,7 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
   const [favoriteGames, setFavoriteGames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const loadFavoriteGames = useCallback(async () => {
     if (!currentUser) return;
@@ -40,6 +41,23 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
     if (onGameSelect) {
       onGameSelect(game);
     }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const { userService, authService } = await import('../services/api');
+      const result = await userService.deleteOwnAccount();
+      // Só remove o token após exclusão bem-sucedida
+      await authService.logout();
+      window.location.href = '/login';
+    } catch (err) {
+      alert('Erro ao excluir conta: ' + (err.response?.data?.error || err.message));
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  const cancelDeleteAccount = () => {
+    setShowDeleteConfirm(false);
   };
 
   if (!currentUser) {
@@ -123,6 +141,13 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
                 className="btn btn-primary"
               >
                 Editar Perfil
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="btn btn-danger"
+                style={{ marginLeft: '1rem' }}
+              >
+                Excluir Conta
               </button>
             </div>
           </div>
@@ -212,6 +237,42 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Modal de confirmação de exclusão */}
+        {showDeleteConfirm && (
+          <div className="delete-modal-overlay">
+            <div className="delete-modal">
+              <div className="delete-modal-header">
+                <h3>Confirmar Exclusão da Conta</h3>
+              </div>
+              <div className="delete-modal-content">
+                <p>Tem certeza que deseja excluir sua conta?</p>
+                <div className="user-to-delete">
+                  <strong>{currentUser.name}</strong>
+                  <br />
+                  <span>{currentUser.email}</span>
+                </div>
+                <p className="warning-text">
+                  ⚠️ Esta ação não pode ser desfeita! Todos os seus dados, incluindo reviews e listas de favoritos, serão permanentemente removidos.
+                </p>
+              </div>
+              <div className="delete-modal-actions">
+                <button
+                  onClick={cancelDeleteAccount}
+                  className="btn btn-secondary"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  className="btn btn-danger"
+                >
+                  Confirmar Exclusão
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

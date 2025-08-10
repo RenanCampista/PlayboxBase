@@ -3,10 +3,55 @@ import { gameService } from '../services/api';
 import '../styles/Home.css';
 
 const Home = ({ onGameSelect, searchTerm = '' }) => {
+  const [showGenreDropdown, setShowGenreDropdown] = useState(false);
+  const handleGenreCheckbox = (genre) => {
+    if (genreFilter.includes(genre)) {
+      setGenreFilter(genreFilter.filter(g => g !== genre));
+    } else {
+      setGenreFilter([...genreFilter, genre]);
+    }
+  };
+  const handleDropdownBlur = (e) => {
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setShowGenreDropdown(false);
+    }
+  };
   const [games, setGames] = useState([]);
   const [filteredGames, setFilteredGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [genreFilter, setGenreFilter] = useState([]);
+  // Extrair gêneros únicos dos jogos
+  const allGenres = Array.from(new Set(games.flatMap(game => game.genres || []))).sort();
+  const [sortOption, setSortOption] = useState('nameAsc');
+  // Função para ordenar os jogos
+  const sortGames = (games) => {
+    const sorted = [...games];
+    switch (sortOption) {
+      case 'nameAsc':
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'nameDesc':
+        sorted.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'metacriticDesc':
+        sorted.sort((a, b) => (b.metacriticScore || 0) - (a.metacriticScore || 0));
+        break;
+      case 'metacriticAsc':
+        sorted.sort((a, b) => (a.metacriticScore || 0) - (b.metacriticScore || 0));
+        break;
+      case 'userRatingDesc':
+        sorted.sort((a, b) => (b.averageReviewRating || 0) - (a.averageReviewRating || 0));
+        break;
+      case 'userRatingAsc':
+        sorted.sort((a, b) => (a.averageReviewRating || 0) - (b.averageReviewRating || 0));
+        break;
+      default:
+        break;
+    }
+    return sorted;
+  };
+
 
   useEffect(() => {
     loadGames();
@@ -65,7 +110,26 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
     );
   }
 
-  const displayGames = searchTerm ? filteredGames : games;
+  let genreFilteredGames = searchTerm ? filteredGames : games;
+  if (genreFilter.length > 0) {
+    genreFilteredGames = genreFilteredGames.filter(game =>
+      game.genres && genreFilter.every(selected => game.genres.includes(selected))
+    );
+  }
+  const displayGames = sortGames(genreFilteredGames);
+      <div className="sort-bar">
+        <label htmlFor="sort-select">Ordenar por:</label>
+        <select
+          id="sort-select"
+          value={sortOption}
+          onChange={e => setSortOption(e.target.value)}
+          className="sort-select"
+        >
+          <option value="name">Nome (A-Z)</option>
+          <option value="metacritic">Nota Metacritic</option>
+          <option value="userRating">Nota Média dos Usuários</option>
+        </select>
+      </div>
 
   return (
     <div className="home-container">
@@ -77,6 +141,47 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
             Resultados para: "{searchTerm}" ({displayGames.length} jogos encontrados)
           </p>
         )}
+        <div className="filter-controls">
+          <div className="filter-left">
+            <label style={{ marginRight: 8, color: '#29B6F6', fontWeight: 500 }}>Filtrar por gênero:</label>
+            <div className="genre-dropdown" tabIndex={0} onBlur={handleDropdownBlur} style={{ position: 'relative', minWidth: 160 }}>
+              <button type="button" className="filter-button" onClick={() => setShowGenreDropdown(s => !s)}>
+                {genreFilter.length > 0 ? `${genreFilter.length} selecionado(s)` : 'Selecionar gêneros'}
+              </button>
+              {showGenreDropdown && (
+                <div className="genre-dropdown-menu" style={{ position: 'absolute', top: '110%', left: 0, background: '#222', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.2)', zIndex: 10, padding: 12, minWidth: 180 }}>
+                  {allGenres.map(genre => (
+                    <label key={genre} style={{ display: 'flex', alignItems: 'center', marginBottom: 6, cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={genreFilter.includes(genre)}
+                        onChange={() => handleGenreCheckbox(genre)}
+                        style={{ marginRight: 8 }}
+                      />
+                      {genre}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="filter-right">
+            <label htmlFor="sort-select" style={{ marginRight: 8, color: '#29B6F6', fontWeight: 500 }}>Ordenar por:</label>
+            <select
+              id="sort-select"
+              value={sortOption}
+              onChange={e => setSortOption(e.target.value)}
+              className="sort-button"
+            >
+              <option value="nameAsc">Nome (A-Z)</option>
+              <option value="nameDesc">Nome (Z-A)</option>
+              <option value="metacriticDesc">Metacritic ↓</option>
+              <option value="metacriticAsc">Metacritic ↑</option>
+              <option value="userRatingDesc">Usuários ↓</option>
+              <option value="userRatingAsc">Usuários ↑</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {displayGames.length === 0 ? (
@@ -112,7 +217,7 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
                   <div className="game-ratings">
                     {game.metacriticScore && (
                       <span className="game-score">
-                        MC: {game.metacriticScore}/100
+                        Crítica: {game.metacriticScore}/100
                       </span>
                     )}
                     <span className="game-user-rating">
