@@ -18,6 +18,11 @@ const AdminPanel = ({ currentUser, onBack }) => {
     }
   }, [currentUser]);
 
+  /**
+   * Carrega a lista de usuários não-admin da API.
+   * @async
+   * @returns {Promise<void>}
+   */
   const loadUsers = async () => {
     try {
       setLoading(true);
@@ -35,6 +40,12 @@ const AdminPanel = ({ currentUser, onBack }) => {
     }
   };
 
+  /**
+   * Deleta um usuário pelo ID.
+   * @async
+   * @param {number} userId ID do usuário
+   * @returns {Promise<void>}
+   */
   const handleDeleteUser = async (userId) => {
     try {
       setError('');
@@ -56,10 +67,17 @@ const AdminPanel = ({ currentUser, onBack }) => {
     }
   };
 
+  /**
+   * Exibe modal de confirmação para deletar usuário.
+   * @param {Object} user Usuário a ser deletado
+   */
   const confirmDelete = (user) => {
     setDeleteConfirm(user);
   };
 
+  /**
+   * Cancela a exclusão do usuário.
+   */
   const cancelDelete = () => {
     setDeleteConfirm(null);
   };

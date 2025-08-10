@@ -12,6 +12,11 @@ const ForgotPassword = ({ onBackToLogin }) => {
   const [loading, setLoading] = useState(false);
   const [resetToken, setResetToken] = useState('');
 
+  /**
+   * Envia o email para recuperação de senha.
+   * @async
+   * @param {Object} e Evento do formulário
+   */
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -32,6 +37,11 @@ const ForgotPassword = ({ onBackToLogin }) => {
     }
   };
 
+  /**
+   * Envia o formulário para redefinir a senha.
+   * @async
+   * @param {Object} e Evento do formulário
+   */
   const handlePasswordReset = async (e) => {
     e.preventDefault();
     

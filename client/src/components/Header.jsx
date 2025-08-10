@@ -3,8 +3,19 @@ import { authService } from '../services/api';
 import '../styles/Header.css';
 
 const Header = ({ user, onLogout, onNavigate, currentPage, onSearchChange }) => {
+/**
+ * Componente de cabeçalho do site.
+ * Exibe o logo e navegação principal.
+ * @module Header
+ * @returns {JSX.Element} Elemento React do cabeçalho
+ */
   const [searchTerm, setSearchTerm] = useState('');
 
+  /**
+   * Realiza o logout do usuário e chama o callback de logout.
+   * @async
+   * @returns {Promise<void>}
+   */
   const handleLogout = async () => {
     try {
       await authService.logout();
@@ -16,6 +27,10 @@ const Header = ({ user, onLogout, onNavigate, currentPage, onSearchChange }) => 
     }
   };
 
+  /**
+   * Atualiza o termo de busca e chama o callback de busca.
+   * @param {Object} e Evento do input
+   */
   const handleSearchInput = (e) => {
     const value = e.target.value;
     setSearchTerm(value);

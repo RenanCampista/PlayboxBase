@@ -2,6 +2,17 @@ import React from 'react';
 import '../styles/UserList.css';
 
 const UserList = ({ users, onEdit, onDelete }) => {
+  /**
+   * Lista de usuários cadastrados.
+   * @module UserList
+   * @param {Object} props Propriedades do componente
+   * @param {Array} props.users Lista de usuários
+   * @returns {JSX.Element} Elemento React da lista de usuários
+   */
+  /**
+   * Renderiza mensagem quando não há usuários.
+   * @returns {JSX.Element}
+   */
   if (users.length === 0) {
     return (
       <div className="user-list-container">

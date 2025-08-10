@@ -20,7 +20,18 @@ ChartJS.register(
 );
 
 const GameRadarChart = ({ reviews }) => {
+/**
+ * Componente para exibir gráfico radar de atributos de um jogo.
+ * @module GameRadarChart
+ * @param {Object} props Propriedades do componente
+ * @param {Object} props.data Dados do gráfico
+ * @returns {JSX.Element} Elemento React do gráfico radar
+ */
   // Calcular médias de cada aspecto
+  /**
+   * Calcula as médias dos aspectos avaliados nas reviews.
+   * @returns {Object} Médias de cada aspecto
+   */
   const calculateAverages = () => {
     if (!reviews || reviews.length === 0) {
       return {

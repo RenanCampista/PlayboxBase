@@ -3,12 +3,25 @@ import { catalogService } from '../services/api';
 import '../styles/UserProfile.css';
 
 const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
+  /**
+   * Perfil do usuário.
+   * Exibe informações detalhadas do usuário.
+   * @module UserProfile
+   * @param {Object} props Propriedades do componente
+   * @param {Object} props.user Dados do usuário
+   * @returns {JSX.Element} Elemento React do perfil de usuário
+   */
   const [activeTab, setActiveTab] = useState('info');
   const [favoriteGames, setFavoriteGames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  /**
+   * Carrega os jogos favoritos do usuário.
+   * @async
+   * @returns {Promise<void>}
+   */
   const loadFavoriteGames = useCallback(async () => {
     if (!currentUser) return;
     
@@ -37,12 +50,21 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
     }
   }, [activeTab, currentUser, favoriteGames.length, loading, loadFavoriteGames]);
 
+  /**
+   * Chama o callback ao selecionar um jogo favorito.
+   * @param {Object} game Objeto do jogo selecionado
+   */
   const handleGameClick = (game) => {
     if (onGameSelect) {
       onGameSelect(game);
     }
   };
 
+  /**
+   * Realiza a exclusão da conta do usuário.
+   * @async
+   * @returns {Promise<void>}
+   */
   const handleDeleteAccount = async () => {
     try {
       const { userService, authService } = await import('../services/api');
@@ -56,6 +78,9 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
     }
   };
 
+  /**
+   * Cancela a exclusão da conta do usuário.
+   */
   const cancelDeleteAccount = () => {
     setShowDeleteConfirm(false);
   };

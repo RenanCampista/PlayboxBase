@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 import '../styles/ReviewForm.css';
 
 const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser, review }) => {
+  /**
+   * Formulário para criação de avaliações de jogos.
+   * @module ReviewForm
+   * @param {Object} props Propriedades do componente
+   * @param {Function} props.onSubmit Função chamada ao enviar o formulário
+   * @returns {JSX.Element} Elemento React do formulário de avaliação
+   */
   const [formData, setFormData] = useState({
     gameplayRating: 0,
     visualRating: 0,
@@ -40,6 +47,11 @@ const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser, review }) => {
     }
   }, [review]);
 
+  /**
+   * Atualiza o valor de uma categoria de avaliação.
+   * @param {string} category Nome da categoria
+   * @param {number} rating Valor da avaliação
+   */
   const handleRatingChange = (category, rating) => {
     setFormData(prev => ({
       ...prev,
@@ -47,6 +59,11 @@ const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser, review }) => {
     }));
   };
 
+  /**
+   * Envia o formulário de avaliação.
+   * @async
+   * @param {Object} e Evento do formulário
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -83,6 +100,14 @@ const ReviewForm = ({ gameId, onSubmit, onCancel, currentUser, review }) => {
     }
   };
 
+  /**
+   * Componente para exibir estrelas de avaliação.
+   * @param {Object} props Propriedades do componente
+   * @param {number} props.value Valor atual
+   * @param {Function} props.onChange Callback para alteração
+   * @param {string} props.label Rótulo da categoria
+   * @returns {JSX.Element}
+   */
   const StarRating = ({ value, onChange, label }) => {
     const [hoverValue, setHoverValue] = useState(0);
 
