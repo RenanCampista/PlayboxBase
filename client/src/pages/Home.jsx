@@ -217,7 +217,7 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
                   <div className="game-ratings">
                     {game.metacriticScore && (
                       <span className="game-score">
-                        MC: {game.metacriticScore}/100
+                        Crítica: {game.metacriticScore}/100
                       </span>
                     )}
                     <span className="game-user-rating">
