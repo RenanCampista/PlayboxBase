@@ -2,6 +2,9 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
+  "author": "Renan Campista, Artur Mendes de Moraes, Pedro Henrique Queiroz",
+  "description": "Plataforma web de avaliação de jogos - Frontend",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

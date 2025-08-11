@@ -12,9 +12,9 @@
     "docs:serve": "npm run docs && cd docs && python3 -m http.server 8080"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Renan Campista, Artur Mendes de Moraes, Pedro Henrique Queiroz",
+  "license": "MIT",
+  "description": "Plataforma web de avaliação de jogos - Backend",
   "dependencies": {
     "@prisma/client": "^6.11.1",
     "bcryptjs": "^3.0.2",

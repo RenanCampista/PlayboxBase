@@ -8,6 +8,7 @@ Plataforma web de avaliação de jogos desenvolvido na disciplina de Projeto Int
 - [Framewoks utilizados](#framewoks-utilizados)
 - [Gerar documentação de código](#gerar-documentação-de-código)
 - [Instalação e Execução](#instalação-e-execução)
+- [Licença](#licença)
 
 # Estrutura do Projeto
 O projeto é dividido em duas partes principais: client (frontend) e server (backend). A estrutura do frontend é explicada em [client/STRUCTURE.md](client/STRUCTURE.md) e a do backend em [server/STRUCTURE.md](server/STRUCTURE.md).
@@ -130,5 +131,15 @@ Para executar o projeto diretamente no ambiente local, siga os passos abaixo:
    make start_frontend
    ```
 7. Acesse a aplicação no navegador em [http://localhost:3000](http://localhost:3000).
+
+# Licença
+
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## Autores
+
+- **Renan Campista** - [RenanCampista](https://github.com/RenanCampista)
+- **Artur Mendes de Moraes**
+- **Pedro Henrique Queiroz** - [PedroHQuedevez](https://github.com/PedroHQuedevez)
 
    
