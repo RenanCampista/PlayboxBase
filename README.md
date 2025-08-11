@@ -1,126 +1,78 @@
 # PlayBox
-Desenvolvimento de uma plataforma web de avaliação de jogos para a disciplina de Projeto Integrado.
+Plataforma web de avaliação de jogos desenvolvido na disciplina de Projeto Integrado.
 
-## Tecnologias Utilizadas
+# Diagrama de Classes
+Clique no link para acessar o diagrama de classes do projeto no figma: [Diagrama de Classes](https://www.figma.com/proto/QDnrFeOwIcdeOkrhybck0W/Trabalho-PI?node-id=51-180&t=V2FmtJweQSe3p507-1)
 
-### Frontend
-- **React** - Biblioteca JavaScript para construção de interfaces
-- **React Scripts** - Ferramenta de build e desenvolvimento do Create React App
-- **Axios** - Cliente HTTP para comunicação com a API
-- **React Testing Library** - Biblioteca de testes para componentes React
-- **Jest** - Framework de testes JavaScript
-- **Web Vitals** - Métricas de performance web
+Um jogo pode estar associado a um ou mais gêneros. Além disso, ele pode receber diversos reviews publicados pelos usuários da plataforma. Ao criar uma conta, o usuário recebe automaticamente um catálogo vazio, que funciona como uma lista de favoritos, onde poderá adicionar os jogos do seu interesse.
 
-### Backend
-- **Node.js** - Runtime JavaScript para servidor
-- **Express** - Framework web para Node.js
-- **Prisma** - ORM moderno para TypeScript e JavaScript
-- **PostgreSQL** - Sistema de gerenciamento de banco de dados
-- **bcryptjs** - Biblioteca para hash de senhas
-- **CORS** - Middleware para permitir requisições cross-origin
-- **dotenv** - Carregamento de variáveis de ambiente
-- **Nodemon** - Ferramenta de desenvolvimento para restart automático
-- **JWT (JSON Web Token)** - Autenticação baseada em tokens
+# Ferramentas Utilizadas
+#### **Git**
+- **GitHub**: Repositório remoto utilizado para versionamento do código e colaboração entre os membros da equipe.
 
-### Containerização
-- **Docker** - Containerização da aplicação
-- **Docker Compose** - Orquestração de containers
+#### **Build**
+- **Npm**: Gerenciador de pacotes utilizado para instalar dependências do projeto.
+
+#### **Testes**
+- **React Testing Library**: Utilizada para testes de componentes React.
+- **Jest**: Framework de testes utilizado para executar os testes automatizados.
+
+#### **Issue Tracking**
+- **GitHub Issues**: Utilizado para rastreamento de problemas e gerenciamento de tarefas.
+
+#### **CI/CD**
+- **GitHub Actions**: Configurado para executar testes automatizados e implantar o projeto.
+
+#### **Containerização**
+- **Docker**: Utilizado para criar contêineres do projeto, facilitando o ambiente de desenvolvimento e implantação.
+
+#### **Banco de Dados**
+- **PostgreSQL**: Sistema de gerenciamento de banco de dados relacional utilizado para armazenar os dados do projeto.
+Observação: Na primeira etapa do trabalho havia sido mencionado o uso do MySQL, mas foi alterado para PostgreSQL.
+
+#### **Documentação de código**
+- **JSDoc**: Utilizado para gerar documentação do código JavaScript.
+
+### **Outras ferramentas**
+- **Figma**: Utilizado para design de interfaces e prototipagem.
+- **Makefile**: Arquivo utilizado para automatizar tarefas comuns do projeto, como instalação de dependências e execução de scripts.
 
 
-## Instalação e Execução
+# Framewoks utilizados
+- **React**: Biblioteca JavaScript para construção de interfaces de usuário.
+- **Express**: Framework para construção de APIs em Node.js.
+- **Node.js**: Ambiente de execução JavaScript no lado do servidor.
+- **Prisma**: ORM utilizado para interagir com o banco de dados PostgreSQL.
 
-### Opção 1: Usando Docker (Recomendado)
-Note: Nesta opção é necessário ter o Docker e Docker Compose instalados.
+# Gerar documentação de código
+A ser implementado.
+
+# Instalação e Execução
 1. Clone o repositório:
    ```bash
    git clone https://github.com/RenanCampista/Playbox.git
    ```
-
 2. Navegue até o diretório do projeto:
    ```bash
-   cd Playbox
+    cd Playbox
    ```
-
-3. Execute o setup automático:
+3. Crie um arquivo `.env` na raiz do projeto e configure as variáveis de ambiente necessárias. Um exemplo de arquivo `.env` pode ser encontrado em `.env.example`.
    ```bash
-   make setup
+    cp .env.example .env
    ```
+    Edite o arquivo `.env` com as configurações apropriadas para o seu ambiente.
 
-   O script automaticamente:
-   - Instala dependências do backend e frontend
-   - Cria arquivo `.env` a partir do `.env.example`
-   - Configura links simbólicos necessários
-
-4. Edite o arquivo `.env` com suas configurações.
-
-5. Inicie a aplicação completa:
+4. Execute o seguinte comando para instalar as dependências do projeto:
    ```bash
-   make dev
+    make install
    ```
-
-Após seguir esses passos, você deve ser capaz de acessar:
-- **Backend**: `http://localhost:5000` 
-- **Frontend**: `http://localhost:5001`
-
-
-### Opção 2: Sem Docker
-Note: Nesta opção, você deve ter o Node.js instalado localmente.
-1. Clone o repositório:
+   
+5. Para iniciar a aplicação, execute o seguinte comando:
    ```bash
-   git clone https://github.com/RenanCampista/Playbox.git
+    make start
    ```
+   Isso iniciará o servidor Express e a aplicação React. Certifique-se de que o banco de dados PostgreSQL esteja em execução e configurado corretamente.
 
-2. Navegue até o diretório do projeto:
-   ```bash
-   cd Playbox
-   ```
+6. Acesse a aplicação no navegador em [http://localhost:5001](http://localhost:5001).
 
-3. Execute o setup inicial:
-   ```bash
-   make setup
-   ```
-
-4. Configure o arquivo `.env` na raiz do projeto:
-
-5. Execute as migrações do banco de dados:
-   ```bash
-   cd server
-   npx prisma migrate dev --name init
-   ```
-
-6. Inicie o servidor backend:
-   ```bash
-   cd server
-   npm run dev
-   ```
-
-7. Em outro terminal, inicie o frontend:
-   ```bash
-   cd client
-   npm start
-   ```
-
-Após seguir esses passos, você deve ser capaz de acessar:
-- **Backend**: `http://localhost:5000` 
-- **Frontend**: `http://localhost:5001`
-
-
-## Scripts Adicionais
-
-### Coleta de Dados de Jogos
-Leia a [documentação](scripts/game_data_collector/README.md) do script.
-
-### Logs de Debug (Docker)
-```bash
-# Ver logs de todos os serviços
-make logs-f
-
-# Ver logs específicos
-docker-compose logs frontend
-docker-compose logs backend
-docker-compose logs database
-```
-
-## Próximos Passos
-- Implementar componentes de avaliação de jogos e sistema de comentários
-- Adicionar testes unitários e de integração
+   
