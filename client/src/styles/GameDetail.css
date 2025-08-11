@@ -293,7 +293,7 @@
   border: 1px solid #555;
   border-radius: 8px;
   padding: 16px;
-  padding-bottom: 50px; /* Espaço extra para os botões */
+  padding-bottom: 16px; /* Reduzido de 50px para 16px */
   background-color: #404040;
   position: relative; /* Para posicionamento absoluto dos botões */
 }
@@ -301,8 +301,16 @@
 .review-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 8px;
+  gap: 10px;
+}
+
+.review-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
 }
 
 .reviewer-name {
@@ -588,11 +596,20 @@
   cursor: not-allowed;
 }
 
+/* Data da review */
+.review-date {
+  color: #999;
+  font-size: 0.75rem;
+  font-style: italic;
+  text-align: right;
+  white-space: nowrap;
+}
+
 /* Botões de ação das reviews (editar/deletar) */
 .review-actions {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
+  bottom: 8px; /* Reduzido de 12px para 8px */
+  right: 8px;  /* Reduzido de 12px para 8px */
   display: flex;
   gap: 8px;
 }
@@ -729,7 +746,23 @@
 /* Responsividade para botões de ação das reviews */
 @media (max-width: 600px) {
   .review-item {
-    padding-bottom: 60px; /* Mais espaço em mobile */
+    padding-bottom: 40px; /* Reduzido de 60px para 40px */
+  }
+  
+  .review-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .review-header-right {
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .review-date {
+    font-size: 0.7rem;
+    text-align: left;
   }
   
   .review-actions {

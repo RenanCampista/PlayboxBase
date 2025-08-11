@@ -16,7 +16,7 @@ app.use(cors()); // Habilita CORS para todas as rotas. CORS é necessário para 
 app.use(express.json()); // Middleware para interpretar JSON no corpo das requisições
 app.use(routes);
 
-const PORT = process.env.SERVER_PORT || 5000; // Define a porta do servidor
+const PORT = process.env.PORT || process.env.SERVER_PORT || 5000; // Render usa PORT, local usa SERVER_PORT
 
 /**
  * Inicia o servidor e configura conexões iniciais

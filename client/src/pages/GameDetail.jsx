@@ -385,7 +385,10 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                 <div key={review.id} className="review-item">
                   <div className="review-header">
                     <span className="reviewer-name">{review.user?.name || 'Usuário'}</span>
-                    <span className="review-rating">⭐ {review.ratings.average}/5</span>
+                    <div className="review-header-right">
+                      <span className="review-rating">⭐ {review.ratings.average}/5</span>
+                      <span className="review-date">Publicado em: {formatDate(review.createdAt)}</span>
+                    </div>
                   </div>
                   {review.comment && (
                     <p className="review-comment">{review.comment}</p>
@@ -416,6 +419,7 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                       <span className="aspect-value">{review.ratings.history || '-'}/5</span>
                     </div>
                   </div>
+                  
                   {/* Botões de editar/deletar visíveis apenas para o autor */}
                   {currentUser && review.user?.id === currentUser.id && (
                     <div className="review-actions">
