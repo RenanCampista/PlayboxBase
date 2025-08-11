@@ -3,16 +3,17 @@
 # Ajuda
 help:
 	@echo "Comandos disponíveis:"
-	@echo "  up         - Sobe containers"
-	@echo "  down       - Para todos os containers"
-	@echo "  migrate    - Executa migrações do banco"
-	@echo "  install      - Executa script de setup inicial para configuração sem Docker"
-	@echo "  start_server - Inicia o servidor sem Docker"
-	@echo "  start_frontend - Inicia o frontend sem Docker"
-	@echo "  clean      - Remove containers, volumes, imagens e node_modules"
+	@echo "  docker         		- Sobe containers"
+	@echo "  down       		- Para todos os containers"
+	@echo "  migrate    		- Executa migrações do banco"
+	@echo "  install      		- Executa script de setup inicial para configuração sem Docker"
+	@echo "  start_server 		- Inicia o servidor sem Docker"
+	@echo "  start_frontend 	- Inicia o frontend sem Docker"
+	@echo "  clean      		- Remove containers, volumes, imagens e node_modules"
+	@echo "  docs       		- Gera documentação de código para backend e frontend"
 
 # Up
-up:
+docker:
 	docker-compose up -d
 
 # Down
@@ -40,10 +41,16 @@ start_frontend:
 
 # Limpeza
 clean:
-	@echo "Limpando containers, volumes e imagens..."
+	@echo "Limpando containers, volumes e imagens do projeto..."
 	docker-compose down -v --rmi all --remove-orphans || true
-	docker system prune -f
 	@echo "Limpando node_modules..."
 	sudo rm -rf server/node_modules client/node_modules || true
 	@echo "Limpando cache npm..."
 	npm cache clean --force || true
+
+docs:
+	@echo "Gerando documentação de código..."
+	cd server && npm run docs
+	@echo "Documentação do backend gerada em server/docs"
+	cd client && npm run docs
+	@echo "Documentação do frontend gerada em client/docs"

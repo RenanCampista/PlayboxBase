@@ -11,7 +11,7 @@
   "opts": {
     "destination": "./docs/",
     "recurse": true,
-    "readme": "./README.md"
+    "readme": "./STRUCTURE.md"
   },
   "plugins": ["plugins/markdown"],
   "templates": {

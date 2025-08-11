@@ -1,5 +1,5 @@
 # Gerador de Reviews Aleatórias
-Script para gerar reviews aleatórias no Playbox usando a API.
+Script para gerar reviews aleatórias no Playbox usando a API. O objetivo é popular o banco de dados com reviews fictícios para testes e demonstrações.
 
 ## Requisitos
 - [Python 3.8](https://www.python.org/downloads/) ou superior.
@@ -15,7 +15,6 @@ Script para gerar reviews aleatórias no Playbox usando a API.
     # Vá para o diretório server e execute:
     cd ../../server
     npm start
-    # A API deve estar rodando em http://localhost:5000
     ```
 3. Execute o script:
     ```bash
