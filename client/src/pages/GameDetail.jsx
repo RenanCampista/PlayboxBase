@@ -416,6 +416,12 @@ const GameDetail = ({ game, onBack, currentUser }) => {
                       <span className="aspect-value">{review.ratings.history || '-'}/5</span>
                     </div>
                   </div>
+                  
+                  {/* Data da review */}
+                  <div className="review-date">
+                    {formatDate(review.createdAt)}
+                  </div>
+                  
                   {/* Botões de editar/deletar visíveis apenas para o autor */}
                   {currentUser && review.user?.id === currentUser.id && (
                     <div className="review-actions">
