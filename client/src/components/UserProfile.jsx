@@ -68,7 +68,7 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
   const handleDeleteAccount = async () => {
     try {
       const { userService, authService } = await import('../services/api');
-      const result = await userService.deleteOwnAccount();
+      await userService.deleteOwnAccount();
       // Só remove o token após exclusão bem-sucedida
       await authService.logout();
       window.location.href = '/login';
