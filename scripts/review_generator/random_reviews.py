@@ -4,9 +4,9 @@ import random
 import requests
 
 # Configuração
-API_URL = "http://localhost:5000"
+API_URL = "https://playboxbase.onrender.com/"
 NUM_REVIEWS = 500
-USER_IDS = [1, 3, 5, 7, 8, 9, 10]  # AJUSTE com IDs reais de usuários 
+USER_IDS = [2, 3, 4, 5, 6, 7, 8]  # AJUSTE com IDs reais de usuários 
 
 # Comentários simples
 COMENTARIOS = [
@@ -52,7 +52,7 @@ def main():
             'userId': user_id,
             'gameId': game['id'],
             'gameplayRating': random.randint(3, 5),
-            'visualRating': random.randint(3, 5),
+            'visualRating': random.randint(4, 5),
             'audioRating': random.randint(3, 5),
             'difficultyRating': random.randint(3, 5),
             'immersionRating': random.randint(3, 5),
