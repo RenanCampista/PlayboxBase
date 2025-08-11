@@ -15,44 +15,6 @@ import axios from 'axios';
  * @module api
  */
 
-/**
- * Realiza uma requisição GET para a API.
- * @param {string} endpoint Rota da API
- * @returns {Promise<Object>} Resposta da API
- */
-export async function get(endpoint) {
-  // ...existing code...
-}
-
-/**
- * Realiza uma requisição POST para a API.
- * @param {string} endpoint Rota da API
- * @param {Object} data Dados para envio
- * @returns {Promise<Object>} Resposta da API
- */
-export async function post(endpoint, data) {
-  // ...existing code...
-}
-
-/**
- * Realiza uma requisição PUT para a API.
- * @param {string} endpoint Rota da API
- * @param {Object} data Dados para atualização
- * @returns {Promise<Object>} Resposta da API
- */
-export async function put(endpoint, data) {
-  // ...existing code...
-}
-
-/**
- * Realiza uma requisição DELETE para a API.
- * @param {string} endpoint Rota da API
- * @returns {Promise<Object>} Resposta da API
- */
-export async function del(endpoint) {
-  // ...existing code...
-}
-
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const api = axios.create({
