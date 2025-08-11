@@ -229,30 +229,18 @@ const UserProfile = ({ currentUser, onEditProfile, onGameSelect }) => {
                     <div className="game-info">
                       <h4 className="game-title">{game.name}</h4>
                       
-                      <div className="game-meta">
-                        {game.genres && game.genres.length > 0 && (
-                          <span className="game-genre">
-                            {game.genres[0]}
-                          </span>
-                        )}
-                        
+                      <div className="game-meta">      
                         <div className="game-ratings">
                           {game.metacriticScore && (
                             <span className="game-score">
-                              MC: {game.metacriticScore}/100
+                              Crítica: {game.metacriticScore}/100
                             </span>
                           )}
                           <span className="game-user-rating">
-                            ⭐ {game.averageReviewRating ? `${game.averageReviewRating}/5` : '-/5'}
+                            ★ {game.averageReviewRating ? `${game.averageReviewRating}/5` : '-/5'}
                           </span>
                         </div>
                       </div>
-
-                      {game.releaseDate && (
-                        <div className="release-date">
-                          Lançamento: {new Date(game.releaseDate).toLocaleDateString('pt-BR')}
-                        </div>
-                      )}
                     </div>
 
                     <div className="favorite-badge">
