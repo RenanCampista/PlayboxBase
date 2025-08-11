@@ -11,12 +11,21 @@ const GameDetail = ({ game, onBack, currentUser }) => {
   const [deletingReview, setDeletingReview] = useState(false);
 
   // Função para editar review
+  /**
+   * Inicia a edição de uma review.
+   * @param {Object} review Review a ser editada
+   */
   const handleEditReview = (review) => {
     setEditingReview(review);
     setShowReviewForm(true);
   };
 
   // Função para deletar review
+  /**
+   * Deleta uma review do jogo.
+   * @async
+   * @param {number} reviewId ID da review
+   */
   const handleDeleteReview = async (reviewId) => {
     if (deletingReview) return; // Prevenir múltiplas execuções
     
@@ -34,11 +43,18 @@ const GameDetail = ({ game, onBack, currentUser }) => {
     }
   };
 
+  /**
+   * Exibe modal de confirmação para deletar review.
+   * @param {Object} review Review a ser deletada
+   */
   const confirmDeleteReview = (review) => {
     if (deletingReview) return; // Prevenir abertura do modal durante deleção
     setDeleteConfirm(review);
   };
 
+  /**
+   * Cancela a exclusão da review.
+   */
   const cancelDeleteReview = () => {
     if (deletingReview) return; // Prevenir fechamento durante deleção
     setDeleteConfirm(null);
@@ -52,6 +68,12 @@ const GameDetail = ({ game, onBack, currentUser }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
 
+  /**
+   * Verifica se o jogo está nos favoritos do usuário.
+   * @async
+   * @param {number} gameId ID do jogo
+   * @returns {Promise<void>}
+   */
   const checkIfFavorite = useCallback(async (gameId) => {
     if (!currentUser) return;
     
@@ -73,6 +95,12 @@ const GameDetail = ({ game, onBack, currentUser }) => {
     }
   }, [game, currentUser, checkIfFavorite]);
 
+  /**
+   * Carrega detalhes do jogo da API.
+   * @async
+   * @param {number} gameId ID do jogo
+   * @returns {Promise<void>}
+   */
   const loadGameDetails = async (gameId) => {
     try {
       setLoading(true);
@@ -87,6 +115,12 @@ const GameDetail = ({ game, onBack, currentUser }) => {
     }
   };
 
+  /**
+   * Carrega reviews do jogo da API.
+   * @async
+   * @param {number} gameId ID do jogo
+   * @returns {Promise<void>}
+   */
   const loadReviews = async (gameId) => {
     try {
       setReviewsLoading(true);
@@ -101,6 +135,11 @@ const GameDetail = ({ game, onBack, currentUser }) => {
     }
   };
 
+  /**
+   * Adiciona ou remove o jogo dos favoritos do usuário.
+   * @async
+   * @returns {Promise<void>}
+   */
   const handleToggleFavorite = async () => {
     if (!currentUser) return;
     
@@ -122,6 +161,12 @@ const GameDetail = ({ game, onBack, currentUser }) => {
     }
   };
 
+  /**
+   * Cria uma nova review para o jogo.
+   * @async
+   * @param {Object} reviewData Dados da review
+   * @returns {Promise<void>}
+   */
   const handleCreateReview = async (reviewData) => {
     try {
       await reviewService.createReview(reviewData);
@@ -134,6 +179,11 @@ const GameDetail = ({ game, onBack, currentUser }) => {
     }
   };
 
+  /**
+   * Formata uma data para o padrão pt-BR.
+   * @param {string} dateString Data em formato string
+   * @returns {string} Data formatada
+   */
   const formatDate = (dateString) => {
     if (!dateString) return 'Data não disponível';
     const date = new Date(dateString);

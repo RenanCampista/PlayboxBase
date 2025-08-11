@@ -3,6 +3,14 @@ import '../styles/UserForm.css';
 
 const UserForm = ({ user, onSubmit, onCancel }) => {
 
+/**
+ * Formulário para cadastro e edição de usuários.
+ * @module UserForm
+ * @param {Object} props Propriedades do componente
+ * @param {Object} [props.user] Dados do usuário para edição
+ * @param {Function} props.onSubmit Função chamada ao enviar o formulário
+ * @returns {JSX.Element} Elemento React do formulário de usuário
+ */
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,6 +29,10 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
     }
   }, [user]);
 
+  /**
+   * Atualiza o valor de um campo do formulário.
+   * @param {Object} e Evento do input
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -29,6 +41,10 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
     }));
   };
 
+  /**
+   * Envia o formulário de usuário.
+   * @param {Object} e Evento do formulário
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
     // Se estiver editando e o campo newPassword estiver preenchido, envia como password

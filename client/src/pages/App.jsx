@@ -6,6 +6,12 @@ import { Login, Register, ForgotPassword, Home, GameDetail, AdminPanel } from '.
 import { userService, authService } from '../services/api';
 
 function App() {
+/**
+ * Componente principal da aplicação.
+ * Gerencia rotas e contexto global.
+ * @module App
+ * @returns {JSX.Element} Elemento React da aplicação
+ */
   const [editingUser, setEditingUser] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState(null);
@@ -25,6 +31,11 @@ function App() {
     checkAuthentication();
   }, []);
 
+  /**
+   * Verifica autenticação do usuário ao carregar o app.
+   * @async
+   * @returns {Promise<void>}
+   */
   const checkAuthentication = async () => {
     try {
       setCheckingAuth(true);
@@ -49,6 +60,10 @@ function App() {
     }
   };
 
+  /**
+   * Manipula login bem-sucedido.
+   * @param {Object} user Usuário logado
+   */
   const handleLoginSuccess = (user) => {
     console.log('Login success, setting user:', user);
     setIsLoggedIn(true);
@@ -59,6 +74,9 @@ function App() {
     setError(null);
   };
 
+  /**
+   * Realiza logout do usuário.
+   */
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser(null);
@@ -69,24 +87,37 @@ function App() {
     setError(null);
   };
 
+  /**
+   * Exibe tela de registro.
+   */
   const handleShowRegister = () => {
     setShowRegister(true);
     setShowForgotPassword(false);
     setError(null);
   };
 
+  /**
+   * Exibe tela de recuperação de senha.
+   */
   const handleShowForgotPassword = () => {
     setShowForgotPassword(true);
     setShowRegister(false);
     setError(null);
   };
 
+  /**
+   * Retorna para tela de login.
+   */
   const handleBackToLogin = () => {
     setShowRegister(false);
     setShowForgotPassword(false);
     setError(null);
   };
 
+  /**
+   * Manipula registro bem-sucedido.
+   * @param {Object} user Usuário registrado
+   */
   const handleRegisterSuccess = (user) => {
     console.log('Register success, setting user:', user);
     setIsLoggedIn(true);
@@ -98,28 +129,50 @@ function App() {
   };
 
   // Funções de navegação
+  /**
+   * Seleciona um jogo para exibir detalhes.
+   * @param {Object} game Jogo selecionado
+   */
   const handleGameSelect = (game) => {
     setSelectedGame(game);
     setCurrentPage('game-detail');
   };
 
+  /**
+   * Retorna para tela inicial.
+   */
   const handleBackToHome = () => {
     setSelectedGame(null);
     setCurrentPage('home');
   };
 
+  /**
+   * Exibe painel de administração.
+   */
   const handleShowAdmin = () => {
     setCurrentPage('admin');
   };
 
+  /**
+   * Exibe perfil do usuário.
+   */
   const handleShowProfile = () => {
     setCurrentPage('profile');
   };
 
+  /**
+   * Exibe tela inicial.
+   */
   const handleShowHome = () => {
     setCurrentPage('home');
   };
 
+  /**
+   * Cria novo usuário.
+   * @async
+   * @param {Object} userData Dados do usuário
+   * @returns {Promise<void>}
+   */
   const handleCreateUser = async (userData) => {
     try {
       await userService.createUser(userData);
@@ -131,6 +184,12 @@ function App() {
     }
   };
 
+  /**
+   * Atualiza dados do usuário.
+   * @async
+   * @param {Object} userData Dados do usuário
+   * @returns {Promise<void>}
+   */
   const handleUpdateUser = async (userData) => {
     try {
       await userService.updateUser(editingUser.id, userData);
@@ -143,6 +202,10 @@ function App() {
     }
   };
 
+  /**
+   * Envia dados do formulário de usuário.
+   * @param {Object} userData Dados do usuário
+   */
   const handleFormSubmit = (userData) => {
     if (editingUser) {
       handleUpdateUser(userData);
@@ -151,11 +214,18 @@ function App() {
     }
   };
 
+  /**
+   * Cancela edição/criação de usuário.
+   */
   const handleCancelForm = () => {
     setEditingUser(null);
     setShowForm(false);
   };
 
+  /**
+   * Atualiza termo de busca global.
+   * @param {string} term Termo de busca
+   */
   const handleSearchChange = (term) => {
     setSearchTerm(term);
   };

@@ -13,6 +13,10 @@ const Register = ({ onRegisterSuccess, onBackToLogin }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  /**
+   * Atualiza o valor dos campos do formulário de cadastro.
+   * @param {Object} e Evento do input
+   */
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -21,6 +25,10 @@ const Register = ({ onRegisterSuccess, onBackToLogin }) => {
     setError(''); // Limpar erro quando usuário digita
   };
 
+  /**
+   * Valida os dados do formulário de cadastro.
+   * @returns {boolean} True se válido, false caso contrário
+   */
   const validateForm = () => {
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Todos os campos são obrigatórios.');
@@ -46,6 +54,11 @@ const Register = ({ onRegisterSuccess, onBackToLogin }) => {
     return true;
   };
 
+  /**
+   * Envia o formulário de cadastro.
+   * @async
+   * @param {Object} e Evento do formulário
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     

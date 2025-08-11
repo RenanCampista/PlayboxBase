@@ -4,6 +4,10 @@ import '../styles/Home.css';
 
 const Home = ({ onGameSelect, searchTerm = '' }) => {
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
+  /**
+   * Alterna seleção de um gênero no filtro.
+   * @param {string} genre Nome do gênero
+   */
   const handleGenreCheckbox = (genre) => {
     if (genreFilter.includes(genre)) {
       setGenreFilter(genreFilter.filter(g => g !== genre));
@@ -11,6 +15,10 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
       setGenreFilter([...genreFilter, genre]);
     }
   };
+  /**
+   * Fecha o dropdown de gêneros ao perder o foco.
+   * @param {Object} e Evento do elemento
+   */
   const handleDropdownBlur = (e) => {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       setShowGenreDropdown(false);
@@ -25,6 +33,11 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
   const allGenres = Array.from(new Set(games.flatMap(game => game.genres || []))).sort();
   const [sortOption, setSortOption] = useState('nameAsc');
   // Função para ordenar os jogos
+  /**
+   * Ordena a lista de jogos conforme a opção selecionada.
+   * @param {Array} games Lista de jogos
+   * @returns {Array} Lista ordenada
+   */
   const sortGames = (games) => {
     const sorted = [...games];
     switch (sortOption) {
@@ -71,6 +84,11 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
     }
   }, [searchTerm, games]);
 
+  /**
+   * Carrega a lista de jogos da API.
+   * @async
+   * @returns {Promise<void>}
+   */
   const loadGames = async () => {
     try {
       setLoading(true);
@@ -85,6 +103,10 @@ const Home = ({ onGameSelect, searchTerm = '' }) => {
     }
   };
 
+  /**
+   * Chama o callback ao selecionar um jogo.
+   * @param {Object} game Objeto do jogo selecionado
+   */
   const handleGameClick = (game) => {
     if (onGameSelect) {
       onGameSelect(game);

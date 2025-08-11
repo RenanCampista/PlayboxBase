@@ -1,3 +1,8 @@
+/**
+ * Ponto de entrada da aplicação React.
+ * Renderiza o componente App dentro do elemento root.
+ * @module index
+ */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/index.css';

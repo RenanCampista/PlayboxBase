@@ -10,6 +10,10 @@ const Login = ({ onLoginSuccess, onShowRegister, onShowForgotPassword }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Atualiza o valor dos campos do formulário de login.
+   * @param {Object} e Evento do input
+   */
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -18,6 +22,11 @@ const Login = ({ onLoginSuccess, onShowRegister, onShowForgotPassword }) => {
     setError(''); // Limpar erro quando usuário digita
   };
 
+  /**
+   * Envia o formulário de login.
+   * @async
+   * @param {Object} e Evento do formulário
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
