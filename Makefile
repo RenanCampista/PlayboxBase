@@ -1,30 +1,15 @@
-.PHONY: help dev build up down logs logs-f status clean migrate shell-be shell-fe
+.PHONY: help up down migrate install clean
 
 # Ajuda
 help:
 	@echo "Comandos disponíveis:"
-	@echo "  dev        - Inicia ambiente de desenvolvimento"
-	@echo "  build      - Constrói containers"
 	@echo "  up         - Sobe containers"
 	@echo "  down       - Para todos os containers"
-	@echo "  logs       - Mostra logs dos containers"
-	@echo "  logs-f     - Mostra logs em tempo real"
-	@echo "  status     - Mostra status dos containers e health checks"
-	@echo "  clean      - Remove containers, volumes e imagens"
 	@echo "  migrate    - Executa migrações do banco"
-	@echo "  shell-be   - Acessa shell do backend"
-	@echo "  shell-fe   - Acessa shell do frontend"
-	@echo "  setup      - Executa script de setup inicial para configuração sem Docker"
-	@echo "  reset      - Remove node_modules e executa setup completo"
-	@echo "  docker-permissions - Configura permissões do Docker"
-
-# Desenvolvimento
-dev: build up migrate
-	@echo "✅ Ambiente de desenvolvimento iniciado!"
-
-# Build
-build:
-	docker-compose build
+	@echo "  install      - Executa script de setup inicial para configuração sem Docker"
+	@echo "  start_server - Inicia o servidor sem Docker"
+	@echo "  start_frontend - Inicia o frontend sem Docker"
+	@echo "  clean      - Remove containers, volumes, imagens e node_modules"
 
 # Up
 up:
@@ -34,50 +19,31 @@ up:
 down:
 	docker-compose down
 
-# Logs
-logs:
-	docker-compose logs
-
-logs-f:
-	docker-compose logs -f
-
-# Status dos containers
-status:
-	@echo "📊 Status dos containers:"
-	docker-compose ps
-
 # Utilitários
 migrate:
-	@echo "🗃️ Executando migrações..."
+	@echo "Executando migrações..."
 	docker-compose exec backend npx prisma migrate deploy
 
-shell-be:
-	docker-compose exec backend sh
+# Setup inicial (usar script de setup)
+install:
+	chmod +x ./scripts/setup.sh
+	./scripts/setup.sh
 
-shell-fe:
-	docker-compose exec frontend sh
+# npm start sem Docker
+start_server:
+	@echo "Iniciando servidor sem Docker..."
+	cd server && npm start
+
+start_frontend:
+	@echo "Iniciando frontend sem Docker..."
+	cd client && npm start
 
 # Limpeza
 clean:
+	@echo "Limpando containers, volumes e imagens..."
 	docker-compose down -v --rmi all --remove-orphans || true
 	docker system prune -f
-
-# Setup inicial (usar script de setup)
-setup:
-	chmod +x ./scripts/setup_unix.sh
-	./scripts/setup_unix.sh
-
-test_backend:
-	cd server && npm test
-	
-# Reset completo do projeto (remove node_modules e reinstala)
-reset:
-	@echo "🧹 Limpando node_modules..."
+	@echo "Limpando node_modules..."
 	sudo rm -rf server/node_modules client/node_modules || true
-	@echo "🧹 Limpando cache npm..."
+	@echo "Limpando cache npm..."
 	npm cache clean --force || true
-
-# Permissões Docker
-docker-permissions:
-	@echo "🔧 Configurando permissões do Docker..."
-	sudo usermod -aG docker $USER

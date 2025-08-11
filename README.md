@@ -1,5 +1,5 @@
 # PlayBox
-Plataforma web de avaliação de jogos desenvolvido na disciplina de Projeto Integrado.
+Plataforma web de avaliação de jogos desenvolvido na disciplina de Projeto Integrado.z
 
 # Diagrama de Classes
 Clique no link para acessar o diagrama de classes do projeto no figma: [Diagrama de Classes](https://www.figma.com/proto/QDnrFeOwIcdeOkrhybck0W/Trabalho-PI?node-id=51-180&t=V2FmtJweQSe3p507-1)
