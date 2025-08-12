@@ -216,7 +216,7 @@ const GameRadarChart = ({ reviews }) => {
     <div className="radar-chart-container">
       <div className="chart-header">
         <h3>Avaliação Geral por Aspectos</h3>
-        <p>Baseado em {reviews.length} avaliação{reviews.length !== 1 ? 'ões' : ''}</p>
+        <p>Baseado em {reviews.length} avaliaç{reviews.length !== 1 ? 'ões' : 'ão'}</p>
       </div>
       <div className="chart-wrapper">
         <Radar data={data} options={options} />

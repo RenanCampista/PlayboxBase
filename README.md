@@ -24,18 +24,20 @@ Um jogo pode estar associado a um ou mais gêneros. Além disso, ele pode recebe
 #### **Git**
 - **GitHub**: Repositório remoto utilizado para versionamento do código e colaboração entre os membros da equipe.
 
-#### **Build**
+#### **Build e Gerenciamento de Pacotes**
 - **Npm**: Gerenciador de pacotes utilizado para instalar dependências do projeto.
+- **Nodemon**: Ferramenta de desenvolvimento para reinicialização automática do servidor durante o desenvolvimento.
 
 #### **Testes**
-- **React Testing Library**: Utilizada para testes de componentes React.
 - **Jest**: Framework de testes utilizado para executar os testes automatizados.
+- **Supertest**: Biblioteca para testes de APIs HTTP.
 
 #### **Issue Tracking**
 - **GitHub Issues**: Utilizado para rastreamento de problemas e gerenciamento de tarefas.
 
 #### **CI/CD**
-- **GitHub Actions**: Configurado para executar testes automatizados e implantar o projeto.
+- **GitHub Actions**: Configurado para implementar integração contínua e entrega contínua (CI/CD) do projeto, automatizando o processo de build.
+- **Render**: Utilizado para implantar o backend do projeto, permitindo que a API esteja disponível online.
 
 #### **Containerização**
 - **Docker**: Utilizado para criar contêineres do projeto, facilitando o ambiente de desenvolvimento e implantação.
@@ -45,25 +47,35 @@ Um jogo pode estar associado a um ou mais gêneros. Além disso, ele pode recebe
 Observação: Na primeira etapa do trabalho havia sido mencionado o uso do MySQL, mas foi alterado para PostgreSQL.
 
 #### **Documentação de código**
-- **JSDoc**: Utilizado para gerar documentação do código JavaScript.
+- **JSDoc**: Utilizado para gerar documentação do código JavaScript tanto no backend quanto no frontend.
+
+#### **Scripts Python**
+- **Requests**: Biblioteca Python para requisições HTTP.
+- **Python-dotenv**: Para gerenciamento de variáveis de ambiente nos scripts Python.
 
 ### **Outras ferramentas**
 - **Figma**: Utilizado para design de interfaces e prototipagem.
 - **Makefile**: Arquivo utilizado para automatizar tarefas comuns do projeto, como instalação de dependências e execução de scripts.
+- **Bash**: Utilizado para executar scripts e comandos no terminal.
 
-
-# Framewoks utilizados
+# Frameworks e Bibliotecas utilizados
 - **React**: Biblioteca JavaScript para construção de interfaces de usuário.
-- **Express**: Framework para construção de APIs em Node.js.
+- **Express.js**: Framework para construção de APIs em Node.js.
 - **Node.js**: Ambiente de execução JavaScript no lado do servidor.
 - **Prisma**: ORM utilizado para interagir com o banco de dados PostgreSQL.
+- **Chart.js**: Biblioteca para criação de gráficos e visualizações (usado no GameRadarChart).
+- **Axios**: Cliente HTTP para realizar requisições à API.
+- **React Router**: Navegação entre páginas na aplicação React.
+- **bcryptjs**: Biblioteca para hash de senhas.
+- **jsonwebtoken**: Implementação de JWT para autenticação.
+- **cors**: Middleware para habilitar CORS no Express.
 
 # Gerar documentação de código
 Para gerar a documentação do código, execute o seguinte comando no terminal:
 ```bash
 make docs
 ```
-Isso irá gerar a documentação do backend e do frontend, utilizando o JSDoc para o backend e o React Styleguidist para o frontend. A documentação será gerada nos diretórios `server/docs` e `client/docs`, respectivamente.
+Isso irá gerar a documentação do backend e do frontend, utilizando o JSDoc para ambos. A documentação será gerada nos diretórios `server/docs` e `client/docs`, respectivamente.
 
 # Instalação e Execução
 Durante o desenvolvimento, é possível executar o projeto de duas maneiras: utilizando o Docker ou diretamente no ambiente local.
@@ -139,7 +151,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 ## Autores
 
 - **Renan Campista** - [RenanCampista](https://github.com/RenanCampista)
-- **Artur Mendes de Moraes**
+- **Artur Mendes de Moraes** - [ArturMendesMoraes](https://github.com/Arturmmoraes)
 - **Pedro Henrique Queiroz** - [PedroHQuedevez](https://github.com/PedroHQuedevez)
 
    
