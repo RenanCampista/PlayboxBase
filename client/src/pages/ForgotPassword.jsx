@@ -9,6 +9,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetToken, setResetToken] = useState('');
 
@@ -57,14 +58,19 @@ const ForgotPassword = ({ onBackToLogin }) => {
 
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       const tokenToUse = token || resetToken; // Usar token inserido ou o gerado
       await authService.resetPassword(tokenToUse, newPassword);
       
-      // Sucesso - voltar para login
-      alert('Senha redefinida com sucesso! Você já pode fazer login com a nova senha.');
-      onBackToLogin();
+      // Sucesso - mostrar mensagem de sucesso
+      setSuccess('Senha redefinida com sucesso! Você já pode fazer login com a nova senha.');
+      
+      // Voltar para login após 3 segundos
+      setTimeout(() => {
+        onBackToLogin();
+      }, 3000);
       
     } catch (error) {
       console.error('Erro ao redefinir senha:', error);
@@ -132,12 +138,13 @@ const ForgotPassword = ({ onBackToLogin }) => {
                 <div className="token-display">
                   <strong>Token de demonstração:</strong>
                   <code>{resetToken}</code>
-                  <small>Em produção, este token seria enviado por email.</small>
+                  <small>No mundo real, este token seria enviado por email.</small>
                 </div>
               )}
               
               <form onSubmit={handlePasswordReset}>
                 {error && <div className="error-message">{error}</div>}
+                {success && <div className="success-message">{success}</div>}
                 
                 <div className="form-group">
                   <input
@@ -148,7 +155,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
                     disabled={loading}
                     placeholder={resetToken ? "Token preenchido automaticamente" : "Cole o token aqui"}
                   />
-                  <small>Se você não inserir um token, usaremos o token gerado automaticamente acima.</small>
+                  <small>Se você não inserir um token, será utilizado o token gerado automaticamente acima.</small>
                 </div>
 
                 <div className="form-group">

@@ -5,6 +5,8 @@
   "scripts": {
     "test": "jest --testTimeout=10000",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --watchAll=false",
+    "test:ci": "jest --ci --coverage --watchAll=false --testTimeout=10000",
     "dev": "nodemon server.js",
     "start": "node server.js",
     "docs": "jsdoc -c jsdoc.conf.json",

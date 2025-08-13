@@ -158,7 +158,7 @@ export const authService = {
    * @returns {Promise<Object>} Dados da resposta
    */
   resetPassword: async (token, newPassword) => {
-    const response = await api.post('/auth/reset-password', { token, newPassword });
+    const response = await api.post('/auth/resetPassword', { token, newPassword });
     return response.data;
   }
 };
