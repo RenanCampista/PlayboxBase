@@ -11,6 +11,7 @@ help:
 	@echo "  start_frontend 	- Inicia o frontend sem Docker"
 	@echo "  clean      		- Remove containers, volumes, imagens e node_modules"
 	@echo "  docs       		- Gera documentação de código para backend e frontend"
+	@echo "  test       		- Executa testes automatizados da API"
 
 # Up
 docker:
@@ -38,6 +39,10 @@ start_server:
 start_frontend:
 	@echo "Iniciando frontend sem Docker..."
 	cd client && npm start
+
+test:
+	@echo "Executando testes automatizados da API..."
+	cd server && npm test
 
 # Limpeza
 clean:

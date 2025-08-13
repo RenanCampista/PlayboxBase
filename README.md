@@ -8,6 +8,7 @@ Plataforma web de avaliação de jogos desenvolvido na disciplina de Projeto Int
 - [Framewoks utilizados](#framewoks-utilizados)
 - [Gerar documentação de código](#gerar-documentação-de-código)
 - [Instalação e Execução](#instalação-e-execução)
+- [Testes](#testes)
 - [Licença](#licença)
 
 # Estrutura do Projeto
@@ -36,8 +37,10 @@ Um jogo pode estar associado a um ou mais gêneros. Além disso, ele pode recebe
 - **GitHub Issues**: Utilizado para rastreamento de problemas e gerenciamento de tarefas.
 
 #### **CI/CD**
+- **Vercel**: Configurado para implementar integração contínua e entrega contínua (CI/CD) do projeto, automatizando o processo de build e deploy do frontend.
 - **GitHub Actions**: Configurado para implementar integração contínua e entrega contínua (CI/CD) do projeto, automatizando o processo de build.
 - **Render**: Utilizado para implantar o backend do projeto, permitindo que a API esteja disponível online.
+
 
 #### **Containerização**
 - **Docker**: Utilizado para criar contêineres do projeto, facilitando o ambiente de desenvolvimento e implantação.
@@ -65,7 +68,6 @@ Observação: Na primeira etapa do trabalho havia sido mencionado o uso do MySQL
 - **Prisma**: ORM utilizado para interagir com o banco de dados PostgreSQL.
 - **Chart.js**: Biblioteca para criação de gráficos e visualizações (usado no GameRadarChart).
 - **Axios**: Cliente HTTP para realizar requisições à API.
-- **React Router**: Navegação entre páginas na aplicação React.
 - **bcryptjs**: Biblioteca para hash de senhas.
 - **jsonwebtoken**: Implementação de JWT para autenticação.
 - **cors**: Middleware para habilitar CORS no Express.
@@ -143,6 +145,14 @@ Para executar o projeto diretamente no ambiente local, siga os passos abaixo:
    make start_frontend
    ```
 7. Acesse a aplicação no navegador em [http://localhost:3000](http://localhost:3000).
+
+
+# Testes
+Para executar os testes do projeto, você pode utilizar o seguinte comando:
+```bash
+make test
+```
+Isso irá executar os testes automatizados utilizando o Jest e o Supertest, garantindo que a API esteja funcionando corretamente.
 
 # Licença
 
