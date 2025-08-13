@@ -132,7 +132,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
                 <div className="token-display">
                   <strong>Token de demonstração:</strong>
                   <code>{resetToken}</code>
-                  <small>Em produção, este token seria enviado por email.</small>
+                  <small>No mundo real, este token seria enviado por email.</small>
                 </div>
               )}
               
@@ -148,7 +148,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
                     disabled={loading}
                     placeholder={resetToken ? "Token preenchido automaticamente" : "Cole o token aqui"}
                   />
-                  <small>Se você não inserir um token, usaremos o token gerado automaticamente acima.</small>
+                  <small>Se você não inserir um token, será utilizado o token gerado automaticamente acima.</small>
                 </div>
 
                 <div className="form-group">
